@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aptus Calendar - A Temporal Operating System</title>
+    <meta name="description" content="A calendar system aligned with natural cycles. 13 months, 28 days each, anchored to the equinox.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-container">
+            <div class="logo">Aptus</div>
+            <div class="nav-links">
+                <a href="index.html" class="active">Home</a>
+                <a href="calendar.html">Calendar</a>
+                <a href="converter.html">Convert</a>
+                <a href="guide.html">Guide</a>
+                <a href="about.html">About</a>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <section class="hero">
+            <div class="container">
+                <h1>A Calendar Aligned With Nature</h1>
+                <p class="subtitle">13 equal months. 28 days each. Anchored to the equinox.</p>
+                <div class="current-date" id="currentDate">
+                    <div class="aptus-date">Loading...</div>
+                    <div class="gregorian-equiv">...</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="intro">
+            <div class="container">
+                <div class="intro-grid">
+                    <div class="intro-text">
+                        <h2>What is Aptus?</h2>
+                        <p><strong>Aptus</strong> (Latin: <em>aligned, fitted, suited to the time</em>) is a calendar system designed for seasonal coherence rather than historical accident.</p>
+                        
+                        <p>The Gregorian calendar works for coordination, but it's poorly aligned with observable reality. Months are uneven (28 to 31 days), the year begins arbitrarily (January has no seasonal significance), and for the Southern Hemisphere, the seasonal labels are backwards.</p>
+                        
+                        <p>Aptus addresses this through structure:</p>
+                        
+                        <ul>
+                            <li><strong>13 months × 28 days</strong> = 364 days</li>
+                            <li><strong>Lacuna</strong>: A threshold day between years</li>
+                            <li><strong>Equinox anchor</strong>: Year begins at spring (Sept 22 SH, Mar 20 NH)</li>
+                            <li><strong>Seasonal alignment</strong>: Month names and focuses match natural cycles</li>
+                        </ul>
+
+                        <p>This is a temporal operating system, not a doctrine. Use it if it helps.</p>
+                    </div>
+                    
+                    <div class="intro-visual">
+                        <div class="wheel-preview">
+                            <img src="wheel.png" alt="Aptus Calendar Wheel" style="width: 100%; max-width: 400px;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="features">
+            <div class="container">
+                <h2>How It Works</h2>
+                <div class="feature-grid">
+                    <div class="feature">
+                        <div class="feature-icon">🌍</div>
+                        <h3>Hemisphere-Aware</h3>
+                        <p>Southern Hemisphere anchors to Sept 22 (spring). Northern to March 20. Seasons align with actual sunlight patterns.</p>
+                    </div>
+                    
+                    <div class="feature">
+                        <div class="feature-icon">📅</div>
+                        <h3>13 Equal Months</h3>
+                        <p>Every month is 28 days (4 perfect weeks). No confusion about month length. Predictable rhythm.</p>
+                    </div>
+                    
+                    <div class="feature">
+                        <div class="feature-icon">🔄</div>
+                        <h3>Weekly Cadence</h3>
+                        <p>Each month follows: Orient → Engage → Amplify → Integrate. Repeating production cycle.</p>
+                    </div>
+                    
+                    <div class="feature">
+                        <div class="feature-icon">🌙</div>
+                        <h3>Lacuna</h3>
+                        <p>Day 365 sits outside the structure. A threshold for reset, review, and intention-setting before the new year.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="cta">
+            <div class="container">
+                <h2>Get Started</h2>
+                <div class="cta-grid">
+                    <a href="calendar.html" class="cta-card">
+                        <h3>View Live Calendar</h3>
+                        <p>See today's Aptus date, month focus, and week phase</p>
+                    </a>
+                    
+                    <a href="converter.html" class="cta-card">
+                        <h3>Convert Dates</h3>
+                        <p>Find your Aptus birthday or convert any Gregorian date</p>
+                    </a>
+                    
+                    <a href="guide.html" class="cta-card">
+                        <h3>Read the Guide</h3>
+                        <p>Month intents, celebrations, and how to use the system</p>
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>Aptus Calendar · A temporal operating system aligned with natural cycles</p>
+            <p class="footer-note">Interoperable with Gregorian · No belief required · Southern Hemisphere default</p>
+        </div>
+    </footer>
+
+    <script src="aptus.js"></script>
+    <script>
+        // Update current date on homepage
+        function updateHomepageDate() {
+            const info = getAptusDate(new Date());
+            const aptusEl = document.querySelector('.aptus-date');
+            const gregEl = document.querySelector('.gregorian-equiv');
+            
+            if (info.day === 'Lacuna') {
+                aptusEl.textContent = 'Lacuna';
+            } else {
+                aptusEl.textContent = `${info.month} ${info.day}, ${info.year} NE`;
+            }
+            
+            const now = new Date();
+            gregEl.textContent = now.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+        }
+        
+        updateHomepageDate();
+    </script>
+</body>
+</html>
