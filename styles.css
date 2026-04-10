@@ -192,6 +192,83 @@ ul li { margin-bottom: 0.4em; }
   text-align: center;
 }
 
+/* ── Months Reference ────────────────────────────────────────────── */
+
+.months-section {
+  padding: 5rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.months-intro {
+  font-size: 0.9rem;
+  color: var(--muted);
+  max-width: 540px;
+  margin-bottom: 2.5rem;
+}
+
+.months-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+}
+
+.month-card {
+  padding: 1.25rem 1rem;
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  transition: border-color 0.15s;
+}
+
+.month-card-active {
+  box-shadow: 0 0 0 1.5px currentColor;
+}
+
+.month-card-spring { border-top: 2px solid var(--spring); }
+.month-card-summer { border-top: 2px solid var(--summer); }
+.month-card-autumn { border-top: 2px solid var(--autumn); }
+.month-card-winter { border-top: 2px solid var(--winter); }
+
+.month-card-spring.month-card-active { color: var(--spring); border-color: var(--spring); }
+.month-card-summer.month-card-active { color: var(--summer); border-color: var(--summer); }
+.month-card-autumn.month-card-active { color: var(--autumn); border-color: var(--autumn); }
+.month-card-winter.month-card-active { color: var(--winter); border-color: var(--winter); }
+
+.month-index {
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--subtle);
+  margin-bottom: 0.3rem;
+}
+
+.month-card-season {
+  font-family: var(--mono);
+  font-size: 0.60rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--subtle);
+}
+
+.month-card-name {
+  font-family: var(--serif);
+  font-size: 1.1rem;
+  font-weight: 400;
+  color: var(--text);
+  margin-top: 0.15rem;
+}
+
+.month-card-focus {
+  font-family: var(--body);
+  font-size: 0.78rem;
+  color: var(--muted);
+  font-style: italic;
+}
+
 /* ── Intro ───────────────────────────────────────────────────────── */
 
 .intro {
@@ -289,15 +366,17 @@ ul li { margin-bottom: 0.4em; }
 /* ── Responsive ──────────────────────────────────────────────────── */
 
 @media (max-width: 900px) {
+  .months-grid  { grid-template-columns: repeat(3, 1fr); }
   .feature-grid { grid-template-columns: 1fr 1fr; }
-  .cta-grid { grid-template-columns: 1fr 1fr; }
+  .cta-grid     { grid-template-columns: 1fr 1fr; }
 }
 
 @media (max-width: 600px) {
-  .container { padding: 0 1.25rem; }
+  .container     { padding: 0 1.25rem; }
   .nav-container { padding: 0 1.25rem; }
-  .today { padding: 3rem 0 2.5rem; }
-  .nav-links { gap: 1.25rem; }
-  .feature-grid { grid-template-columns: 1fr; gap: 2rem; }
-  .cta-grid { grid-template-columns: 1fr; }
+  .today         { padding: 3rem 0 2.5rem; }
+  .nav-links     { gap: 1.25rem; }
+  .months-grid   { grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+  .feature-grid  { grid-template-columns: 1fr; gap: 2rem; }
+  .cta-grid      { grid-template-columns: 1fr; }
 }

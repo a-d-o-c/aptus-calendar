@@ -27,7 +27,7 @@
 
     <main>
 
-        <!-- Today ─────────────────────────────────────────── -->
+        <!-- Today / Hero ──────────────────────────────────────────── -->
         <section class="today">
             <div class="container">
                 <div class="today-grid">
@@ -49,60 +49,29 @@
             </div>
         </section>
 
-        <!-- What is Aptus ─────────────────────────────────── -->
+        <!-- Thirteen Months ───────────────────────────────────────── -->
+        <section class="months-section">
+            <div class="container">
+                <h2>Thirteen Months</h2>
+                <p class="months-intro">Each month is 28 days — four identical weeks. Every month has a name, a season, and a focus that describes its energetic quality.</p>
+                <div class="months-grid" id="months-grid"></div>
+            </div>
+        </section>
+
+        <!-- What is Aptus ─────────────────────────────────────────── -->
         <section class="intro">
             <div class="container">
                 <h2>What is Aptus?</h2>
                 <div class="intro-body">
                     <p><strong>Aptus</strong> (Latin: <em>aligned, fitted, suited to the time</em>) is a calendar system designed for seasonal coherence rather than historical accident.</p>
                     <p>The Gregorian calendar works for coordination, but it's poorly aligned with observable reality. Months are uneven, the year begins arbitrarily, and for the Southern Hemisphere, the seasonal labels are backwards.</p>
-                    <p>Aptus addresses this through structure:</p>
-                    <ul>
-                        <li><strong>13 months × 28 days</strong> = 364 days, every month identical</li>
-                        <li><strong>Lacuna</strong>: A threshold day outside the structure, between years</li>
-                        <li><strong>Equinox anchor</strong>: Year begins at spring (Sept 22 SH, Mar 20 NH)</li>
-                        <li><strong>Weekly cadence</strong>: Every month follows the same four-phase cycle</li>
-                    </ul>
+                    <p>Aptus addresses this: <strong>13 months × 28 days</strong> = 364 days, every month identical. The year begins at spring equinox (Sept 22 SH). Day 365 is <em>Lacuna</em> — a threshold day outside the structure. Every month follows the same four-phase weekly cycle: Orient → Engage → Amplify → Integrate.</p>
                     <p>This is a temporal operating system, not a doctrine. Use it if it helps.</p>
                 </div>
             </div>
         </section>
 
-        <!-- How It Works ──────────────────────────────────── -->
-        <section class="features">
-            <div class="container">
-                <h2>How It Works</h2>
-                <div class="feature-grid">
-
-                    <div class="feature">
-                        <p class="feature-index">01</p>
-                        <h3>Hemisphere-Aware</h3>
-                        <p>Southern Hemisphere anchors to Sept 22. Northern to March 20. Seasons align with actual sunlight, not administrative convention.</p>
-                    </div>
-
-                    <div class="feature">
-                        <p class="feature-index">02</p>
-                        <h3>13 Equal Months</h3>
-                        <p>Every month is exactly 28 days — four perfect weeks. No confusion about how many days remain. Every month behaves identically.</p>
-                    </div>
-
-                    <div class="feature">
-                        <p class="feature-index">03</p>
-                        <h3>Weekly Cadence</h3>
-                        <p>Each month follows the same four phases: Orient → Engage → Amplify → Integrate. A repeating production cycle you can internalise.</p>
-                    </div>
-
-                    <div class="feature">
-                        <p class="feature-index">04</p>
-                        <h3>Lacuna & Aequa</h3>
-                        <p>Day 365 is Lacuna — outside the structure, for threshold work. Aequa is a rare calibration day (~every 6 years) for solar precision.</p>
-                    </div>
-
-                </div>
-            </div>
-        </section>
-
-        <!-- Get Started ───────────────────────────────────── -->
+        <!-- Get Started ───────────────────────────────────────────── -->
         <section class="cta">
             <div class="container">
                 <h2>Get Started</h2>
@@ -153,8 +122,8 @@
             const tagsEl = document.getElementById('today-tags');
             const tags = [];
             if (!info.isLacuna) {
-                tags.push({ text: info.season, cls: 'tag tag-' + info.season });
-                tags.push({ text: info.weekPhase + ' week', cls: 'tag' });
+                tags.push({ text: info.season,                    cls: 'tag tag-' + info.season });
+                tags.push({ text: info.weekPhase + ' week',       cls: 'tag' });
                 tags.push({ text: 'Week ' + (info.weekIndex + 1) + ' of 4', cls: 'tag' });
             } else {
                 tags.push({ text: 'Threshold Day', cls: 'tag' });
@@ -177,6 +146,25 @@
             } else {
                 focusEl.textContent = 'A day outside the structure. For reflection and renewal.';
             }
+
+            // ── Build 13-month grid ──────────────────────────────────
+            const SEASON_LABELS = { spring: 'Spring', summer: 'Summer', autumn: 'Autumn', winter: 'Winter' };
+            const grid = document.getElementById('months-grid');
+            const isCurrent = !info.isLacuna;
+
+            APTUS_DATA.MONTHS.forEach((month, i) => {
+                const isActive = isCurrent && month.name === info.month;
+                const idx  = String(i + 1).padStart(2, '0');
+                const card = document.createElement('div');
+                card.className = 'month-card month-card-' + month.season + (isActive ? ' month-card-active' : '');
+                card.innerHTML = `
+                    <span class="month-index">${idx}</span>
+                    <div class="month-card-season">${SEASON_LABELS[month.season]}</div>
+                    <div class="month-card-name">${month.name}</div>
+                    <div class="month-card-focus">${month.focus}</div>
+                `;
+                grid.appendChild(card);
+            });
         })();
     </script>
 
