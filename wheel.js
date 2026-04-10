@@ -1,524 +1,732 @@
-// wheel.js — Aptus Calendar Volvelle v3
-// Astrolabe-style layered mask discs. Each ring has an opaque disc
-// with one slot cut out — only the current state illuminates.
+// wheel.js — Aptus Calendar Volvelle v4
+// Design: warm cream face · three rotating discs · reading window fixed at 12 o'clock
+// All discs rotate so the current segment rises to the window.
+// Physical depth: drop shadow, mask plate colour offset, aperture edge shading.
 //
-// Rings (center → out):
-//   Hub  ·  Season (4)  ·  Month (13)  ·  Week (4)  ·  Day (28)  ·  Bezel
-//
-// 28 outer segments = one full month cycle (1 segment = 1 day of month).
-// Week ring aligns with day ring: Orient=days 1–7, Engage=8–14, etc.
-// Golden ratio ring proportions throughout.
+// Rings (centre → out): hub · season (4) · month (13) · day (28) · bezel
+// Week phase labelled inside the day window — not a separate ring.
+// Year clock: separate small dial showing 365-day position + cardinal events.
 
 (function () {
   'use strict';
 
-  const WEEKS = ['Orient', 'Engage', 'Amplify', 'Integrate'];
-
-  const PHASE_COLORS = {
-    Orient:    { primary: '#5a7898', light: '#8aaec8' },
-    Engage:    { primary: '#c08010', light: '#e0a830' },
-    Amplify:   { primary: '#a84020', light: '#d06840' },
-    Integrate: { primary: '#3e6848', light: '#60a070' },
-  };
-
   const SEASONS = [
-    { key: 'spring', label: 'SPRING' },
-    { key: 'summer', label: 'SUMMER' },
-    { key: 'autumn', label: 'AUTUMN' },
-    { key: 'winter', label: 'WINTER' },
+    { key: 'spring', label: 'Spring' },
+    { key: 'summer', label: 'Summer' },
+    { key: 'autumn', label: 'Autumn' },
+    { key: 'winter', label: 'Winter' },
   ];
 
-  class AptusWheel {
+  const PHASES = ['Orient', 'Engage', 'Amplify', 'Integrate'];
+
+  const PHASE_COL = {
+    Orient:    '#426480',
+    Engage:    '#a06c10',
+    Amplify:   '#804030',
+    Integrate: '#3a6048',
+  };
+
+  // ─────────────────────────────────────────────────────────────────────────────
+  // AptusVolvelle — main rotating-disc calendar
+  // ─────────────────────────────────────────────────────────────────────────────
+
+  class AptusVolvelle {
     constructor(canvas) {
       this.canvas = canvas;
       this.ctx    = canvas.getContext('2d');
       this.dpr    = window.devicePixelRatio || 1;
-      this._onResize = this._onResize.bind(this);
-      window.addEventListener('resize', this._onResize);
-      this._onResize();
+      this._resize = this._resize.bind(this);
+      window.addEventListener('resize', this._resize);
+      this._resize();
     }
 
-    _onResize() {
-      const container = this.canvas.parentElement;
-      const display   = Math.min(container.clientWidth || 780, 780);
-      this.canvas.style.width  = display + 'px';
-      this.canvas.style.height = display + 'px';
-      this.canvas.width  = display * this.dpr;
-      this.canvas.height = display * this.dpr;
+    _resize() {
+      const d = Math.min(this.canvas.parentElement.clientWidth || 780, 780);
+      this.canvas.style.width  = d + 'px';
+      this.canvas.style.height = d + 'px';
+      this.canvas.width  = d * this.dpr;
+      this.canvas.height = d * this.dpr;
       this.ctx.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
-      this.size = display;
-      this.cx   = display / 2;
-      this.cy   = display / 2;
-      this.R    = display / 2 - 18;
-      this._computeRings();
+      this.S  = d;
+      this.cx = d / 2;
+      this.cy = d / 2;
+      this.R  = d / 2 - 18;
+      const R = this.R;
+      // Ring boundaries (centre → out). Small gaps between discs show depth.
+      this.r = {
+        hub:  R * 0.178,
+        sI:   R * 0.208,  sO: R * 0.385,  // season disc
+        mI:   R * 0.410,  mO: R * 0.625,  // month disc
+        dI:   R * 0.650,  dO: R * 0.872,  // day disc
+        bI:   R * 0.872,  bO: R * 1.000,  // bezel
+      };
       this.draw();
     }
 
-    _computeRings() {
-      const R = this.R;
-      // Boundaries derived from golden ratio series: 0.190, 0.310, 0.472, 0.650, 0.878
-      this.r = {
-        hub:     R * 0.190,
-        seasIn:  R * 0.190,
-        seasOut: R * 0.310,
-        monIn:   R * 0.310,
-        monOut:  R * 0.472,
-        weekIn:  R * 0.472,
-        weekOut: R * 0.650,
-        dayIn:   R * 0.650,
-        dayOut:  R * 0.878,
-        bezIn:   R * 0.878,
-        bezOut:  R * 1.000,
-      };
+    // Aperture half-angle — ±0.52 rad (≈ 30°) from 12 o'clock = 60° window
+    get AH() { return 0.52; }
+
+    // ── Main draw ──────────────────────────────────────────────────────────────
+
+    draw() {
+      const { ctx, S } = this;
+      const now = getAptusDate(new Date());
+      ctx.clearRect(0, 0, S, S);
+
+      this._face();
+      this._ghostDiscs(now);  // faint rotating discs (show mechanism outside window)
+      this._masks();           // cream plates cover non-aperture area
+      this._activeDiscs(now); // bright content in aperture window
+      this._gapLines();        // subtle ring-boundary lines
+      this._hub(now);
+      this._apertureFrame();
+      this._bezel();
     }
 
-    // Day-of-month 1–28 → canvas angle (12 o'clock = 0, clockwise)
-    _dayAngle(d) {
-      return ((d - 1) / 28) * Math.PI * 2 - Math.PI / 2;
-    }
+    // ── Face ───────────────────────────────────────────────────────────────────
 
-    // Quarter index 0–3 → start angle of 90° segment
-    _quadAngle(i) {
-      return (i / 4) * Math.PI * 2 - Math.PI / 2;
-    }
-
-    // Month index 0–12 → start angle of 1/13 segment
-    _monthAngle(i) {
-      return (i / 13) * Math.PI * 2 - Math.PI / 2;
-    }
-
-    // Draw an annular segment
-    _segment(r1, r2, a1, a2, fill, stroke, sw) {
-      const { ctx, cx, cy } = this;
+    _face() {
+      const { ctx, cx, cy, r } = this;
+      const g = ctx.createRadialGradient(cx, cy - r.bO * 0.05, 0, cx, cy, r.bO);
+      g.addColorStop(0,   '#faf8f3');
+      g.addColorStop(0.6, '#f6f2e8');
+      g.addColorStop(1,   '#ede6d5');
       ctx.beginPath();
-      ctx.arc(cx, cy, r2, a1, a2, false);
-      ctx.arc(cx, cy, r1, a2, a1, true);
+      ctx.arc(cx, cy, r.bO, 0, Math.PI * 2);
+      ctx.fillStyle = g;
+      ctx.fill();
+    }
+
+    // ── Ghost discs — very pale rotating content (visible outside window too) ──
+
+    _ghostDiscs(now) {
+      if (now.isLacuna) return;
+      const { r } = this;
+      const si = SEASONS.findIndex(s => s.key === now.season);
+
+      // Season ghost
+      this._discPass(4, -si * Math.PI / 2, (i, a1, a2) => {
+        const col = APTUS_DATA.SEASON_COLORS[SEASONS[i].key];
+        this._segFill(r.sI, r.sO, a1, a2, col.bg + '60', 0.012);
+      });
+
+      // Month ghost
+      const mSEG = Math.PI * 2 / 13;
+      this._discPass(13, -now.monthIndex * mSEG, (i, a1, a2) => {
+        const col = APTUS_DATA.SEASON_COLORS[APTUS_DATA.MONTHS[i].season];
+        this._segFill(r.mI, r.mO, a1, a2, col.bg + '48', 0.010);
+      });
+
+      // Day ghost — phase-tinted
+      const dSEG = Math.PI * 2 / 28;
+      this._discPass(28, -(now.dayInMonth - 1) * dSEG, (i, a1, a2) => {
+        const col = PHASE_COL[PHASES[Math.floor(i / 7)]];
+        this._segFill(r.dI, r.dO, a1, a2, col + '1e', 0.008);
+      });
+    }
+
+    // ── Cream masks — cover non-aperture area of each disc ─────────────────────
+
+    _masks() {
+      const { ctx, cx, cy, r } = this;
+      const AH   = this.AH;
+      const a1   = -Math.PI / 2 - AH;
+      const a2   = -Math.PI / 2 + AH;
+      // The mask covers from aperture-end → aperture-start (the long way around)
+      const mA1  = a2;
+      const mA2  = a1 + Math.PI * 2;
+
+      // Mask plate colour — slightly warmer/darker than face to imply depth
+      const plate = '#eae3d0';
+
+      [[r.sI, r.sO], [r.mI, r.mO], [r.dI, r.dO]].forEach(([rI, rO]) => {
+        // Main mask plate
+        ctx.beginPath();
+        ctx.arc(cx, cy, rO, mA1, mA2, false);
+        ctx.arc(cx, cy, rI, mA2, mA1, true);
+        ctx.closePath();
+        ctx.fillStyle = plate;
+        ctx.fill();
+
+        // Subtle inner shadow at left aperture edge (light comes from upper-left)
+        this._edgeShadow(cx, cy, rI, rO, a1, a1 + 0.22, 'rgba(130,105,65,0.07)');
+        // Subtle inner shadow at right aperture edge
+        this._edgeShadow(cx, cy, rI, rO, a2 - 0.22, a2, 'rgba(130,105,65,0.07)');
+      });
+    }
+
+    _edgeShadow(cx, cy, rI, rO, eA1, eA2, col) {
+      const { ctx } = this;
+      ctx.beginPath();
+      ctx.arc(cx, cy, rO, eA1, eA2, false);
+      ctx.arc(cx, cy, rI, eA2, eA1, true);
       ctx.closePath();
-      if (fill)   { ctx.fillStyle   = fill;         ctx.fill(); }
-      if (stroke) { ctx.strokeStyle = stroke; ctx.lineWidth = sw || 1; ctx.stroke(); }
+      ctx.fillStyle = col;
+      ctx.fill();
     }
 
-    // Draw a radial spoke
-    _spoke(r1, r2, angle, color, width) {
-      const { ctx, cx, cy } = this;
+    // ── Active discs — bright content, clipped to aperture window ──────────────
+
+    _activeDiscs(now) {
+      if (now.isLacuna) return;
+      const { r, R } = this;
+
+      // Season
+      const si   = SEASONS.findIndex(s => s.key === now.season);
+      const sSEG = Math.PI / 2;
+      this._withClip(r.sI, r.sO, () => {
+        this._discPass(4, -si * sSEG, (i, a1, a2, midA) => {
+          const dist = Math.min(Math.abs(i - si), 4 - Math.abs(i - si));
+          const col  = APTUS_DATA.SEASON_COLORS[SEASONS[i].key];
+          const curr = dist === 0;
+          if (curr) {
+            this._segFill(r.sI, r.sO, a1, a2, col.bg, 0.015);
+            this._colBand((r.sI + r.sO) / 2, a1, a2, col.primary + 'cc', (r.sO - r.sI) * 0.28);
+          }
+          const alpha = curr ? 'ff' : dist === 1 ? '50' : '20';
+          this._radText(SEASONS[i].label,
+            (r.sI + r.sO) / 2, midA,
+            `${curr ? '600' : '400'} ${R * 0.036}px 'Lora', Georgia, serif`,
+            col.primary + alpha);
+        });
+      });
+
+      // Month
+      const mi   = now.monthIndex;
+      const mSEG = Math.PI * 2 / 13;
+      this._withClip(r.mI, r.mO, () => {
+        this._discPass(13, -mi * mSEG, (i, a1, a2, midA) => {
+          const raw  = i - mi;
+          const dist = Math.min(Math.abs(raw), 13 - Math.abs(raw));
+          const m    = APTUS_DATA.MONTHS[i];
+          const col  = APTUS_DATA.SEASON_COLORS[m.season];
+          const curr = dist === 0;
+          const midR = (r.mI + r.mO) / 2;
+          if (curr) {
+            this._segFill(r.mI, r.mO, a1, a2, col.bg, 0.012);
+            this._colBand(midR, a1, a2, col.primary + 'bb', (r.mO - r.mI) * 0.24);
+            this._textBlock(midR, midA, [
+              { text: m.name,  font: `700 ${R * 0.031}px 'Space Mono', monospace`, fill: col.primary,       dy: -R * 0.013 },
+              { text: m.focus, font: `italic ${R * 0.020}px 'Lora', serif`,        fill: col.primary + 'aa', dy:  R * 0.014 },
+            ]);
+          } else {
+            const alpha = dist === 1 ? '52' : '22';
+            this._radText(m.name, midR, midA,
+              `${R * 0.021}px 'Space Mono', monospace`, col.primary + alpha);
+          }
+        });
+      });
+
+      // Day
+      const d    = now.dayInMonth;
+      const dSEG = Math.PI * 2 / 28;
+      this._withClip(r.dI, r.dO, () => {
+        this._discPass(28, -(d - 1) * dSEG, (i, a1, a2, midA) => {
+          const dayN = i + 1;
+          const raw  = i - (d - 1);
+          const dist = Math.min(Math.abs(raw), 28 - Math.abs(raw));
+          const wk   = Math.floor(i / 7);
+          const col  = PHASE_COL[PHASES[wk]];
+          const curr = dist === 0;
+          const midR = (r.dI + r.dO) / 2;
+
+          if (curr) {
+            this._segFill(r.dI, r.dO, a1, a2, col + '20', 0.006);
+            this._colBand(midR, a1, a2, col + 'bb', (r.dO - r.dI) * 0.30);
+            this._textBlock(midR, midA, [
+              { text: String(dayN),   font: `700 ${R * 0.054}px 'Space Mono', monospace`, fill: col,         dy: -R * 0.014 },
+              { text: PHASES[wk],     font: `${R * 0.019}px 'Space Mono', monospace`,      fill: col + 'bb', dy:  R * 0.017 },
+            ]);
+          } else {
+            const sz    = dist === 1 ? R * 0.030 : R * 0.022;
+            const alpha = dist === 1 ? '72' : dist === 2 ? '44' : '22';
+            this._radText(String(dayN), midR, midA,
+              `${sz}px 'Space Mono', monospace`, col + alpha);
+          }
+        });
+      });
+    }
+
+    // ── Structural ring lines (very faint — show disc boundaries) ──────────────
+
+    _gapLines() {
+      const { ctx, cx, cy, r } = this;
+      [r.sI, r.sO, r.mI, r.mO, r.dI, r.dO, r.bI].forEach(rad => {
+        ctx.beginPath();
+        ctx.arc(cx, cy, rad, 0, Math.PI * 2);
+        ctx.strokeStyle = 'rgba(170,140,85,0.24)';
+        ctx.lineWidth   = 0.8;
+        ctx.stroke();
+      });
+    }
+
+    // ── Hub ────────────────────────────────────────────────────────────────────
+
+    _hub(now) {
+      const { ctx, cx, cy, r, R } = this;
+      const g = ctx.createRadialGradient(cx - R * 0.03, cy - R * 0.04, 0, cx, cy, r.hub);
+      g.addColorStop(0, '#faf8f3');
+      g.addColorStop(1, '#f0ebe0');
       ctx.beginPath();
-      ctx.moveTo(cx + Math.cos(angle) * r1, cy + Math.sin(angle) * r1);
-      ctx.lineTo(cx + Math.cos(angle) * r2, cy + Math.sin(angle) * r2);
-      ctx.strokeStyle = color;
-      ctx.lineWidth   = width || 1;
+      ctx.arc(cx, cy, r.hub, 0, Math.PI * 2);
+      ctx.fillStyle = g;
+      ctx.fill();
+      // Hub border
+      ctx.beginPath();
+      ctx.arc(cx, cy, r.hub, 0, Math.PI * 2);
+      ctx.strokeStyle = 'rgba(170,140,85,0.55)';
+      ctx.lineWidth   = 1.5;
+      ctx.stroke();
+      // Inner decorative ring
+      ctx.beginPath();
+      ctx.arc(cx, cy, r.hub - 5, 0, Math.PI * 2);
+      ctx.strokeStyle = 'rgba(170,140,85,0.20)';
+      ctx.lineWidth   = 0.6;
+      ctx.stroke();
+
+      if (now.isLacuna) {
+        ctx.font         = `italic ${R * 0.044}px 'Lora', serif`;
+        ctx.fillStyle    = '#7a60a8';
+        ctx.textAlign    = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('Lacuna', cx, cy);
+      } else {
+        // NE year
+        ctx.font         = `${R * 0.021}px 'Space Mono', monospace`;
+        ctx.fillStyle    = 'rgba(115,95,65,0.65)';
+        ctx.textAlign    = 'center';
+        ctx.textBaseline = 'alphabetic';
+        ctx.fillText(now.year + ' NE', cx, cy - r.hub * 0.30);
+        // Gregorian date
+        const greg = new Date().toLocaleDateString('en-NZ', { day: 'numeric', month: 'short' });
+        ctx.font         = `${R * 0.017}px 'Space Mono', monospace`;
+        ctx.fillStyle    = 'rgba(140,115,80,0.48)';
+        ctx.textBaseline = 'top';
+        ctx.fillText(greg, cx, cy + r.hub * 0.22);
+      }
+
+      // Gold pivot jewel
+      const pg = ctx.createRadialGradient(cx - R * 0.006, cy - R * 0.007, 0, cx, cy, R * 0.017);
+      pg.addColorStop(0, '#f5d56a');
+      pg.addColorStop(1, '#c49020');
+      ctx.beginPath();
+      ctx.arc(cx, cy, R * 0.017, 0, Math.PI * 2);
+      ctx.fillStyle   = pg;
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(155,115,35,0.55)';
+      ctx.lineWidth   = 0.8;
       ctx.stroke();
     }
 
-    // Draw text rotated to follow the ring (always reads outward)
-    _arcText(text, radius, angle, font, color) {
-      const { ctx, cx, cy } = this;
+    // ── Aperture frame — visible window outline ─────────────────────────────────
+
+    _apertureFrame() {
+      const { ctx, cx, cy, r } = this;
+      const AH   = this.AH;
+      const gold = 'rgba(170,140,85,0.80)';
+
+      // Radial edge lines at aperture boundaries
+      [-AH, AH].forEach(offset => {
+        const a    = -Math.PI / 2 + offset;
+        const cos  = Math.cos(a);
+        const sin  = Math.sin(a);
+        ctx.beginPath();
+        ctx.moveTo(cx + cos * (r.sI - 6), cy + sin * (r.sI - 6));
+        ctx.lineTo(cx + cos * (r.dO + 6), cy + sin * (r.dO + 6));
+        ctx.strokeStyle = gold;
+        ctx.lineWidth   = 1.2;
+        ctx.stroke();
+      });
+
+      // Arc along outer edge of aperture
+      ctx.beginPath();
+      ctx.arc(cx, cy, r.dO + 5, -Math.PI / 2 - AH, -Math.PI / 2 + AH);
+      ctx.strokeStyle = gold;
+      ctx.lineWidth   = 1.8;
+      ctx.stroke();
+
+      // Arc along inner edge of aperture
+      ctx.beginPath();
+      ctx.arc(cx, cy, r.sI - 5, -Math.PI / 2 - AH, -Math.PI / 2 + AH);
+      ctx.strokeStyle = 'rgba(170,140,85,0.45)';
+      ctx.lineWidth   = 1.0;
+      ctx.stroke();
+
+      // Gold diamond marker at 12 o'clock above the wheel
+      const dmY = cy - r.dO - 11;
       ctx.save();
-      ctx.translate(cx + Math.cos(angle) * radius, cy + Math.sin(angle) * radius);
+      ctx.translate(cx, dmY);
+      ctx.beginPath();
+      ctx.moveTo(0, -5); ctx.lineTo(5, 0); ctx.lineTo(0, 5); ctx.lineTo(-5, 0);
+      ctx.closePath();
+      ctx.fillStyle = 'rgba(175,140,65,0.88)';
+      ctx.fill();
+      ctx.restore();
+    }
+
+    // ── Bezel ──────────────────────────────────────────────────────────────────
+
+    _bezel() {
+      const { ctx, cx, cy, r } = this;
+      const SEG = Math.PI * 2 / 28;
+      // 28 tick marks
+      for (let i = 0; i < 28; i++) {
+        const a       = i * SEG - Math.PI / 2;
+        const isWeek  = i % 7 === 0;
+        const rInner  = isWeek ? r.bI : r.bI + (r.bO - r.bI) * 0.45;
+        ctx.beginPath();
+        ctx.moveTo(cx + Math.cos(a) * rInner, cy + Math.sin(a) * rInner);
+        ctx.lineTo(cx + Math.cos(a) * r.bO,   cy + Math.sin(a) * r.bO);
+        ctx.strokeStyle = isWeek
+          ? 'rgba(170,140,85,0.65)'
+          : 'rgba(170,140,85,0.28)';
+        ctx.lineWidth = isWeek ? 1.2 : 0.6;
+        ctx.stroke();
+      }
+      ctx.beginPath();
+      ctx.arc(cx, cy, r.bO - 0.5, 0, Math.PI * 2);
+      ctx.strokeStyle = 'rgba(170,140,85,0.55)';
+      ctx.lineWidth   = 1.5;
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(cx, cy, r.bI, 0, Math.PI * 2);
+      ctx.strokeStyle = 'rgba(170,140,85,0.30)';
+      ctx.lineWidth   = 0.8;
+      ctx.stroke();
+    }
+
+    // ── Primitive helpers ───────────────────────────────────────────────────────
+
+    // Iterate over n segments of a rotating disc.
+    // Calls cb(index, a1, a2, midA) in a context translated to (cx,cy) and rotated.
+    _discPass(n, rotation, cb) {
+      const { ctx, cx, cy } = this;
+      const SEG = Math.PI * 2 / n;
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.rotate(rotation);
+      for (let i = 0; i < n; i++) {
+        const a1 = i * SEG - Math.PI / 2;
+        cb(i, a1, a1 + SEG, a1 + SEG / 2);
+      }
+      ctx.restore();
+    }
+
+    // Fill an annular segment (call inside _discPass — origin = ring centre)
+    _segFill(rI, rO, a1, a2, fill, gap) {
+      const { ctx } = this;
+      const g = gap || 0;
+      ctx.beginPath();
+      ctx.arc(0, 0, rO, a1 + g, a2 - g, false);
+      ctx.arc(0, 0, rI, a2 - g, a1 + g, true);
+      ctx.closePath();
+      ctx.fillStyle = fill;
+      ctx.fill();
+    }
+
+    // Draw a colour band (thick arc stroke) — call inside _discPass
+    _colBand(radius, a1, a2, color, width) {
+      const { ctx } = this;
+      ctx.beginPath();
+      ctx.arc(0, 0, radius, a1 + 0.022, a2 - 0.022);
+      ctx.strokeStyle = color;
+      ctx.lineWidth   = width;
+      ctx.lineCap     = 'butt';
+      ctx.stroke();
+    }
+
+    // Radially-oriented text — call inside _discPass (origin = ring centre)
+    _radText(text, radius, angle, font, fill) {
+      const { ctx } = this;
+      ctx.save();
+      ctx.translate(Math.cos(angle) * radius, Math.sin(angle) * radius);
       let rot = angle + Math.PI / 2;
       if (Math.sin(angle) > 0.001) rot += Math.PI;
       ctx.rotate(rot);
-      ctx.font         = font;
-      ctx.fillStyle    = color;
-      ctx.textAlign    = 'center';
-      ctx.textBaseline = 'middle';
+      ctx.font = font; ctx.fillStyle = fill;
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
       ctx.fillText(text, 0, 0);
       ctx.restore();
     }
 
-    // Draw ring border circle
-    _ringLine(radius, color, width) {
-      const { ctx, cx, cy } = this;
-      ctx.beginPath();
-      ctx.arc(cx, cy, radius, 0, Math.PI * 2);
-      ctx.strokeStyle = color;
-      ctx.lineWidth   = width || 0.7;
-      ctx.stroke();
+    // Multiple text lines at the same angle, each offset radially — call inside _discPass
+    _textBlock(radius, angle, lines) {
+      const { ctx } = this;
+      ctx.save();
+      ctx.translate(Math.cos(angle) * radius, Math.sin(angle) * radius);
+      let rot = angle + Math.PI / 2;
+      if (Math.sin(angle) > 0.001) rot += Math.PI;
+      ctx.rotate(rot);
+      ctx.textAlign = 'center';
+      lines.forEach(({ text, font, fill, dy }) => {
+        ctx.font = font; ctx.fillStyle = fill;
+        ctx.textBaseline = 'middle';
+        ctx.fillText(text, 0, dy);
+      });
+      ctx.restore();
     }
 
-    // Opaque annular mask with one slot gap (slotA1 → slotA2 = the revealed window)
-    _mask(r1, r2, slotA1, slotA2, alpha) {
+    // Clip context to the aperture window (annular arc at 12 o'clock) then run fn
+    _withClip(rI, rO, fn) {
       const { ctx, cx, cy } = this;
-      // Draw the ring arc that covers everything EXCEPT the slot
+      const AH = this.AH;
+      ctx.save();
       ctx.beginPath();
-      ctx.arc(cx, cy, r2, slotA2, slotA1 + Math.PI * 2, false);
-      ctx.arc(cx, cy, r1, slotA1 + Math.PI * 2, slotA2, true);
+      ctx.arc(cx, cy, rO + 5, -Math.PI / 2 - AH, -Math.PI / 2 + AH, false);
+      ctx.arc(cx, cy, rI - 5, -Math.PI / 2 + AH, -Math.PI / 2 - AH, true);
       ctx.closePath();
-      ctx.fillStyle = `rgba(13,10,7,${alpha})`;
-      ctx.fill();
+      ctx.clip();
+      fn();
+      ctx.restore();
+    }
+
+    start() {
+      this.draw();
+      const msToNext = 60000 - (Date.now() % 60000);
+      this._t = setTimeout(() => {
+        this.draw();
+        this._i = setInterval(() => this.draw(), 60000);
+      }, msToNext);
+    }
+
+    destroy() {
+      window.removeEventListener('resize', this._resize);
+      clearTimeout(this._t);
+      clearInterval(this._i);
+    }
+  }
+
+  // ─────────────────────────────────────────────────────────────────────────────
+  // AptusYearClock — small 365-day dial showing seasonal position + cardinal events
+  // ─────────────────────────────────────────────────────────────────────────────
+
+  class AptusYearClock {
+    constructor(canvas) {
+      this.canvas = canvas;
+      this.ctx    = canvas.getContext('2d');
+      this.dpr    = window.devicePixelRatio || 1;
+      this._resize = this._resize.bind(this);
+      window.addEventListener('resize', this._resize);
+      this._resize();
+    }
+
+    _resize() {
+      const d = Math.min(this.canvas.parentElement.clientWidth || 220, 220);
+      this.canvas.style.width  = d + 'px';
+      this.canvas.style.height = d + 'px';
+      this.canvas.width  = d * this.dpr;
+      this.canvas.height = d * this.dpr;
+      this.ctx.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
+      this.S  = d;
+      this.cx = d / 2;
+      this.cy = d / 2;
+      this.R  = d / 2 - 12;
+      this.draw();
+    }
+
+    // Day of year (1–365) → canvas angle (12 o'clock = Spring EQ = day 1)
+    _angle(day) {
+      return ((day - 1) / 365) * Math.PI * 2 - Math.PI / 2;
     }
 
     draw() {
-      const { ctx, cx, cy, r } = this;
+      const { ctx, cx, cy, R } = this;
       const now = getAptusDate(new Date());
+      ctx.clearRect(0, 0, this.S, this.S);
 
-      ctx.clearRect(0, 0, this.size, this.size);
-
-      // ── Outer disc background ────────────────────────────────────────
+      // Face
+      const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, R);
+      g.addColorStop(0, '#faf8f3');
+      g.addColorStop(1, '#ece5d5');
       ctx.beginPath();
-      ctx.arc(cx, cy, r.bezOut + 1, 0, Math.PI * 2);
-      ctx.fillStyle = '#0d0a07';
+      ctx.arc(cx, cy, R, 0, Math.PI * 2);
+      ctx.fillStyle = g;
       ctx.fill();
 
-      this._drawBezel(now);
-      this._drawDayRing(now);
-      this._drawWeekRing(now);
-      this._drawMonthRing(now);
-      this._drawSeasonRing(now);
-      this._drawHub(now);
-    }
-
-    // ── Outer bezel — 28 tick marks ──────────────────────────────────
-    _drawBezel(now) {
-      const { r } = this;
-
-      this._segment(r.bezIn, r.bezOut, -Math.PI, Math.PI, '#18140f');
-
-      // 28 notch marks; week boundaries are heavier
-      for (let d = 1; d <= 28; d++) {
-        const a              = this._dayAngle(d);
-        const isWeekBoundary = (d - 1) % 7 === 0;
-        this._spoke(r.bezIn, r.bezOut, a,
-          isWeekBoundary ? '#6a5430' : '#2e2418',
-          isWeekBoundary ? 1.5 : 0.5);
-      }
-
-      this._ringLine(r.bezOut, '#5a4830', 1.2);
-      this._ringLine(r.bezIn,  '#5a4830', 1.0);
-    }
-
-    // ── Day ring — 28 equal segments, one slot revealed ───────────────
-    _drawDayRing(now) {
-      const { r, R } = this;
-      const SEG = Math.PI * 2 / 28;
-      const GAP = 0.020;
-
-      // Base — all 28 segments, very dark phase-tinted
-      for (let d = 1; d <= 28; d++) {
-        const a1      = this._dayAngle(d);
-        const a2      = a1 + SEG;
-        const wk      = Math.floor((d - 1) / 7);
-        const col     = PHASE_COLORS[WEEKS[wk]].primary;
-        this._segment(r.dayIn, r.dayOut, a1 + GAP, a2 - GAP, col + '1a');
-        this._spoke(r.dayIn, r.dayOut, a1,
-          (d - 1) % 7 === 0 ? '#3e3020' : '#201a12',
-          (d - 1) % 7 === 0 ? 0.9 : 0.3);
-      }
-
-      this._ringLine(r.dayOut, '#4a3c24', 0.8);
-      this._ringLine(r.dayIn,  '#4a3c24', 0.8);
-
-      if (now.isLacuna) return;
-
-      // Active segment
-      const d    = now.dayInMonth;
-      const col  = PHASE_COLORS[WEEKS[now.weekIndex]];
-      const a1   = this._dayAngle(d);
-      const a2   = a1 + SEG;
-      const midA = a1 + SEG / 2;
-      const midR = (r.dayIn + r.dayOut) / 2;
-      const rW   = (r.dayOut - r.dayIn) * 0.50;
-
-      // Glow fill
-      this._segment(r.dayIn, r.dayOut, a1 + GAP * 0.3, a2 - GAP * 0.3, col.primary + '55');
-      // Centre bar
-      this._ringLine(midR, 'rgba(0,0,0,0)'); // reset lineCap
-      const { ctx, cx, cy } = this;
-      ctx.beginPath();
-      ctx.arc(cx, cy, midR, a1 + GAP * 0.8, a2 - GAP * 0.8);
-      ctx.strokeStyle = col.primary;
-      ctx.lineWidth   = rW;
-      ctx.lineCap     = 'butt';
-      ctx.stroke();
-
-      // Day number, rotated to follow the arc
-      this._arcText(
-        String(d),
-        midR,
-        midA,
-        `700 ${R * 0.038}px 'Space Mono', monospace`,
-        '#f4efe6'
-      );
-
-      // Mask — covers all but the active slot
-      this._mask(r.dayIn - 1, r.dayOut + 1, a1 - GAP, a2 + GAP, 0.93);
-    }
-
-    // ── Week ring — 4 × 90° phases, aligned with day ring ───────────
-    _drawWeekRing(now) {
-      const { r, R, ctx, cx, cy } = this;
-      const SEG = Math.PI / 2;
-      const GAP = 0.022;
-
-      for (let w = 0; w < 4; w++) {
-        const a1   = this._quadAngle(w);
-        const col  = PHASE_COLORS[WEEKS[w]].primary;
-        this._segment(r.weekIn, r.weekOut, a1 + GAP, a1 + SEG - GAP, col + '16');
-        this._spoke(r.weekIn, r.weekOut, a1, '#3e3020', 1.0);
-        this._arcText(
-          WEEKS[w].toUpperCase(),
-          (r.weekIn + r.weekOut) / 2,
-          a1 + SEG / 2,
-          `${R * 0.022}px 'Space Mono', monospace`,
-          '#2a201a'
-        );
-      }
-
-      this._ringLine(r.weekOut, '#4a3c24', 0.8);
-      this._ringLine(r.weekIn,  '#4a3c24', 0.8);
-
-      if (now.isLacuna) return;
-
-      const w    = now.weekIndex;
-      const col  = PHASE_COLORS[WEEKS[w]];
-      const a1   = this._quadAngle(w);
-      const a2   = a1 + SEG;
-      const midA = a1 + SEG / 2;
-      const midR = (r.weekIn + r.weekOut) / 2;
-      const rW   = (r.weekOut - r.weekIn) * 0.52;
-
-      this._segment(r.weekIn, r.weekOut, a1 + GAP * 0.4, a2 - GAP * 0.4, col.primary + '45');
-      ctx.beginPath();
-      ctx.arc(cx, cy, midR, a1 + GAP * 1.2, a2 - GAP * 1.2);
-      ctx.strokeStyle = col.primary;
-      ctx.lineWidth   = rW;
-      ctx.lineCap     = 'butt';
-      ctx.stroke();
-
-      this._arcText(
-        WEEKS[w].toUpperCase(),
-        midR, midA,
-        `700 ${R * 0.028}px 'Space Mono', monospace`,
-        '#f4efe6'
-      );
-
-      this._mask(r.weekIn - 1, r.weekOut + 1, a1 - GAP, a2 + GAP, 0.93);
-    }
-
-    // ── Month ring — 13 equal segments (~27.7° each) ─────────────────
-    _drawMonthRing(now) {
-      const { r, R, ctx, cx, cy } = this;
-      const SEG = Math.PI * 2 / 13;
-      const GAP = 0.016;
-
-      APTUS_DATA.MONTHS.forEach((month, i) => {
-        const a1  = this._monthAngle(i);
-        const col = APTUS_DATA.SEASON_COLORS[month.season];
-        this._segment(r.monIn, r.monOut, a1 + GAP, a1 + SEG - GAP, col.primary + '18');
-        this._spoke(r.monIn, r.monOut, a1, '#302418', 0.5);
-        this._arcText(
-          month.name.toUpperCase(),
-          (r.monIn + r.monOut) / 2,
-          a1 + SEG / 2,
-          `${R * 0.019}px 'Space Mono', monospace`,
-          '#2a201a'
-        );
-      });
-
-      this._ringLine(r.monOut, '#4a3c24', 0.8);
-      this._ringLine(r.monIn,  '#4a3c24', 0.8);
-
-      if (now.isLacuna) return;
-
-      const mi   = now.monthIndex;
-      const col  = APTUS_DATA.SEASON_COLORS[now.season];
-      const a1   = this._monthAngle(mi);
-      const a2   = a1 + SEG;
-      const midA = a1 + SEG / 2;
-      const midR = (r.monIn + r.monOut) / 2;
-      const rW   = (r.monOut - r.monIn) * 0.52;
-
-      this._segment(r.monIn, r.monOut, a1 + GAP * 0.4, a2 - GAP * 0.4, col.bg + 'aa');
-      ctx.beginPath();
-      ctx.arc(cx, cy, midR, a1 + GAP * 1.2, a2 - GAP * 1.2);
-      ctx.strokeStyle = col.primary;
-      ctx.lineWidth   = rW;
-      ctx.lineCap     = 'butt';
-      ctx.stroke();
-
-      this._arcText(
-        now.month.toUpperCase(),
-        midR, midA,
-        `700 ${R * 0.022}px 'Space Mono', monospace`,
-        '#f4efe6'
-      );
-
-      this._mask(r.monIn - 1, r.monOut + 1, a1 - GAP, a2 + GAP, 0.93);
-    }
-
-    // ── Season ring — 4 × 90° sectors ───────────────────────────────
-    _drawSeasonRing(now) {
-      const { r, R, ctx, cx, cy } = this;
-      const SEG = Math.PI / 2;
-      const GAP = 0.028;
-
-      SEASONS.forEach((s, i) => {
-        const a1  = this._quadAngle(i);
-        const col = APTUS_DATA.SEASON_COLORS[s.key];
-        this._segment(r.seasIn, r.seasOut, a1 + GAP, a1 + SEG - GAP, col.primary + '18');
-        this._spoke(r.seasIn, r.seasOut, a1, '#3e3020', 1.0);
-        this._arcText(
-          s.label,
-          (r.seasIn + r.seasOut) / 2,
-          a1 + SEG / 2,
-          `${R * 0.020}px 'Space Mono', monospace`,
-          '#2a201a'
-        );
-      });
-
-      this._ringLine(r.seasOut, '#4a3c24', 0.8);
-      this._ringLine(r.seasIn,  '#4a3c24', 0.8);
-
-      if (now.isLacuna) return;
-
-      const si   = SEASONS.findIndex(s => s.key === now.season);
-      const col  = APTUS_DATA.SEASON_COLORS[now.season];
-      const a1   = this._quadAngle(si);
-      const a2   = a1 + SEG;
-      const midA = a1 + SEG / 2;
-      const midR = (r.seasIn + r.seasOut) / 2;
-      const rW   = (r.seasOut - r.seasIn) * 0.55;
-
-      this._segment(r.seasIn, r.seasOut, a1 + GAP * 0.4, a2 - GAP * 0.4, col.bg + 'cc');
-      ctx.beginPath();
-      ctx.arc(cx, cy, midR, a1 + GAP * 1.5, a2 - GAP * 1.5);
-      ctx.strokeStyle = col.primary;
-      ctx.lineWidth   = rW;
-      ctx.lineCap     = 'butt';
-      ctx.stroke();
-
-      this._arcText(
-        SEASONS[si].label,
-        midR, midA,
-        `700 ${R * 0.024}px 'Space Mono', monospace`,
-        '#f4efe6'
-      );
-
-      this._mask(r.seasIn - 1, r.seasOut + 1, a1 - GAP, a2 + GAP, 0.93);
-    }
-
-    // ── Center hub — day number, month, year ─────────────────────────
-    _drawHub(now) {
-      const { ctx, cx, cy, r, R } = this;
-
-      // Hub gradient — offset center gives depth
-      const grad = ctx.createRadialGradient(
-        cx - R * 0.04, cy - R * 0.05, 0,
-        cx, cy, r.hub
-      );
-      grad.addColorStop(0, '#302418');
-      grad.addColorStop(1, '#161008');
-      ctx.beginPath();
-      ctx.arc(cx, cy, r.hub, 0, Math.PI * 2);
-      ctx.fillStyle = grad;
-      ctx.fill();
-
-      // Hub border rings
-      this._ringLine(r.hub,       '#6a5428', 1.8);
-      this._ringLine(r.hub - 4.5, '#2e2418', 0.6);
-
-      // Subtle geometric motif — 8-point compass rose, very faint
-      const rg = r.hub * 0.72;
-      ctx.save();
-      ctx.strokeStyle = '#251c12';
-      ctx.lineWidth   = 0.6;
-      for (let i = 0; i < 8; i++) {
-        const a = (i / 8) * Math.PI * 2;
+      // Season arcs
+      const rO = R * 0.82;
+      const rI = R * 0.50;
+      const YEAR_SEASONS = [
+        { key: 'spring', s: 1,   e: 84  },
+        { key: 'summer', s: 85,  e: 168 },
+        { key: 'autumn', s: 169, e: 252 },
+        { key: 'winter', s: 253, e: 364 },
+      ];
+      YEAR_SEASONS.forEach(({ key, s, e }) => {
+        const col = APTUS_DATA.SEASON_COLORS[key];
+        const a1  = this._angle(s);
+        const a2  = this._angle(e + 0.9);
         ctx.beginPath();
-        ctx.moveTo(cx, cy);
-        ctx.lineTo(cx + Math.cos(a) * rg, cy + Math.sin(a) * rg);
-        ctx.stroke();
-      }
-      ctx.beginPath();
-      ctx.arc(cx, cy, rg * 0.42, 0, Math.PI * 2);
-      ctx.stroke();
-      ctx.beginPath();
-      ctx.arc(cx, cy, rg * 0.72, 0, Math.PI * 2);
-      ctx.stroke();
-      ctx.restore();
+        ctx.arc(cx, cy, rO, a1, a2, false);
+        ctx.arc(cx, cy, rI, a2, a1, true);
+        ctx.closePath();
+        ctx.fillStyle = col.bg + 'cc';
+        ctx.fill();
+      });
 
-      if (now.isLacuna) {
-        ctx.font         = `italic ${R * 0.048}px 'Instrument Serif', serif`;
-        ctx.fillStyle    = '#c0a0f0';
+      // Month divider marks on inner ring
+      APTUS_DATA.MONTHS.forEach(m => {
+        const a = this._angle(m.start);
+        ctx.beginPath();
+        ctx.moveTo(cx + Math.cos(a) * rI, cy + Math.sin(a) * rI);
+        ctx.lineTo(cx + Math.cos(a) * rO, cy + Math.sin(a) * rO);
+        ctx.strokeStyle = 'rgba(170,140,85,0.28)';
+        ctx.lineWidth   = 0.5;
+        ctx.stroke();
+      });
+
+      // Ring borders
+      [R, rO, rI].forEach(rad => {
+        ctx.beginPath();
+        ctx.arc(cx, cy, rad, 0, Math.PI * 2);
+        ctx.strokeStyle = 'rgba(170,140,85,0.42)';
+        ctx.lineWidth   = 0.8;
+        ctx.stroke();
+      });
+
+      // Cardinal event markers (equinoxes + solstices)
+      const EVENTS = [
+        { day: 1,   key: 'spring' },
+        { day: 91,  key: 'summer' },
+        { day: 180, key: 'autumn' },
+        { day: 272, key: 'winter' },
+      ];
+      EVENTS.forEach(({ day, key }) => {
+        const col = APTUS_DATA.SEASON_COLORS[key];
+        const a   = this._angle(day);
+        // Marker line through arc
+        ctx.beginPath();
+        ctx.moveTo(cx + Math.cos(a) * (rI - 2), cy + Math.sin(a) * (rI - 2));
+        ctx.lineTo(cx + Math.cos(a) * (R - 1),  cy + Math.sin(a) * (R - 1));
+        ctx.strokeStyle = col.primary + 'cc';
+        ctx.lineWidth   = 1.5;
+        ctx.stroke();
+        // Diamond at outer rim
+        const dx = cx + Math.cos(a) * (R - 6);
+        const dy = cy + Math.sin(a) * (R - 6);
+        ctx.save();
+        ctx.translate(dx, dy);
+        ctx.rotate(a);
+        ctx.beginPath();
+        ctx.moveTo(0, -3.5); ctx.lineTo(3.5, 0);
+        ctx.lineTo(0, 3.5);  ctx.lineTo(-3.5, 0);
+        ctx.closePath();
+        ctx.fillStyle = col.primary;
+        ctx.fill();
+        ctx.restore();
+        // Season initial letter in arc band
+        const lR = (rI + rO) / 2;
+        const lx = cx + Math.cos(a + 0.22) * lR;
+        const ly = cy + Math.sin(a + 0.22) * lR;
+        ctx.save();
+        ctx.translate(lx, ly);
+        let rot = (a + 0.22) + Math.PI / 2;
+        if (Math.sin(a + 0.22) > 0.001) rot += Math.PI;
+        ctx.rotate(rot);
+        ctx.font         = `700 ${R * 0.095}px 'Space Mono', monospace`;
+        ctx.fillStyle    = col.primary + 'dd';
         ctx.textAlign    = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillText('Lacuna', cx, cy);
-        this._pivot();
-        return;
+        ctx.fillText(key.charAt(0).toUpperCase(), 0, 0);
+        ctx.restore();
+      });
+
+      // Today — highlight current arc position
+      if (!now.isLacuna) {
+        const a   = this._angle(now.dayOfYear);
+        const col = APTUS_DATA.SEASON_COLORS[now.season];
+        const sp  = (2 / 365) * Math.PI * 2;
+        // Today marker arc
+        ctx.beginPath();
+        ctx.arc(cx, cy, (rI + rO) / 2, a - sp, a + sp);
+        ctx.strokeStyle = col.primary;
+        ctx.lineWidth   = rO - rI - 2;
+        ctx.lineCap     = 'round';
+        ctx.stroke();
+        // Thin needle from centre to arc
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.lineTo(cx + Math.cos(a) * rI, cy + Math.sin(a) * rI);
+        ctx.strokeStyle = col.primary + 'cc';
+        ctx.lineWidth   = 1.2;
+        ctx.lineCap     = 'round';
+        ctx.stroke();
       }
 
-      const col    = APTUS_DATA.SEASON_COLORS[now.season];
-      const hubH   = r.hub;
+      // Centre: last 2 digits of NE year
+      if (now.year) {
+        ctx.font         = `${R * 0.22}px 'Space Mono', monospace`;
+        ctx.fillStyle    = 'rgba(120,100,70,0.40)';
+        ctx.textAlign    = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(String(now.year).slice(-2), cx, cy);
+      }
 
-      // NE year — small, near top of hub
-      ctx.font         = `${R * 0.021}px 'Space Mono', monospace`;
-      ctx.fillStyle    = '#4a3c28';
-      ctx.textAlign    = 'center';
-      ctx.textBaseline = 'alphabetic';
-      ctx.fillText(now.year + ' NE', cx, cy - hubH * 0.36);
-
-      // Day number — dominant
-      ctx.font         = `700 ${R * 0.082}px 'Space Mono', monospace`;
-      ctx.fillStyle    = '#f4efe6';
-      ctx.textBaseline = 'middle';
-      ctx.fillText(now.dayInMonth, cx, cy + hubH * 0.04);
-
-      // Month name — italic serif, season-tinted
-      ctx.font         = `italic ${R * 0.034}px 'Instrument Serif', serif`;
-      ctx.fillStyle    = col.light + 'ee';
-      ctx.textBaseline = 'top';
-      ctx.fillText(now.month, cx, cy + hubH * 0.32);
-
-      this._pivot();
-    }
-
-    // Gold pivot jewel at dead center
-    _pivot() {
-      const { ctx, cx, cy, R } = this;
+      // Centre pivot
       ctx.beginPath();
-      ctx.arc(cx, cy, R * 0.014, 0, Math.PI * 2);
-      const pg = ctx.createRadialGradient(cx - R * 0.005, cy - R * 0.005, 0, cx, cy, R * 0.014);
-      pg.addColorStop(0, '#f8d860');
-      pg.addColorStop(1, '#c89020');
-      ctx.fillStyle   = pg;
+      ctx.arc(cx, cy, R * 0.052, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(170,140,85,0.65)';
       ctx.fill();
-      ctx.strokeStyle = '#a07010';
+      ctx.strokeStyle = 'rgba(140,110,55,0.50)';
       ctx.lineWidth   = 0.8;
       ctx.stroke();
     }
 
     start() {
       this.draw();
-      const msToNextMinute = 60000 - (Date.now() % 60000);
-      this._timeout = setTimeout(() => {
-        this.draw();
-        this._interval = setInterval(() => this.draw(), 60000);
-      }, msToNextMinute);
+      this._i = setInterval(() => this.draw(), 60000);
     }
 
     destroy() {
-      window.removeEventListener('resize', this._onResize);
-      clearTimeout(this._timeout);
-      clearInterval(this._interval);
+      window.removeEventListener('resize', this._resize);
+      clearInterval(this._i);
     }
   }
 
+  // ─────────────────────────────────────────────────────────────────────────────
+  // Init — create both canvases
+  // ─────────────────────────────────────────────────────────────────────────────
+
   function init() {
-    const placeholder = document.getElementById('aptus-wheel-placeholder');
-    if (!placeholder) return;
+    // Main volvelle
+    const vEl = document.getElementById('aptus-wheel-placeholder');
+    if (vEl) {
+      const wrap = document.createElement('div');
+      wrap.style.cssText = 'width:100%;max-width:780px;margin:0 auto;';
+      const c = document.createElement('canvas');
+      c.id = 'aptus-wheel';
+      c.style.cssText = [
+        'display:block',
+        'border-radius:50%',
+        'box-shadow:0 8px 48px rgba(110,85,40,0.18),0 2px 10px rgba(110,85,40,0.10)',
+      ].join(';');
+      c.setAttribute('aria-label', 'Aptus Calendar Volvelle — rotating disc calendar');
+      wrap.appendChild(c);
+      vEl.replaceWith(wrap);
+      const v = new AptusVolvelle(c);
+      v.start();
+      window._aptusVolvelle = v;
+    }
 
-    const wrapper = document.createElement('div');
-    wrapper.style.cssText = 'width:100%;max-width:780px;margin:0 auto;';
-
-    const canvas = document.createElement('canvas');
-    canvas.id    = 'aptus-wheel';
-    canvas.style.display = 'block';
-    canvas.setAttribute('aria-label', 'Aptus Calendar Volvelle — layered disc instrument showing current date');
-    wrapper.appendChild(canvas);
-    placeholder.replaceWith(wrapper);
-
-    const wheel = new AptusWheel(canvas);
-    wheel.start();
-    window._aptusWheel = wheel;
+    // Year clock
+    const yEl = document.getElementById('aptus-year-clock-placeholder');
+    if (yEl) {
+      const wrap = document.createElement('div');
+      wrap.style.cssText = 'width:100%;max-width:220px;margin:0 auto;';
+      const c = document.createElement('canvas');
+      c.id = 'aptus-year-clock';
+      c.style.cssText = [
+        'display:block',
+        'border-radius:50%',
+        'box-shadow:0 4px 22px rgba(110,85,40,0.14),0 1px 5px rgba(110,85,40,0.08)',
+      ].join(';');
+      c.setAttribute('aria-label', 'Aptus Year Clock — year position and seasonal events');
+      wrap.appendChild(c);
+      yEl.replaceWith(wrap);
+      const y = new AptusYearClock(c);
+      y.start();
+      window._aptusYearClock = y;
+    }
   }
 
   if (document.readyState === 'loading') {
@@ -526,4 +734,5 @@
   } else {
     init();
   }
+
 })();
