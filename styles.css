@@ -98,51 +98,52 @@ ul li { margin-bottom: 0.4em; }
 /* ── Today / Hero ────────────────────────────────────────────────── */
 
 .today {
-  padding: 5rem 0 4rem;
+  padding: 4rem 0 3rem;
   border-bottom: 1px solid var(--border);
 }
 
+/* Centered single-column hero */
 .today-grid {
-  display: grid;
-  grid-template-columns: 1fr 660px;
-  gap: 5rem;
+  display: flex;
+  flex-direction: column;
   align-items: center;
+  gap: 2.5rem;
 }
 
-/* Left: date info */
-.today-info { display: flex; flex-direction: column; }
+.today-wheel { width: 100%; max-width: 780px; }
 
-.section-label {
-  font-family: var(--mono);
-  font-size: 0.68rem;
-  text-transform: uppercase;
-  letter-spacing: 0.14em;
-  color: var(--subtle);
-  margin-bottom: 1rem;
+/* Info strip below the wheel */
+.today-info {
+  width: 100%;
+  max-width: 780px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
 }
 
 .today-date {
   font-family: var(--serif);
-  font-size: clamp(3rem, 5.5vw, 5rem);
+  font-size: clamp(2.2rem, 4vw, 3.4rem);
   line-height: 1;
   letter-spacing: -0.01em;
   color: var(--text);
-  margin-bottom: 0.4rem;
+  text-align: center;
 }
 
 .today-year {
   font-family: var(--mono);
-  font-size: 0.82rem;
+  font-size: 0.78rem;
   color: var(--muted);
-  margin-bottom: 1.75rem;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.06em;
+  text-align: center;
 }
 
 .today-tags {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
   gap: 0.5rem;
-  margin-bottom: 1.75rem;
 }
 
 .tag {
@@ -164,22 +165,32 @@ ul li { margin-bottom: 0.4em; }
 
 .today-gregorian {
   font-family: var(--body);
-  font-size: 0.875rem;
+  font-size: 0.82rem;
   color: var(--subtle);
-  margin-bottom: 1.5rem;
+  text-align: center;
 }
 
 .today-focus {
   font-family: var(--body);
   font-style: italic;
-  font-size: 1.05rem;
+  font-size: 1rem;
   color: var(--muted);
-  padding-left: 1rem;
+  padding: 0.9rem 1.25rem;
   border-left: 2px solid var(--border);
-  line-height: 1.5;
+  line-height: 1.55;
+  max-width: 600px;
+  text-align: left;
 }
 
-.today-wheel { display: flex; justify-content: center; }
+/* Label above wheel */
+.section-label {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--subtle);
+  text-align: center;
+}
 
 /* ── Intro ───────────────────────────────────────────────────────── */
 
@@ -278,11 +289,6 @@ ul li { margin-bottom: 0.4em; }
 /* ── Responsive ──────────────────────────────────────────────────── */
 
 @media (max-width: 900px) {
-  .today-grid {
-    grid-template-columns: 1fr;
-    gap: 3rem;
-  }
-  .today-wheel { order: -1; }
   .feature-grid { grid-template-columns: 1fr 1fr; }
   .cta-grid { grid-template-columns: 1fr 1fr; }
 }

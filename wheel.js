@@ -43,7 +43,7 @@
 
     _onResize() {
       const container = this.canvas.parentElement;
-      const display   = Math.min(container.clientWidth || 660, 660);
+      const display   = Math.min(container.clientWidth || 780, 780);
       this.canvas.style.width  = display + 'px';
       this.canvas.style.height = display + 'px';
       this.canvas.width  = display * this.dpr;
@@ -254,7 +254,7 @@
       });
 
       // ── Outer bezel ring (dark background) ───────────────────────────
-      this._segment(r.bezIn, r.bezOut, -Math.PI, Math.PI, '#201c16');
+      this._segment(r.bezIn, r.bezOut, -Math.PI, Math.PI, '#2a221a');
       // Subtle month notches on bezel
       APTUS_DATA.MONTHS.forEach(month => {
         this._spoke(r.bezIn, r.bezOut, this._angle(month.start), '#3a3228', 1);
@@ -390,8 +390,8 @@
 
       // Hub background gradient
       const grad = ctx.createRadialGradient(cx, cy, r.hub * 0.1, cx, cy, r.hub);
-      grad.addColorStop(0, '#302820');
-      grad.addColorStop(1, '#1c1510');
+      grad.addColorStop(0, '#3a3028');
+      grad.addColorStop(1, '#251e18');
       ctx.beginPath();
       ctx.arc(cx, cy, r.hub, 0, Math.PI * 2);
       ctx.fillStyle = grad;
@@ -488,7 +488,7 @@
     if (!placeholder) return;
 
     const wrapper = document.createElement('div');
-    wrapper.style.cssText = 'width:100%;max-width:540px;margin:0 auto;';
+    wrapper.style.cssText = 'width:100%;max-width:780px;margin:0 auto;';
 
     const canvas = document.createElement('canvas');
     canvas.id    = 'aptus-wheel';
