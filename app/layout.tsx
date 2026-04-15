@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Cormorant_Garamond, DM_Mono, Libre_Baskerville } from 'next/font/google';
+import { Analytics } from '@vercel/analytics/next';
 import { HemisphereProvider } from '@/lib/hemisphere-context';
 import './globals.css';
 
@@ -57,6 +58,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     >
       <body className="h-full antialiased">
         <HemisphereProvider>{children}</HemisphereProvider>
+        <Analytics />
       </body>
     </html>
   );
