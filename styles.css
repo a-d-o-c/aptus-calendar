@@ -1,0 +1,390 @@
+/* styles.css — Aptus Calendar */
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:          #f6f3ee;
+  --bg-raised:   #ffffff;
+  --text:        #1a1610;
+  --muted:       #68605a;
+  --subtle:      #9a9088;
+  --border:      #ddd8d0;
+  --border-lt:   #ece8e2;
+
+  --spring: #456e28;
+  --summer: #c08010;
+  --autumn: #904018;
+  --winter: #425878;
+
+  --serif: 'Instrument Serif', Georgia, serif;
+  --mono:  'Space Mono', 'Courier New', monospace;
+  --body:  'Lora', Georgia, serif;
+
+  --max: 1260px;
+  --r:   6px;
+}
+
+html { font-size: 16px; scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+
+body {
+  font-family: var(--body);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  min-height: 100vh;
+}
+
+/* ── Typography ─────────────────────────────────────────────────── */
+
+h1, h2, h3 { font-family: var(--serif); font-weight: 400; line-height: 1.2; }
+h1 { font-size: clamp(2.6rem, 5vw, 4rem); }
+h2 { font-size: clamp(1.6rem, 3vw, 2.2rem); margin-bottom: 2rem; }
+h3 { font-size: 1.15rem; }
+
+p { margin-bottom: 1em; }
+p:last-child { margin-bottom: 0; }
+
+ul { padding-left: 1.25em; }
+ul li { margin-bottom: 0.4em; }
+
+/* ── Layout ─────────────────────────────────────────────────────── */
+
+.container { max-width: var(--max); margin: 0 auto; padding: 0 2rem; }
+
+/* ── Nav ─────────────────────────────────────────────────────────── */
+
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+}
+
+.nav-container {
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 0 2rem;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo {
+  font-family: var(--mono);
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text);
+}
+
+.nav-links { display: flex; gap: 2rem; }
+
+.nav-links a {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+
+.nav-links a:hover,
+.nav-links a.active { color: var(--text); }
+
+/* ── Today / Hero ────────────────────────────────────────────────── */
+
+.today {
+  padding: 4rem 0 3rem;
+  border-bottom: 1px solid var(--border);
+}
+
+/* Centered single-column hero */
+.today-grid {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2.5rem;
+}
+
+.today-wheel { width: 100%; max-width: 780px; }
+
+/* Info strip below the wheel */
+.today-info {
+  width: 100%;
+  max-width: 780px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.today-date {
+  font-family: var(--serif);
+  font-size: clamp(2.2rem, 4vw, 3.4rem);
+  line-height: 1;
+  letter-spacing: -0.01em;
+  color: var(--text);
+  text-align: center;
+}
+
+.today-year {
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  color: var(--muted);
+  letter-spacing: 0.06em;
+  text-align: center;
+}
+
+.today-tags {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.tag {
+  padding: 0.28em 0.8em;
+  border: 1px solid var(--border);
+  border-radius: 99px;
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  background: var(--bg-raised);
+}
+
+.tag-spring { border-color: var(--spring); color: var(--spring); }
+.tag-summer { border-color: var(--summer); color: var(--summer); }
+.tag-autumn { border-color: var(--autumn); color: var(--autumn); }
+.tag-winter { border-color: var(--winter); color: var(--winter); }
+
+.today-gregorian {
+  font-family: var(--body);
+  font-size: 0.82rem;
+  color: var(--subtle);
+  text-align: center;
+}
+
+.today-focus {
+  font-family: var(--body);
+  font-style: italic;
+  font-size: 1rem;
+  color: var(--muted);
+  padding: 0.9rem 1.25rem;
+  border-left: 2px solid var(--border);
+  line-height: 1.55;
+  max-width: 600px;
+  text-align: left;
+}
+
+.year-clock-wrap {
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--border);
+  width: 100%;
+  max-width: 260px;
+}
+
+/* Label above wheel */
+.section-label {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--subtle);
+  text-align: center;
+}
+
+/* ── Months Reference ────────────────────────────────────────────── */
+
+.months-section {
+  padding: 5rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.months-intro {
+  font-size: 0.9rem;
+  color: var(--muted);
+  max-width: 540px;
+  margin-bottom: 2.5rem;
+}
+
+.months-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+}
+
+.month-card {
+  padding: 1.25rem 1rem;
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  transition: border-color 0.15s;
+}
+
+.month-card-active {
+  box-shadow: 0 0 0 1.5px currentColor;
+}
+
+.month-card-spring { border-top: 2px solid var(--spring); }
+.month-card-summer { border-top: 2px solid var(--summer); }
+.month-card-autumn { border-top: 2px solid var(--autumn); }
+.month-card-winter { border-top: 2px solid var(--winter); }
+
+.month-card-spring.month-card-active { color: var(--spring); border-color: var(--spring); }
+.month-card-summer.month-card-active { color: var(--summer); border-color: var(--summer); }
+.month-card-autumn.month-card-active { color: var(--autumn); border-color: var(--autumn); }
+.month-card-winter.month-card-active { color: var(--winter); border-color: var(--winter); }
+
+.month-index {
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--subtle);
+  margin-bottom: 0.3rem;
+}
+
+.month-card-season {
+  font-family: var(--mono);
+  font-size: 0.60rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--subtle);
+}
+
+.month-card-name {
+  font-family: var(--serif);
+  font-size: 1.1rem;
+  font-weight: 400;
+  color: var(--text);
+  margin-top: 0.15rem;
+}
+
+.month-card-focus {
+  font-family: var(--body);
+  font-size: 0.78rem;
+  color: var(--muted);
+  font-style: italic;
+}
+
+/* ── Intro ───────────────────────────────────────────────────────── */
+
+.intro {
+  padding: 5rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.intro-body { max-width: 680px; }
+
+.intro-body ul { margin: 0.5em 0 1em; }
+
+/* ── Features ────────────────────────────────────────────────────── */
+
+.features {
+  padding: 5rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2.5rem;
+}
+
+.feature { display: flex; flex-direction: column; gap: 0.5rem; }
+
+.feature-index {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--subtle);
+  margin-bottom: 0.25rem;
+}
+
+.feature h3 {
+  font-family: var(--serif);
+  font-size: 1.15rem;
+  font-weight: 400;
+  margin-bottom: 0.25rem;
+}
+
+.feature p { font-size: 0.875rem; color: var(--muted); line-height: 1.6; margin: 0; }
+
+/* ── CTA ─────────────────────────────────────────────────────────── */
+
+.cta { padding: 5rem 0; }
+
+.cta-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
+}
+
+.cta-card {
+  display: block;
+  padding: 2rem;
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  text-decoration: none;
+  color: var(--text);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.cta-card:hover {
+  border-color: var(--muted);
+  box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+}
+
+.cta-card h3 {
+  font-family: var(--serif);
+  font-size: 1.15rem;
+  font-weight: 400;
+  margin-bottom: 0.5rem;
+}
+
+.cta-card p { font-size: 0.875rem; color: var(--muted); margin: 0; line-height: 1.5; }
+
+/* ── Footer ──────────────────────────────────────────────────────── */
+
+.footer { border-top: 1px solid var(--border); padding: 2.5rem 0; }
+
+.footer p {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--subtle);
+  margin-bottom: 0.3rem;
+}
+
+.footer-note { opacity: 0.65; }
+
+/* ── Responsive ──────────────────────────────────────────────────── */
+
+@media (max-width: 900px) {
+  .months-grid  { grid-template-columns: repeat(3, 1fr); }
+  .feature-grid { grid-template-columns: 1fr 1fr; }
+  .cta-grid     { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 600px) {
+  .container     { padding: 0 1.25rem; }
+  .nav-container { padding: 0 1.25rem; }
+  .today         { padding: 3rem 0 2.5rem; }
+  .nav-links     { gap: 1.25rem; }
+  .months-grid   { grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+  .feature-grid  { grid-template-columns: 1fr; gap: 2rem; }
+  .cta-grid      { grid-template-columns: 1fr; }
+}

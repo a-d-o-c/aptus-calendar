@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aptus Calendar — A Temporal Operating System</title>
+    <meta name="description" content="A calendar system aligned with natural cycles. 13 months, 28 days each, anchored to the equinox.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Lora:ital,wght@0,400;0,600;1,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <nav class="nav">
+        <div class="nav-container">
+            <div class="logo">Aptus</div>
+            <div class="nav-links">
+                <a href="index.html" class="active">Home</a>
+                <a href="calendar.html">Calendar</a>
+                <a href="converter.html">Convert</a>
+                <a href="guide.html">Guide</a>
+                <a href="about.html">About</a>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+
+        <!-- Today / Hero ──────────────────────────────────────────── -->
+        <section class="today">
+            <div class="container">
+                <div class="today-grid">
+
+                    <div class="today-wheel">
+                        <p class="section-label" style="margin-bottom:1.25rem;">Today in Aptus</p>
+                        <div id="aptus-wheel-placeholder"></div>
+                    </div>
+
+                    <div class="today-info">
+                        <h1 class="today-date" id="aptus-date">—</h1>
+                        <p class="today-year" id="aptus-year">—</p>
+                        <div class="today-tags" id="today-tags"></div>
+                        <p class="today-gregorian" id="gregorian-date">—</p>
+                        <p class="today-focus" id="month-focus">—</p>
+                        <div class="year-clock-wrap">
+                            <p class="section-label" style="margin-bottom:0.9rem;">Year at a glance</p>
+                            <div id="aptus-year-clock-placeholder"></div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- Thirteen Months ───────────────────────────────────────── -->
+        <section class="months-section">
+            <div class="container">
+                <h2>Thirteen Months</h2>
+                <p class="months-intro">Each month is 28 days — four identical weeks. Every month has a name, a season, and a focus that describes its energetic quality.</p>
+                <div class="months-grid" id="months-grid"></div>
+            </div>
+        </section>
+
+        <!-- What is Aptus ─────────────────────────────────────────── -->
+        <section class="intro">
+            <div class="container">
+                <h2>What is Aptus?</h2>
+                <div class="intro-body">
+                    <p><strong>Aptus</strong> (Latin: <em>aligned, fitted, suited to the time</em>) is a calendar system designed for seasonal coherence rather than historical accident.</p>
+                    <p>The Gregorian calendar works for coordination, but it's poorly aligned with observable reality. Months are uneven, the year begins arbitrarily, and for the Southern Hemisphere, the seasonal labels are backwards.</p>
+                    <p>Aptus addresses this: <strong>13 months × 28 days</strong> = 364 days, every month identical. The year begins at spring equinox (Sept 22 SH). Day 365 is <em>Lacuna</em> — a threshold day outside the structure. Every month follows the same four-phase weekly cycle: Orient → Engage → Amplify → Integrate.</p>
+                    <p>This is a temporal operating system, not a doctrine. Use it if it helps.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Get Started ───────────────────────────────────────────── -->
+        <section class="cta">
+            <div class="container">
+                <h2>Get Started</h2>
+                <div class="cta-grid">
+                    <a href="calendar.html" class="cta-card">
+                        <h3>Live Calendar</h3>
+                        <p>Today's Aptus date, month focus, week phase, and upcoming events.</p>
+                    </a>
+                    <a href="converter.html" class="cta-card">
+                        <h3>Date Converter</h3>
+                        <p>Convert any Gregorian date to Aptus — including your birthday.</p>
+                    </a>
+                    <a href="guide.html" class="cta-card">
+                        <h3>Field Guide</h3>
+                        <p>Month intentions, seasonal practices, and how to use the system.</p>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>Aptus Calendar · A temporal operating system aligned with natural cycles</p>
+            <p class="footer-note">Interoperable with Gregorian · No belief required · Southern Hemisphere default</p>
+        </div>
+    </footer>
+
+    <script src="aptus.js"></script>
+    <script src="wheel.js"></script>
+    <script>
+        (function () {
+            const info = getAptusDate(new Date());
+
+            // Date heading
+            const dateEl = document.getElementById('aptus-date');
+            if (info.isLacuna) {
+                dateEl.textContent = 'Lacuna';
+            } else {
+                dateEl.textContent = info.month + ' ' + info.dayInMonth;
+            }
+
+            // Year line
+            document.getElementById('aptus-year').textContent = info.year + ' NE';
+
+            // Tags
+            const tagsEl = document.getElementById('today-tags');
+            const tags = [];
+            if (!info.isLacuna) {
+                tags.push({ text: info.season,                    cls: 'tag tag-' + info.season });
+                tags.push({ text: info.weekPhase + ' week',       cls: 'tag' });
+                tags.push({ text: 'Week ' + (info.weekIndex + 1) + ' of 4', cls: 'tag' });
+            } else {
+                tags.push({ text: 'Threshold Day', cls: 'tag' });
+            }
+            tagsEl.innerHTML = tags
+                .map(t => `<span class="${t.cls}">${t.text}</span>`)
+                .join('');
+
+            // Gregorian date
+            document.getElementById('gregorian-date').textContent =
+                new Date().toLocaleDateString('en-NZ', {
+                    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+                });
+
+            // Month focus
+            const focusEl = document.getElementById('month-focus');
+            if (!info.isLacuna) {
+                const month = APTUS_DATA.MONTHS.find(m => m.name === info.month);
+                focusEl.textContent = info.month + ': ' + month.focus;
+            } else {
+                focusEl.textContent = 'A day outside the structure. For reflection and renewal.';
+            }
+
+            // ── Build 13-month grid ──────────────────────────────────
+            const SEASON_LABELS = { spring: 'Spring', summer: 'Summer', autumn: 'Autumn', winter: 'Winter' };
+            const grid = document.getElementById('months-grid');
+            const isCurrent = !info.isLacuna;
+
+            APTUS_DATA.MONTHS.forEach((month, i) => {
+                const isActive = isCurrent && month.name === info.month;
+                const idx  = String(i + 1).padStart(2, '0');
+                const card = document.createElement('div');
+                card.className = 'month-card month-card-' + month.season + (isActive ? ' month-card-active' : '');
+                card.innerHTML = `
+                    <span class="month-index">${idx}</span>
+                    <div class="month-card-season">${SEASON_LABELS[month.season]}</div>
+                    <div class="month-card-name">${month.name}</div>
+                    <div class="month-card-focus">${month.focus}</div>
+                `;
+                grid.appendChild(card);
+            });
+        })();
+    </script>
+
+</body>
+</html>
