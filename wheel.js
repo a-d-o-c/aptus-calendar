@@ -41,7 +41,10 @@
     }
 
     _resize() {
-      const d = Math.min(this.canvas.parentElement.clientWidth || 780, 780);
+      const p  = this.canvas.parentElement;
+      const vw = document.documentElement.clientWidth;
+      const w  = p.clientWidth || p.getBoundingClientRect().width || Math.min(vw - 40, 920);
+      const d  = Math.min(w, 920);
       this.canvas.style.width  = d + 'px';
       this.canvas.style.height = d + 'px';
       this.canvas.width  = d * this.dpr;
@@ -186,7 +189,7 @@
           const alpha = curr ? 'ff' : dist === 1 ? '50' : '20';
           this._radText(SEASONS[i].label,
             (r.sI + r.sO) / 2, midA,
-            `${curr ? '600' : '400'} ${R * 0.036}px 'Lora', Georgia, serif`,
+            `${curr ? '600' : '400'} ${curr ? R * 0.058 : R * 0.038}px 'Lora', Georgia, serif`,
             col.primary + alpha);
         });
       });
@@ -206,13 +209,13 @@
             this._segFill(r.mI, r.mO, a1, a2, col.bg, 0.012);
             this._colBand(midR, a1, a2, col.primary + 'bb', (r.mO - r.mI) * 0.24);
             this._textBlock(midR, midA, [
-              { text: m.name,  font: `700 ${R * 0.031}px 'Space Mono', monospace`, fill: col.primary,       dy: -R * 0.013 },
-              { text: m.focus, font: `italic ${R * 0.020}px 'Lora', serif`,        fill: col.primary + 'aa', dy:  R * 0.014 },
+              { text: m.name,  font: `700 ${R * 0.048}px 'Space Mono', monospace`, fill: col.primary,       dy: -R * 0.022 },
+              { text: m.focus, font: `italic ${R * 0.030}px 'Lora', serif`,        fill: col.primary + 'bb', dy:  R * 0.024 },
             ]);
           } else {
-            const alpha = dist === 1 ? '52' : '22';
+            const alpha = dist === 1 ? '60' : '28';
             this._radText(m.name, midR, midA,
-              `${R * 0.021}px 'Space Mono', monospace`, col.primary + alpha);
+              `${dist === 1 ? R * 0.030 : R * 0.022}px 'Space Mono', monospace`, col.primary + alpha);
           }
         });
       });
@@ -234,12 +237,12 @@
             this._segFill(r.dI, r.dO, a1, a2, col + '20', 0.006);
             this._colBand(midR, a1, a2, col + 'bb', (r.dO - r.dI) * 0.30);
             this._textBlock(midR, midA, [
-              { text: String(dayN),   font: `700 ${R * 0.054}px 'Space Mono', monospace`, fill: col,         dy: -R * 0.014 },
-              { text: PHASES[wk],     font: `${R * 0.019}px 'Space Mono', monospace`,      fill: col + 'bb', dy:  R * 0.017 },
+              { text: String(dayN),   font: `700 ${R * 0.068}px 'Space Mono', monospace`, fill: col,         dy: -R * 0.020 },
+              { text: PHASES[wk],     font: `${R * 0.030}px 'Space Mono', monospace`,      fill: col + 'cc', dy:  R * 0.026 },
             ]);
           } else {
-            const sz    = dist === 1 ? R * 0.030 : R * 0.022;
-            const alpha = dist === 1 ? '72' : dist === 2 ? '44' : '22';
+            const sz    = dist === 1 ? R * 0.036 : dist === 2 ? R * 0.026 : R * 0.020;
+            const alpha = dist === 1 ? '80' : dist === 2 ? '50' : '28';
             this._radText(String(dayN), midR, midA,
               `${sz}px 'Space Mono', monospace`, col + alpha);
           }
@@ -511,7 +514,10 @@
     }
 
     _resize() {
-      const d = Math.min(this.canvas.parentElement.clientWidth || 220, 220);
+      const p  = this.canvas.parentElement;
+      const vw = document.documentElement.clientWidth;
+      const w  = p.clientWidth || p.getBoundingClientRect().width || Math.min(vw - 40, 280);
+      const d  = Math.min(w, 280);
       this.canvas.style.width  = d + 'px';
       this.canvas.style.height = d + 'px';
       this.canvas.width  = d * this.dpr;
@@ -688,45 +694,52 @@
   // ─────────────────────────────────────────────────────────────────────────────
 
   function init() {
-    // Main volvelle
+    // Insert canvas elements into the DOM first, then size after layout resolves
     const vEl = document.getElementById('aptus-wheel-placeholder');
+    const vWrap = vEl ? document.createElement('div') : null;
+    const vCanvas = vEl ? document.createElement('canvas') : null;
     if (vEl) {
-      const wrap = document.createElement('div');
-      wrap.style.cssText = 'width:100%;max-width:780px;margin:0 auto;';
-      const c = document.createElement('canvas');
-      c.id = 'aptus-wheel';
-      c.style.cssText = [
+      vWrap.style.cssText = 'width:100%;max-width:920px;margin:0 auto;';
+      vCanvas.id = 'aptus-wheel';
+      vCanvas.style.cssText = [
         'display:block',
         'border-radius:50%',
         'box-shadow:0 8px 48px rgba(110,85,40,0.18),0 2px 10px rgba(110,85,40,0.10)',
       ].join(';');
-      c.setAttribute('aria-label', 'Aptus Calendar Volvelle — rotating disc calendar');
-      wrap.appendChild(c);
-      vEl.replaceWith(wrap);
-      const v = new AptusVolvelle(c);
-      v.start();
-      window._aptusVolvelle = v;
+      vCanvas.setAttribute('aria-label', 'Aptus Calendar Volvelle — rotating disc calendar');
+      vWrap.appendChild(vCanvas);
+      vEl.replaceWith(vWrap);
     }
 
-    // Year clock
     const yEl = document.getElementById('aptus-year-clock-placeholder');
+    const yWrap = yEl ? document.createElement('div') : null;
+    const yCanvas = yEl ? document.createElement('canvas') : null;
     if (yEl) {
-      const wrap = document.createElement('div');
-      wrap.style.cssText = 'width:100%;max-width:220px;margin:0 auto;';
-      const c = document.createElement('canvas');
-      c.id = 'aptus-year-clock';
-      c.style.cssText = [
+      yWrap.style.cssText = 'width:100%;max-width:280px;margin:0 auto;';
+      yCanvas.id = 'aptus-year-clock';
+      yCanvas.style.cssText = [
         'display:block',
         'border-radius:50%',
         'box-shadow:0 4px 22px rgba(110,85,40,0.14),0 1px 5px rgba(110,85,40,0.08)',
       ].join(';');
-      c.setAttribute('aria-label', 'Aptus Year Clock — year position and seasonal events');
-      wrap.appendChild(c);
-      yEl.replaceWith(wrap);
-      const y = new AptusYearClock(c);
-      y.start();
-      window._aptusYearClock = y;
+      yCanvas.setAttribute('aria-label', 'Aptus Year Clock — year position and seasonal events');
+      yWrap.appendChild(yCanvas);
+      yEl.replaceWith(yWrap);
     }
+
+    // Defer instantiation until after first paint so clientWidth is layout-ready
+    requestAnimationFrame(function () {
+      if (vCanvas) {
+        const v = new AptusVolvelle(vCanvas);
+        v.start();
+        window._aptusVolvelle = v;
+      }
+      if (yCanvas) {
+        const y = new AptusYearClock(yCanvas);
+        y.start();
+        window._aptusYearClock = y;
+      }
+    });
   }
 
   if (document.readyState === 'loading') {
