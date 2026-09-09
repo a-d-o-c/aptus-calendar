@@ -9,10 +9,11 @@ export interface AptusMonth {
   start: number;
   end: number;
   intent: string;
+  color: string;
 }
 
 export interface AptusDate {
-  isLacuna: boolean;
+  isOtium: boolean;
   day: number | string;
   month: string | null;
   monthIndex: number;
@@ -26,38 +27,37 @@ export interface AptusDate {
 }
 
 export const MONTHS: AptusMonth[] = [
-  { name: 'Verna',   focus: 'Initiation',      season: 'spring', start: 1,   end: 28,  intent: 'Begin. What gets initiated now takes root for the whole year. Reduce friction, choose your one direction, and take the first real step.' },
-  { name: 'Cresca',  focus: 'Growth',           season: 'spring', start: 29,  end: 56,  intent: "Compound small actions. Growth is invisible until it isn't. Maintain the reps, resist the urge to pivot." },
-  { name: 'Flora',   focus: 'Expression',       season: 'spring', start: 57,  end: 84,  intent: 'Let it be seen. The work that has been building wants to surface. Share, publish, show up.' },
-  { name: 'Solaris', focus: 'Visibility',       season: 'summer', start: 85,  end: 112, intent: 'Operate at full capacity. The light is long. This is your season for volume and output.' },
-  { name: 'Arden',   focus: 'Sustained Effort', season: 'summer', start: 113, end: 140, intent: 'Stay. The temptation to ease off comes early. The work done in Arden outlasts everything.' },
-  { name: 'Messia',  focus: 'Harvest',          season: 'summer', start: 141, end: 168, intent: "Collect what you've earned. Review, consolidate, extract value from what's been built." },
-  { name: 'Axia',    focus: 'Turning Point',    season: 'autumn', start: 169, end: 196, intent: 'Something shifts. A decision becomes obvious. Trust the turning.' },
-  { name: 'Valla',   focus: 'Holding',          season: 'autumn', start: 197, end: 224, intent: 'Maintain what matters. Let the rest fall. Containment is a form of power.' },
-  { name: 'Lenia',   focus: 'Softening',        season: 'autumn', start: 225, end: 252, intent: "Release grip. This is not failure — it's preparation. The system is becoming available again." },
-  { name: 'Umbra',   focus: 'Stillness',        season: 'winter', start: 253, end: 280, intent: 'Go inward. The most productive thing you can do in Umbra is rest without guilt.' },
-  { name: 'Noctis',  focus: 'Insight',          season: 'winter', start: 281, end: 308, intent: 'Think. Read. The dark months generate the ideas that spring will execute.' },
-  { name: 'Spira',   focus: 'Readiness',        season: 'winter', start: 309, end: 336, intent: "Prepare the conditions for what's next. Systems, tools, relationships. The coil tightens." },
-  { name: 'Lumen',   focus: 'Integration',      season: 'winter', start: 337, end: 364, intent: 'Make sense of the year. What held, what broke, what is worth carrying forward.' },
+  { name: 'Verna',   focus: 'Initiation',      season: 'spring', start: 1,   end: 28,  color: '#4e8845', intent: 'Begin. What gets initiated now takes root for the whole year. Reduce friction, choose your one direction, and take the first real step.' },
+  { name: 'Cresca',  focus: 'Growth',           season: 'spring', start: 29,  end: 56,  color: '#638c3a', intent: "Compound small actions. Growth is invisible until it isn't. Maintain the reps, resist the urge to pivot." },
+  { name: 'Flora',   focus: 'Expression',       season: 'spring', start: 57,  end: 84,  color: '#829030', intent: 'Let it be seen. The work that has been building wants to surface. Share, publish, show up.' },
+  { name: 'Solaris', focus: 'Visibility',       season: 'summer', start: 85,  end: 112, color: '#c8920c', intent: 'Operate at full capacity. The light is long. This is your season for volume and output.' },
+  { name: 'Arden',   focus: 'Sustained Effort', season: 'summer', start: 113, end: 140, color: '#b09420', intent: 'Stay. The temptation to ease off comes early. The work done in Arden outlasts everything.' },
+  { name: 'Plena',  focus: 'Harvest',          season: 'summer', start: 141, end: 168, color: '#be8c1e', intent: "Collect what you've earned. Review, consolidate, extract value from what's been built." },
+  { name: 'Axia',    focus: 'Turning Point',    season: 'autumn', start: 169, end: 196, color: '#b06e25', intent: 'Something shifts. A decision becomes obvious. Trust the turning.' },
+  { name: 'Valla',   focus: 'Holding',          season: 'autumn', start: 197, end: 224, color: '#a05820', intent: 'Maintain what matters. Let the rest fall. Containment is a form of power.' },
+  { name: 'Lenia',   focus: 'Softening',        season: 'autumn', start: 225, end: 252, color: '#8a4820', intent: "Release grip. This is not failure — it's preparation. The system is becoming available again." },
+  { name: 'Umbra',   focus: 'Stillness',        season: 'winter', start: 253, end: 280, color: '#486888', intent: 'Go inward. The most productive thing you can do in Umbra is rest without guilt.' },
+  { name: 'Noctis',  focus: 'Insight',          season: 'winter', start: 281, end: 308, color: '#406280', intent: 'Think. Read. The dark months generate the ideas that spring will execute.' },
+  { name: 'Spyra',   focus: 'Readiness',        season: 'winter', start: 309, end: 336, color: '#3c5c78', intent: "Prepare the conditions for what's next. Systems, tools, relationships. The coil tightens." },
+  { name: 'Lumen',   focus: 'Integration',      season: 'winter', start: 337, end: 364, color: '#4e6870', intent: 'Make sense of the year. What held, what broke, what is worth carrying forward.' },
 ];
 
 export const WEEK_PHASES: WeekPhase[] = ['Orient', 'Engage', 'Amplify', 'Integrate'];
 
 export const WEEK_PHASE_DESC: Record<WeekPhase, string> = {
-  Orient:    'Set direction. Reduce noise. Choose 1–3 priorities and nothing else.',
+  Orient:    'Set direction. Reduce noise. Choose 1-3 priorities and nothing else.',
   Engage:    'Begin. Do the first real reps. Momentum over perfection.',
   Amplify:   'Push output. Ship, produce, add volume. This is the sprint.',
   Integrate: 'Consolidate. Review. Repair and simplify what the sprint revealed.',
 };
 
 export const SEASON_COLORS: Record<Season, { primary: string; glow: string }> = {
-  spring: { primary: '#5aad3e', glow: 'rgba(90, 173, 62, 0.18)' },
-  summer: { primary: '#e8a020', glow: 'rgba(232, 160, 32, 0.18)' },
-  autumn: { primary: '#c85428', glow: 'rgba(200, 84, 40, 0.18)' },
-  winter: { primary: '#4a6fa5', glow: 'rgba(74, 111, 165, 0.18)' },
+  spring: { primary: '#4e8845', glow: 'rgba(78, 136, 69, 0.18)' },
+  summer: { primary: '#c8920c', glow: 'rgba(200, 146, 12, 0.18)' },
+  autumn: { primary: '#a05820', glow: 'rgba(160, 88, 32, 0.18)' },
+  winter: { primary: '#406280', glow: 'rgba(64, 98, 128, 0.18)' },
 };
 
-// Anchors: the Gregorian date that equals Verna Day 1 of 12026 NE
 const ANCHORS: Record<Hemisphere, { date: Date; year: number }> = {
   SH: { date: new Date('2026-09-22T00:00:00'), year: 12026 },
   NH: { date: new Date('2026-03-20T00:00:00'), year: 12026 },
@@ -82,8 +82,8 @@ export function getAptusDate(date: Date = new Date(), hemisphere: Hemisphere = '
 
   if (dayOfYear === 365) {
     return {
-      isLacuna: true,
-      day: 'Lacuna',
+      isOtium: true,
+      day: 'Otium',
       month: null,
       monthIndex: -1,
       year,
@@ -101,7 +101,7 @@ export function getAptusDate(date: Date = new Date(), hemisphere: Hemisphere = '
   const weekIndex = Math.ceil(dayInMonth / 7) - 1;
 
   return {
-    isLacuna: false,
+    isOtium: false,
     day: dayInMonth,
     month: monthData.name,
     monthIndex,
