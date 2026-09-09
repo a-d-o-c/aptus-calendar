@@ -20,7 +20,7 @@ function Label({ children }: { children: React.ReactNode }) {
       fontSize: '0.6rem',
       letterSpacing: '0.22em',
       textTransform: 'uppercase',
-      color: '#5a5248',
+      color: '#8a7460',
       marginBottom: '1rem',
     }}>
       {children}
@@ -33,7 +33,7 @@ function Body({ children, style }: { children: React.ReactNode; style?: React.CS
     <p style={{
       fontFamily: 'var(--font-libre)',
       fontSize: '1rem',
-      color: '#c0bcb6',
+      color: '#d4dede',
       lineHeight: 1.9,
       marginBottom: '1.1rem',
       ...style,
@@ -44,7 +44,7 @@ function Body({ children, style }: { children: React.ReactNode; style?: React.CS
 }
 
 function Rule() {
-  return <div style={{ height: 1, background: '#2a2520', margin: '2.5rem 0' }} />;
+  return <div style={{ height: 1, background: '#222e28', margin: '2.5rem 0' }} />;
 }
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
@@ -53,7 +53,7 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
       fontFamily: 'var(--font-cormorant)',
       fontSize: 'clamp(1.8rem, 3vw, 2.4rem)',
       fontWeight: 300,
-      color: '#f0ede8',
+      color: '#ede8de',
       lineHeight: 1.1,
       marginBottom: '1.25rem',
     }}>
@@ -71,9 +71,9 @@ function Card({ title, subtitle, body, accent }: {
   return (
     <div style={{
       padding: '1.25rem 1.4rem',
-      background: '#191714',
-      border: '1px solid #2a2520',
-      borderLeft: accent ? `3px solid ${accent}` : '1px solid #2a2520',
+      background: '#1d1d1c',
+      border: '1px solid #222e28',
+      borderLeft: accent ? `3px solid ${accent}` : '1px solid #222e28',
       borderRadius: 6,
     }}>
       <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.875rem', marginBottom: '0.6rem', flexWrap: 'wrap' }}>
@@ -81,7 +81,7 @@ function Card({ title, subtitle, body, accent }: {
           fontFamily: 'var(--font-cormorant)',
           fontSize: '1.2rem',
           fontWeight: 400,
-          color: '#f0ede8',
+          color: '#ede8de',
           lineHeight: 1,
         }}>
           {title}
@@ -90,7 +90,7 @@ function Card({ title, subtitle, body, accent }: {
           <span style={{
             fontFamily: 'var(--font-dm-mono)',
             fontSize: '0.58rem',
-            color: accent ?? '#5a5248',
+            color: accent ?? '#8a7460',
             letterSpacing: '0.08em',
           }}>
             {subtitle}
@@ -122,7 +122,7 @@ export default function AboutTab() {
           <Label>About Aptus</Label>
           <SectionTitle>
             The Gregorian calendar wasn't designed.<br />
-            <span style={{ fontStyle: 'italic', color: '#7a7368' }}>It just kept getting patched.</span>
+            <span style={{ fontStyle: 'italic', color: '#c0a880' }}>It just kept getting patched.</span>
           </SectionTitle>
           <Body>
             Months are 28, 29, 30, or 31 days long with no consistent pattern. The year begins on January 1st,
@@ -143,7 +143,7 @@ export default function AboutTab() {
           <Label>The Evidence</Label>
           <SectionTitle>How we got here</SectionTitle>
           <Body>
-            The original Roman calendar had <strong style={{ color: '#f0ede8', fontWeight: 400 }}>ten months</strong> and
+            The original Roman calendar had <strong style={{ color: '#ede8de', fontWeight: 400 }}>ten months</strong> and
             began in March. In order, they were: Martius, Aprilis, Maius, Junius, Quintilis, Sextilis,
             September, October, November, December. The last four were simply named after their position —
             the 7th, 8th, 9th, and 10th months. This was honest. It made sense.
@@ -174,7 +174,7 @@ export default function AboutTab() {
             />
             <Card
               title="The uneven month problem"
-              accent="#5a5248"
+              accent="#8a7460"
               body="Months consist of 28, 29, 30, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 days. There is no pattern. There is no reason. 'Thirty days hath September' exists as a mnemonic because the calendar is so arbitrary it needs a nursery rhyme to remember how long its months are. Aptus has one rule: every month is 28 days. You will never need the rhyme again."
             />
           </div>
@@ -200,8 +200,8 @@ export default function AboutTab() {
           <Body>
             Thirteen months of exactly 28 days each = 364 days. Every month has four identical weeks. The year
             begins at the spring equinox — the moment the hemisphere tilts back toward the sun and conditions
-            for growth actually begin. Day 365 is Lacuna: a threshold day outside the structure, for the pause
-            between years. Every six years, Aequa is added as a calibration day to keep the calendar true to
+            for growth actually begin. Day 365 is Otium: a threshold day outside the structure, for the pause
+            between years. Roughly every six years, Retta is added as a calibration day to keep the calendar true to
             the solar year.
           </Body>
           <Body>
@@ -213,20 +213,20 @@ export default function AboutTab() {
             {[
               { n: '13', label: 'Months of exactly 28 days' },
               { n: '4',  label: 'Identical weeks per month' },
-              { n: '365', label: 'Days — 364 in months + Lacuna' },
+              { n: '365', label: 'Days — 364 in months + Otium' },
               { n: '+10,000', label: 'Year offset — Natural Era (NE)' },
             ].map(item => (
               <div key={item.n} style={{
                 padding: '1.1rem 1.25rem',
-                background: '#191714',
-                border: '1px solid #2a2520',
+                background: '#1d1d1c',
+                border: '1px solid #222e28',
                 borderRadius: 6,
               }}>
                 <div style={{
                   fontFamily: 'var(--font-cormorant)',
                   fontSize: '2rem',
                   fontWeight: 300,
-                  color: '#f0ede8',
+                  color: '#ede8de',
                   lineHeight: 1,
                   marginBottom: '0.3rem',
                 }}>
@@ -235,7 +235,7 @@ export default function AboutTab() {
                 <div style={{
                   fontFamily: 'var(--font-dm-mono)',
                   fontSize: '0.6rem',
-                  color: '#5a5248',
+                  color: '#8a7460',
                   letterSpacing: '0.08em',
                 }}>
                   {item.label}
@@ -261,24 +261,24 @@ export default function AboutTab() {
               <div key={phase} style={{
                 display: 'flex', gap: '1.25rem', alignItems: 'flex-start',
                 padding: '1rem 1.25rem',
-                background: '#191714', border: '1px solid #2a2520', borderRadius: 6,
+                background: '#1d1d1c', border: '1px solid #222e28', borderRadius: 6,
               }}>
                 <div style={{
-                  fontFamily: 'var(--font-dm-mono)', fontSize: '0.55rem',
-                  color: '#3d3830', paddingTop: '0.15rem', flexShrink: 0, width: 20,
+                  fontFamily: 'var(--font-dm-mono)', fontSize: '0.62rem',
+                  color: '#8a7460', paddingTop: '0.15rem', flexShrink: 0, width: 20,
                 }}>
                   W{i + 1}
                 </div>
                 <div>
                   <div style={{
                     fontFamily: 'var(--font-cormorant)', fontSize: '1.25rem',
-                    fontWeight: 400, color: '#f0ede8', marginBottom: '0.2rem', lineHeight: 1,
+                    fontWeight: 400, color: '#ede8de', marginBottom: '0.2rem', lineHeight: 1,
                   }}>
                     {phase}
                   </div>
                   <div style={{
                     fontFamily: 'var(--font-libre)', fontStyle: 'italic',
-                    fontSize: '0.9rem', color: '#7a7368', lineHeight: 1.65,
+                    fontSize: '0.9rem', color: '#c0a880', lineHeight: 1.65,
                   }}>
                     {WEEK_PHASE_DESC[phase]}
                   </div>
@@ -293,12 +293,12 @@ export default function AboutTab() {
         {/* ── Celebrations ─────────────────────────────────────── */}
         <div style={{ marginBottom: '3rem' }}>
           <Label>Celebrations</Label>
-          <SectionTitle>Six moments the sky actually marks</SectionTitle>
+          <SectionTitle>Seven days the year turns on</SectionTitle>
           <Body>
-            These are not invented. Every culture that has lived close enough to the land to pay attention
-            has marked these six turning points. The equinoxes and solstices are astronomical events —
-            measurable, precise, occurring whether or not anyone acknowledges them. Lacuna and Aequa are
-            structural features of the Aptus calendar built around those events.
+            The equinoxes and solstices are not invented — they're astronomical events, measurable and precise,
+            occurring whether or not anyone acknowledges them. Arfa, Otium and Retta are structural features
+            of the Aptus calendar built around those events and around the turn of the year itself. Together
+            these seven days are Aptus's calendar of observance.
           </Body>
           <Body>
             What follows is what each moment actually is, and some suggestions for how a person might
@@ -308,77 +308,88 @@ export default function AboutTab() {
 
           {[
             {
-              name: 'Spring Equinox — New Year',
-              timing: 'Verna Day 1 · Sept 22 SH / Mar 20 NH',
-              color: '#5aad3e',
-              what: 'Day and night are equal length. From this point, light grows. The hemisphere is tilting back toward the sun — not metaphorically, literally. Energy is increasing. The biological pressure to begin is real.',
+              name: 'Arfa',
+              timing: 'Lumen 28 · Day 364 · Sept 20 SH / Mar 18 NH',
+              color: '#4e6870',
+              what: 'The last day of the year. The estate closes: everything the year left you, wanted or not, comes due for a decision. Not a highlight reel and not a trial — an inventory.',
               ritual: [
-                'Write one intention for the year. Not a list — one thing. The thing that, if it happened, would make the year feel like it meant something.',
-                'Go outside at or before dawn. Watch the light arrive. This is the actual new year. It has more claim to that title than January 1st ever will.',
-                'Clear something you have been putting off. The equinox is a hinge. What you do in the first week of Verna tends to compound.',
+                'Go through the year honestly. What did it leave you that you would have chosen anyway? What are you carrying only because you have always carried it?',
+                'Decide what crosses into the next year and what you refuse to carry forward.',
+                'Do this before Hayta, not after. The vow lands better on a year that has actually been closed out.',
               ],
             },
             {
-              name: 'Summer Solstice',
-              timing: 'Around Solaris 15 · Dec 21–22 SH / Jun 20–21 NH',
-              color: '#e8a020',
-              what: 'The longest day. Maximum light. Peak solar energy. The solstice lands in the middle of Solaris — the month of Visibility — by design. This is the apex of the year\'s output phase.',
-              ritual: [
-                'Be outside for as much of the long day as possible. The solstice is the one day you should not spend inside.',
-                'Audit what you started in spring. Is it growing? Is it what you actually wanted? The solstice is the last good moment to correct course before harvest.',
-                'Mark the evening with fire if you can. Bonfire, candle, whatever the context allows. Cultures across history have done exactly this on this night because it works.',
-              ],
-            },
-            {
-              name: 'Autumn Equinox',
-              timing: 'Around Axia 1 · Mar 20–21 SH / Sept 22 NH',
-              color: '#c85428',
-              what: 'Equal day and night again, but now light is retreating. The balance point before the dark half of the year. Axia means turning point — because this is one.',
-              ritual: [
-                'Take honest stock of the year so far. What did you build? What did you abandon? What are you proud of? Write it down, not to judge but to see clearly.',
-                'Decide what to carry into winter. Winter is not a time for new projects — it is a time for depth. Choose what deserves your depth.',
-                'Share a meal with people who matter. The autumn equinox is the harvest moment. The old harvest festivals were not sentimental — they were practical: what did we grow, and who do we share it with?',
-              ],
-            },
-            {
-              name: 'Winter Solstice',
-              timing: 'Around Umbra 15 · Jun 20–21 SH / Dec 21–22 NH',
-              color: '#4a6fa5',
-              what: 'The longest night. The nadir. Every pre-industrial culture marked this night because it is the bottom of the arc — after this, the light returns. That is genuinely worth acknowledging.',
-              ritual: [
-                'Rest. Not "unwind" — actually rest. The solstice night is the one night of the year that has the most biological and astronomical permission for stillness. Use it.',
-                'Turn off screens earlier than usual. Sit with the dark. Most of us have never actually experienced intentional darkness. The solstice night is the right occasion.',
-                'Write nothing. Plan nothing. Do not make lists or set intentions. The time for that is Lacuna and the equinox. Tonight, let the year be what it was.',
-              ],
-            },
-            {
-              name: 'Lacuna',
+              name: 'Otium',
               timing: 'Day 365 · Sept 21 SH / Mar 19 NH',
-              color: '#9a9390',
-              what: 'The threshold day. It exists outside the 13-month structure — not part of any month, not assigned to any season. The solar year is not exactly 364 days, so rather than distorting a month to absorb the remainder, Aptus gives it its own name and identity.',
+              color: '#b8c8c8',
+              what: 'The threshold day. It exists outside the 13-month structure — not part of any month, not assigned to any season. The only day of the year that asks nothing of you, on purpose: yesterday closed the year, tomorrow opens it, and neither lands if the two ends never stop touching.',
               ritual: [
-                'Conduct a year review. Not a performance review — a genuine accounting. What happened? What worked? What broke? What surprised you? Write it in whatever form suits you.',
-                'Do not plan the next year yet. Lacuna is not for planning — it is for witnessing. The intention-setting happens on Verna Day 1. Today is for looking back.',
-                'Treat it as genuinely liminal. You are between years. Nothing is due. Nothing is urgent. This is one of the few days the calendar actually gives you.',
+                'Nothing is required. That is the whole practice.',
+                'If you want one thing to do with it: notice you belong to neither year today, and let that be comfortable rather than urgent.',
+                'Do not plan the next year yet — that starts tomorrow, at Hayta.',
               ],
             },
             {
-              name: 'Aequa',
-              timing: 'Day 366 · Next: 12030 NE (Gregorian ~Sept 2031)',
-              color: '#7a7368',
-              what: 'The calibration day. The solar year is 365.2422 days — not 365. Each Aptus year accumulates roughly a quarter-day of drift. After about five years that drift exceeds a full day, and Aequa is added as Day 366 to bring the calendar back into alignment with the actual equinox. It occurs approximately every 4–5 years. The next one falls in 12030 NE.',
+              name: 'Hayta',
+              timing: 'Verna Day 1 · New Year · Sept 22 SH / Mar 20 NH',
+              color: '#5aad3e',
+              what: 'Day and night are equal length, and from here light grows. The actual new year — it has more claim to the title than January 1st ever will. This is the day the year’s vow is set: not a list of intentions, one direction the year is for.',
               ritual: [
-                'When Aequa comes, notice it. An extra day outside the ordinary structure of the year is genuinely unusual. Most years you do not get one.',
-                'Use it for something that is on no list. Not productive, not planned, not optimised. Aequa is the gift of an unclaimed day. The only rule is that you do not waste it on the ordinary.',
-                'Consider: what would you do if you had a day that no one could schedule over? That is Aequa. The answer to that question probably tells you something.',
+                'Say the one thing this year is for out loud, to someone. A vow spoken is a different object than one written down.',
+                'Name what you will have to refuse in order to keep it. A direction that costs nothing to hold isn’t a direction.',
+                'This vow gets checked at each of the year’s other turning points — Samna, Nesti, Vona — and settled at Arfa.',
+              ],
+            },
+            {
+              name: 'Samna',
+              timing: 'Around Solaris 7 · Summer Solstice · Dec 21–22 SH / Jun 20–21 NH',
+              color: '#e8a020',
+              what: 'The longest light, and the one day of the year built around other people rather than yourself. In the Southern Hemisphere it sits where Christmas sits — Samna displaces it honestly, with the same materials: people, food, the whole long evening.',
+              ritual: [
+                'Be somewhere with people for the length of the day — not an hour, all of it.',
+                'Give one purposeful thing: something made, something useful, a day of your labour. Not an obligation discharged with an object.',
+                'Say the Hayta vow out loud to someone at the gathering. Has it survived the first quarter?',
+              ],
+            },
+            {
+              name: 'Nesti',
+              timing: 'Around Axia 12 · Autumn Equinox · Mar 20–21 SH / Sept 22–23 NH',
+              color: '#c85428',
+              what: '“Nesti” is the food packed for a journey. Equal day and night again, but now light is retreating — the balance point before the dark half of the year. Not sentimental: thanks and remembrance sit inside a practical act of provisioning.',
+              ritual: [
+                'What carried you through this year that you didn’t put there yourself?',
+                'Who or what won’t be coming into the dark half — and what do you want to say before it closes?',
+                'Name three things you will actually need before the light goes, and get one of them this week.',
+              ],
+            },
+            {
+              name: 'Vona',
+              timing: 'Around Umbra 21 · Winter Solstice · Jun 20–21 SH / Dec 21–22 NH',
+              color: '#4a6fa5',
+              what: '“Vona” is hope — the specific kind that comes from knowing the dark has a floor. The longest night, and the point in the count that turns back toward light, whether or not it feels that way yet. Not a vigil and not resolutions — the one night built for taking the long view on purpose.',
+              ritual: [
+                'What is furthest from resolved right now — and can it wait for spring without cost?',
+                'Name one sign, however small, that the direction is already turning.',
+                'Say the Hayta vow once more, plainly, and notice whether it still sounds like what you meant in September.',
+              ],
+            },
+            {
+              name: 'Retta',
+              timing: 'Day 366 · roughly every 6 years · Next: 12030 NE',
+              color: '#c0a880',
+              what: 'The calibration day. The solar year is 365.2422 days, not 365 — each Aptus year accumulates roughly a quarter-day of drift, and Retta is added as Day 366 to bring the calendar back into alignment with the actual equinox.',
+              ritual: [
+                'Notice it. An extra day outside the ordinary structure of the year is genuinely unusual — most years you don’t get one.',
+                'Use it for something on no list. Not productive, not planned, not optimised.',
+                'Consider: what would you do with a day no one could schedule over? That is Retta.',
               ],
             },
           ].map(cel => (
             <div key={cel.name} style={{ marginBottom: '2rem' }}>
               <div style={{
                 padding: '1.4rem',
-                background: '#191714',
-                border: '1px solid #2a2520',
+                background: '#1d1d1c',
+                border: '1px solid #222e28',
                 borderLeft: `3px solid ${cel.color}`,
                 borderRadius: 6,
                 marginBottom: '0.5rem',
@@ -386,7 +397,7 @@ export default function AboutTab() {
                 <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.875rem', marginBottom: '0.75rem', flexWrap: 'wrap' }}>
                   <span style={{
                     fontFamily: 'var(--font-cormorant)',
-                    fontSize: '1.4rem', fontWeight: 400, color: '#f0ede8', lineHeight: 1,
+                    fontSize: '1.4rem', fontWeight: 400, color: '#ede8de', lineHeight: 1,
                   }}>
                     {cel.name}
                   </span>
@@ -411,18 +422,18 @@ export default function AboutTab() {
                 borderLeft: `1px solid ${cel.color}30`,
               }}>
                 <div style={{
-                  fontFamily: 'var(--font-dm-mono)', fontSize: '0.55rem',
+                  fontFamily: 'var(--font-dm-mono)', fontSize: '0.62rem',
                   letterSpacing: '0.18em', textTransform: 'uppercase',
-                  color: '#3d3830', marginBottom: '0.6rem', marginTop: '0.5rem',
+                  color: '#8a7460', marginBottom: '0.6rem', marginTop: '0.5rem',
                 }}>
                   Some ways to mark it
                   <span style={{
                     marginLeft: '0.75rem',
                     fontFamily: 'var(--font-dm-mono)',
-                    fontSize: '0.5rem',
+                    fontSize: '0.58rem',
                     letterSpacing: '0.06em',
                     textTransform: 'none',
-                    color: '#2a2520',
+                    color: '#222e28',
                     fontStyle: 'italic',
                   }}>
                     — suggestions only
@@ -432,7 +443,7 @@ export default function AboutTab() {
                   {cel.ritual.map((r, i) => (
                     <div key={i} style={{ display: 'flex', gap: '0.75rem', alignItems: 'flex-start' }}>
                       <span style={{
-                        fontFamily: 'var(--font-dm-mono)', fontSize: '0.55rem',
+                        fontFamily: 'var(--font-dm-mono)', fontSize: '0.62rem',
                         color: cel.color, flexShrink: 0, paddingTop: '0.35rem',
                         opacity: 0.7,
                       }}>
@@ -440,7 +451,7 @@ export default function AboutTab() {
                       </span>
                       <p style={{
                         fontFamily: 'var(--font-libre)', fontStyle: 'italic',
-                        fontSize: '0.9rem', color: '#7a7368', lineHeight: 1.75, margin: 0,
+                        fontSize: '0.9rem', color: '#c0a880', lineHeight: 1.75, margin: 0,
                       }}>
                         {r}
                       </p>
@@ -478,11 +489,11 @@ export default function AboutTab() {
                   {MONTHS.filter(m => m.season === season).map(m => (
                     <div key={m.name} style={{
                       display: 'flex', gap: '1.25rem', alignItems: 'baseline',
-                      padding: '0.65rem 0', borderBottom: '1px solid #1e1b18',
+                      padding: '0.65rem 0', borderBottom: '1px solid #232322',
                     }}>
                       <span style={{
                         fontFamily: 'var(--font-cormorant)', fontSize: '1.2rem',
-                        fontWeight: 400, color: '#f0ede8', minWidth: 80,
+                        fontWeight: 400, color: '#ede8de', minWidth: 80,
                       }}>
                         {m.name}
                       </span>
@@ -494,7 +505,7 @@ export default function AboutTab() {
                       </span>
                       <span style={{
                         fontFamily: 'var(--font-libre)', fontStyle: 'italic',
-                        fontSize: '0.88rem', color: '#7a7368', lineHeight: 1.55,
+                        fontSize: '0.88rem', color: '#c0a880', lineHeight: 1.55,
                       }}>
                         {m.intent}
                       </span>
@@ -518,10 +529,10 @@ export default function AboutTab() {
             ].map(a => (
               <div key={a.label} style={{
                 flex: 1, minWidth: 200,
-                padding: '1.1rem 1.25rem', background: '#191714',
-                border: '1px solid #2a2520', borderRadius: 6,
+                padding: '1.1rem 1.25rem', background: '#1d1d1c',
+                border: '1px solid #222e28', borderRadius: 6,
               }}>
-                <div style={{ fontFamily: 'var(--font-dm-mono)', fontSize: '0.6rem', color: '#5a5248', marginBottom: '0.3rem' }}>
+                <div style={{ fontFamily: 'var(--font-dm-mono)', fontSize: '0.6rem', color: '#8a7460', marginBottom: '0.3rem' }}>
                   {a.label}
                 </div>
                 <div style={{ fontFamily: 'var(--font-dm-mono)', fontSize: '0.8rem', color: a.color, letterSpacing: '0.06em' }}>
@@ -535,7 +546,7 @@ export default function AboutTab() {
         {/* Footer */}
         <div style={{
           fontFamily: 'var(--font-dm-mono)', fontSize: '0.58rem',
-          color: '#2a2520', letterSpacing: '0.1em', textAlign: 'center',
+          color: '#222e28', letterSpacing: '0.1em', textAlign: 'center',
         }}>
           Aptus · Interoperable with Gregorian · No belief required · Southern Hemisphere default
         </div>

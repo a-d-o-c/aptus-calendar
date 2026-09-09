@@ -11,13 +11,13 @@ const APTUS_DATA = {
     { name: 'Flora',   focus: 'Expression',       season: 'spring', start: 57,  end: 84  },
     { name: 'Solaris', focus: 'Visibility',       season: 'summer', start: 85,  end: 112 },
     { name: 'Arden',   focus: 'Sustained Effort', season: 'summer', start: 113, end: 140 },
-    { name: 'Messia',  focus: 'Harvest',          season: 'summer', start: 141, end: 168 },
+    { name: 'Plena',  focus: 'Harvest',          season: 'summer', start: 141, end: 168 },
     { name: 'Axia',    focus: 'Turning Point',    season: 'autumn', start: 169, end: 196 },
     { name: 'Valla',   focus: 'Holding',          season: 'autumn', start: 197, end: 224 },
     { name: 'Lenia',   focus: 'Softening',        season: 'autumn', start: 225, end: 252 },
     { name: 'Umbra',   focus: 'Stillness',        season: 'winter', start: 253, end: 280 },
     { name: 'Noctis',  focus: 'Insight',          season: 'winter', start: 281, end: 308 },
-    { name: 'Spira',   focus: 'Readiness',        season: 'winter', start: 309, end: 336 },
+    { name: 'Spyra',   focus: 'Readiness',        season: 'winter', start: 309, end: 336 },
     { name: 'Lumen',   focus: 'Integration',      season: 'winter', start: 337, end: 364 },
   ],
 
@@ -49,8 +49,8 @@ function getAptusDate(date) {
 
   if (dayOfYear === 365) {
     return {
-      isLacuna: true,
-      day: 'Lacuna',
+      isOtium: true,
+      day: 'Otium',
       month: null,
       monthIndex: -1,
       year,
@@ -68,7 +68,7 @@ function getAptusDate(date) {
   const weekIndex = Math.ceil(dayInMonth / 7) - 1;
 
   return {
-    isLacuna: false,
+    isOtium: false,
     day: dayInMonth,
     month: monthData.name,
     monthIndex,

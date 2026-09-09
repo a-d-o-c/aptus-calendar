@@ -12,6 +12,7 @@ import {
   type Season,
 } from '@/lib/aptus';
 import { useHemisphere } from '@/lib/hemisphere-context';
+import { useIsMobile } from '@/lib/use-mobile';
 
 // ── SVG geometry ─────────────────────────────────────────────────
 
@@ -26,6 +27,12 @@ const GAP = 0.5;
 function polar(cx: number, cy: number, r: number, deg: number) {
   const rad = ((deg - 90) * Math.PI) / 180;
   return { x: cx + r * Math.cos(rad), y: cy + r * Math.sin(rad) };
+}
+
+function lerpColor(a: string, b: string, t: number): string {
+  const p = (h: string, o: number) => parseInt(h.slice(o, o + 2), 16);
+  const hex = (n: number) => Math.round(n).toString(16).padStart(2, '0');
+  return `#${hex(p(a,1)+(p(b,1)-p(a,1))*t)}${hex(p(a,3)+(p(b,3)-p(a,3))*t)}${hex(p(a,5)+(p(b,5)-p(a,5))*t)}`;
 }
 
 function donut(cx: number, cy: number, ro: number, ri: number, s: number, e: number): string {
@@ -80,7 +87,7 @@ function buildSegments(): MonthSegment[] {
 
 const SEGMENTS = buildSegments();
 
-const LACUNA_PATH = donut(
+const OTIUM_PATH = donut(
   CX, CY, R_OUT, R_IN,
   364 * DEG_PER_DAY + GAP / 2,
   365 * DEG_PER_DAY - GAP / 2,
@@ -102,12 +109,13 @@ export default function YearTab() {
   const [today, setToday] = useState<AptusDate | null>(null);
   const [hovered, setHovered] = useState<number | null>(null);
   const [selected, setSelected] = useState<number | null>(null);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     setToday(getAptusDate(new Date(), hemisphere));
   }, [hemisphere]);
 
-  const activeIndex = selected ?? (today && !today.isLacuna ? today.monthIndex : null);
+  const activeIndex = selected ?? (today && !today.isOtium ? today.monthIndex : null);
   const activeSegment = activeIndex !== null ? SEGMENTS[activeIndex] : null;
 
   const weekRows = useMemo(() => {
@@ -117,7 +125,7 @@ export default function YearTab() {
       const dayStart = month.start + wi * 7;
       const dayEnd   = dayStart + 6;
       const isCurrent =
-        !!(today && !today.isLacuna &&
+        !!(today && !today.isOtium &&
            today.monthIndex === activeIndex &&
            today.weekIndex === wi);
       const gregStart = formatGregorian(gregDateFromAptus(dayStart, today?.year ?? 12026, hemisphere));
@@ -126,9 +134,9 @@ export default function YearTab() {
     });
   }, [activeIndex, today, hemisphere]);
 
-  const currentDayAngle = today && !today.isLacuna
+  const currentDayAngle = today && !today.isOtium
     ? (today.dayOfYear - 0.5) * DEG_PER_DAY
-    : today?.isLacuna ? 364.5 * DEG_PER_DAY : null;
+    : today?.isOtium ? 364.5 * DEG_PER_DAY : null;
 
   const dotPos = currentDayAngle !== null
     ? polar(CX, CY, (R_OUT + R_IN) / 2, currentDayAngle)
@@ -142,10 +150,11 @@ export default function YearTab() {
       height: '100%',
       overflow: 'hidden auto',
       display: 'flex',
-      alignItems: 'center',
+      flexDirection: isMobile ? 'column' : 'row',
+      alignItems: isMobile ? 'center' : 'center',
       justifyContent: 'center',
-      padding: '2rem',
-      gap: '4rem',
+      padding: isMobile ? '1.5rem 1rem' : '2rem',
+      gap: isMobile ? '1.5rem' : '4rem',
     }}>
 
       {/* ── Ring ─────────────────────────────────────────────────── */}
@@ -154,7 +163,7 @@ export default function YearTab() {
           width="480"
           height="480"
           viewBox="0 0 480 480"
-          style={{ display: 'block', maxWidth: '45vw', maxHeight: '80vh' }}
+          style={{ display: 'block', maxWidth: isMobile ? '88vw' : '45vw', maxHeight: isMobile ? '50vw' : '80vh' }}
           aria-label="Aptus year ring — 13 months"
         >
           <defs>
@@ -164,22 +173,37 @@ export default function YearTab() {
                 <stop offset="100%" stopColor={c.primary} stopOpacity="0" />
               </radialGradient>
             ))}
+            {SEGMENTS.map((seg, i) => {
+              const n = MONTHS.length;
+              const c0 = lerpColor(MONTHS[(i - 1 + n) % n].color, MONTHS[i].color, 0.5);
+              const c1 = lerpColor(MONTHS[i].color, MONTHS[(i + 1) % n].color, 0.5);
+              const r = (R_OUT + R_IN) / 2;
+              const p1 = polar(CX, CY, r, seg.startDeg);
+              const p2 = polar(CX, CY, r, seg.endDeg);
+              return (
+                <linearGradient key={`omg${i}`} id={`omg${i}`} gradientUnits="userSpaceOnUse"
+                  x1={p1.x.toFixed(2)} y1={p1.y.toFixed(2)}
+                  x2={p2.x.toFixed(2)} y2={p2.y.toFixed(2)}
+                >
+                  <stop offset="0%" stopColor={c0} />
+                  <stop offset="100%" stopColor={c1} />
+                </linearGradient>
+              );
+            })}
           </defs>
 
-          {/* Month segments */}
+          {/* Month segments — ombre gradient ring */}
           {SEGMENTS.map(seg => {
             const isActive = seg.index === activeIndex;
             const isHovered = seg.index === hovered;
-            const color = SEASON_COLORS[seg.season].primary;
             return (
               <path
                 key={seg.index}
                 d={seg.path}
-                fill={isActive || isHovered ? color : '#1e1b18'}
-                stroke={isActive || isHovered ? color : '#2e2924'}
-                strokeWidth="0.5"
-                opacity={isActive || isHovered ? 1 : 0.9}
-                style={{ cursor: 'pointer', transition: 'fill 0.2s, opacity 0.2s' }}
+                fill={`url(#omg${seg.index})`}
+                stroke="none"
+                opacity={isActive || isHovered ? 1 : 0.32}
+                style={{ cursor: 'pointer', transition: 'opacity 0.25s' }}
                 onMouseEnter={() => setHovered(seg.index)}
                 onMouseLeave={() => setHovered(null)}
                 onClick={() => setSelected(prev => prev === seg.index ? null : seg.index)}
@@ -191,11 +215,11 @@ export default function YearTab() {
             );
           })}
 
-          {/* Lacuna sliver */}
+          {/* Otium sliver */}
           <path
-            d={LACUNA_PATH}
-            fill="#2e2924"
-            stroke="#2e2924"
+            d={OTIUM_PATH}
+            fill="#2d2e2b"
+            stroke="#2d2e2b"
             strokeWidth="0.5"
             opacity="0.7"
           />
@@ -204,8 +228,8 @@ export default function YearTab() {
           {(Object.entries(SEASON_MID_DAYS) as [Season, number][]).map(([season, day]) => {
             const angle = (day - 0.5) * DEG_PER_DAY;
             const inner = polar(CX, CY, R_OUT + 8, angle);
-            const outer = polar(CX, CY, R_OUT + 18, angle);
-            const label = polar(CX, CY, R_OUT + 30, angle);
+            const outer = polar(CX, CY, R_OUT + 22, angle);
+            const label = polar(CX, CY, R_OUT + 38, angle);
             return (
               <g key={season}>
                 <line
@@ -220,10 +244,10 @@ export default function YearTab() {
                   textAnchor="middle"
                   dominantBaseline="middle"
                   fill={SEASON_COLORS[season].primary}
-                  fontSize="8"
+                  fontSize="11"
                   fontFamily="var(--font-dm-mono)"
                   letterSpacing="0.15em"
-                  opacity="0.7"
+                  opacity="0.9"
                   style={{ textTransform: 'uppercase' }}
                 >
                   {season.toUpperCase()}
@@ -238,7 +262,7 @@ export default function YearTab() {
               cx={dotPos.x}
               cy={dotPos.y}
               r="4"
-              fill="#f0ede8"
+              fill="#ede8de"
               style={{ filter: 'drop-shadow(0 0 4px rgba(240,237,232,0.8))' }}
             />
           )}
@@ -249,7 +273,7 @@ export default function YearTab() {
               <text
                 x={CX} y={CY - 28}
                 textAnchor="middle"
-                fill="#7a7368"
+                fill="#c0a880"
                 fontSize="8"
                 fontFamily="var(--font-dm-mono)"
                 letterSpacing="0.15em"
@@ -259,7 +283,7 @@ export default function YearTab() {
               <text
                 x={CX} y={CY + 4}
                 textAnchor="middle"
-                fill="#f0ede8"
+                fill="#ede8de"
                 fontSize="28"
                 fontFamily="var(--font-cormorant)"
                 fontWeight="300"
@@ -281,7 +305,7 @@ export default function YearTab() {
             <text
               x={CX} y={CY + 6}
               textAnchor="middle"
-              fill="#3d3830"
+              fill="#8a7460"
               fontSize="10"
               fontFamily="var(--font-dm-mono)"
               letterSpacing="0.1em"
@@ -295,8 +319,9 @@ export default function YearTab() {
 
       {/* ── Month detail panel ───────────────────────────────────── */}
       <div style={{
-        flex: 1,
-        maxWidth: 380,
+        flex: isMobile ? 'none' : 1,
+        width: isMobile ? '100%' : 'auto',
+        maxWidth: isMobile ? 480 : 380,
         display: 'flex',
         flexDirection: 'column',
         gap: '1.5rem',
@@ -320,7 +345,7 @@ export default function YearTab() {
                 fontFamily: 'var(--font-cormorant)',
                 fontSize: 'clamp(2.2rem, 4vw, 3.2rem)',
                 fontWeight: 300,
-                color: '#f0ede8',
+                color: '#ede8de',
                 lineHeight: 0.95,
                 marginBottom: '0.4rem',
               }}>
@@ -329,7 +354,7 @@ export default function YearTab() {
               <p style={{
                 fontFamily: 'var(--font-dm-mono)',
                 fontSize: '0.62rem',
-                color: '#7a7368',
+                color: '#c0a880',
                 letterSpacing: '0.12em',
                 textTransform: 'uppercase',
               }}>
@@ -341,14 +366,14 @@ export default function YearTab() {
               fontFamily: 'var(--font-libre)',
               fontStyle: 'italic',
               fontSize: '0.9rem',
-              color: '#7a7368',
+              color: '#c0a880',
               lineHeight: 1.75,
             }}>
               {activeSegment.intent}
             </p>
 
             <div style={{
-              borderTop: '1px solid #2e2924',
+              borderTop: '1px solid #2d2e2b',
               paddingTop: '1.25rem',
               display: 'flex',
               flexDirection: 'column',
@@ -357,7 +382,7 @@ export default function YearTab() {
               <div style={{
                 fontFamily: 'var(--font-dm-mono)',
                 fontSize: '0.58rem',
-                color: '#3d3830',
+                color: '#8a7460',
                 letterSpacing: '0.15em',
                 textTransform: 'uppercase',
                 marginBottom: '0.5rem',
@@ -373,7 +398,7 @@ export default function YearTab() {
                     gap: '1rem',
                     padding: '0.6rem 0.75rem',
                     borderRadius: 6,
-                    background: row.isCurrent ? '#1e1b18' : 'transparent',
+                    background: row.isCurrent ? '#232322' : 'transparent',
                     border: row.isCurrent ? `1px solid ${SEASON_COLORS[activeSegment.season].primary}22` : '1px solid transparent',
                   }}
                 >
@@ -383,7 +408,7 @@ export default function YearTab() {
                     letterSpacing: '0.1em',
                     color: row.isCurrent
                       ? SEASON_COLORS[activeSegment.season].primary
-                      : '#4d4740',
+                      : '#9a8870',
                     textTransform: 'uppercase',
                     minWidth: 60,
                   }}>
@@ -391,8 +416,8 @@ export default function YearTab() {
                   </span>
                   <span style={{
                     fontFamily: 'var(--font-dm-mono)',
-                    fontSize: '0.55rem',
-                    color: '#3d3830',
+                    fontSize: '0.62rem',
+                    color: '#8a7460',
                     letterSpacing: '0.06em',
                   }}>
                     Days {row.dayStart}–{row.dayEnd}
@@ -401,7 +426,7 @@ export default function YearTab() {
                     <span style={{
                       marginLeft: 'auto',
                       fontFamily: 'var(--font-dm-mono)',
-                      fontSize: '0.52rem',
+                      fontSize: '0.6rem',
                       color: SEASON_COLORS[activeSegment.season].primary,
                       letterSpacing: '0.1em',
                       textTransform: 'uppercase',
@@ -417,7 +442,7 @@ export default function YearTab() {
           <div style={{
             fontFamily: 'var(--font-dm-mono)',
             fontSize: '0.62rem',
-            color: '#3d3830',
+            color: '#8a7460',
             letterSpacing: '0.1em',
             textAlign: 'center',
             marginTop: '4rem',

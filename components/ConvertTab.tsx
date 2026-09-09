@@ -24,25 +24,25 @@ function AptusResult({ info, accent }: { info: AptusDate; accent: string }) {
       gridTemplateColumns: '1fr 1fr',
       gap: '0.75rem 1.5rem',
       padding: '1.5rem',
-      background: '#1a1816',
-      border: '1px solid #2e2924',
+      background: '#1d1d1c',
+      border: '1px solid #2d2e2b',
       borderRadius: 8,
     }}>
       {[
-        { label: 'Month',   value: info.isLacuna ? '—' : info.month ?? '—' },
-        { label: 'Day',     value: info.isLacuna ? 'Lacuna' : String(info.dayInMonth) },
+        { label: 'Month',   value: info.isOtium ? '—' : info.month ?? '—' },
+        { label: 'Day',     value: info.isOtium ? 'Otium' : String(info.dayInMonth) },
         { label: 'Year',    value: `${info.year} NE` },
         { label: 'Season',  value: info.season ? SEASON_LABELS[info.season] : '—' },
-        { label: 'Phase',   value: info.isLacuna ? '—' : (info.weekPhase ?? '—') },
-        { label: 'Focus',   value: info.isLacuna ? '—' : (info.monthFocus ?? '—') },
+        { label: 'Phase',   value: info.isOtium ? '—' : (info.weekPhase ?? '—') },
+        { label: 'Focus',   value: info.isOtium ? '—' : (info.monthFocus ?? '—') },
       ].map(row => (
         <div key={row.label}>
           <div style={{
             fontFamily: 'var(--font-dm-mono)',
-            fontSize: '0.55rem',
+            fontSize: '0.62rem',
             letterSpacing: '0.15em',
             textTransform: 'uppercase',
-            color: '#3d3830',
+            color: '#8a7460',
             marginBottom: '0.2rem',
           }}>
             {row.label}
@@ -55,7 +55,7 @@ function AptusResult({ info, accent }: { info: AptusDate; accent: string }) {
               : row.label === 'Day' ? '1.4rem'
               : '0.75rem',
             fontWeight: 300,
-            color: row.label === 'Month' || row.label === 'Day' ? '#f0ede8' : accent,
+            color: row.label === 'Month' || row.label === 'Day' ? '#ede8de' : accent,
             letterSpacing: row.label === 'Month' || row.label === 'Day' ? '-0.01em' : '0.08em',
           }}>
             {row.value}
@@ -63,13 +63,13 @@ function AptusResult({ info, accent }: { info: AptusDate; accent: string }) {
         </div>
       ))}
 
-      {!info.isLacuna && info.weekPhase && (
-        <div style={{ gridColumn: '1 / -1', marginTop: '0.5rem', paddingTop: '1rem', borderTop: '1px solid #2e2924' }}>
+      {!info.isOtium && info.weekPhase && (
+        <div style={{ gridColumn: '1 / -1', marginTop: '0.5rem', paddingTop: '1rem', borderTop: '1px solid #2d2e2b' }}>
           <p style={{
             fontFamily: 'var(--font-libre)',
             fontStyle: 'italic',
-            fontSize: '0.85rem',
-            color: '#4d4740',
+            fontSize: '0.95rem',
+            color: '#9a8870',
             lineHeight: 1.65,
           }}>
             {WEEK_PHASE_DESC[info.weekPhase as WeekPhase]}
@@ -150,7 +150,7 @@ export default function ConvertTab() {
             fontSize: '0.58rem',
             letterSpacing: '0.2em',
             textTransform: 'uppercase',
-            color: '#4d4740',
+            color: '#9a8870',
             marginBottom: '0.6rem',
           }}>
             Date Converter
@@ -159,7 +159,7 @@ export default function ConvertTab() {
             fontFamily: 'var(--font-cormorant)',
             fontSize: 'clamp(2rem, 4vw, 2.8rem)',
             fontWeight: 300,
-            color: '#f0ede8',
+            color: '#ede8de',
             lineHeight: 1,
           }}>
             Gregorian → Aptus
@@ -174,7 +174,7 @@ export default function ConvertTab() {
             fontSize: '0.58rem',
             letterSpacing: '0.15em',
             textTransform: 'uppercase',
-            color: '#4d4740',
+            color: '#9a8870',
             marginBottom: '0.5rem',
           }}>
             Enter a date
@@ -186,12 +186,12 @@ export default function ConvertTab() {
             style={{
               width: '100%',
               padding: '0.8rem 1rem',
-              background: '#1a1816',
-              border: `1px solid ${result ? accent + '60' : '#2e2924'}`,
+              background: '#1d1d1c',
+              border: `1px solid ${result ? accent + '60' : '#2d2e2b'}`,
               borderRadius: 6,
-              color: '#f0ede8',
+              color: '#ede8de',
               fontFamily: 'var(--font-dm-mono)',
-              fontSize: '0.85rem',
+              fontSize: '0.95rem',
               letterSpacing: '0.05em',
               outline: 'none',
               transition: 'border-color 0.3s ease',
@@ -211,10 +211,10 @@ export default function ConvertTab() {
                 style={{
                   alignSelf: 'flex-start',
                   padding: '0.35rem 1rem',
-                  border: '1px solid #2e2924',
+                  border: '1px solid #2d2e2b',
                   borderRadius: 99,
                   background: 'transparent',
-                  color: '#4d4740',
+                  color: '#9a8870',
                   fontFamily: 'var(--font-dm-mono)',
                   fontSize: '0.6rem',
                   letterSpacing: '0.1em',
@@ -222,8 +222,8 @@ export default function ConvertTab() {
                   cursor: 'pointer',
                   transition: 'border-color 0.2s, color 0.2s',
                 }}
-                onMouseEnter={e => { e.currentTarget.style.borderColor = '#7a7368'; e.currentTarget.style.color = '#f0ede8'; }}
-                onMouseLeave={e => { e.currentTarget.style.borderColor = '#2e2924'; e.currentTarget.style.color = '#4d4740'; }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = '#c0a880'; e.currentTarget.style.color = '#ede8de'; }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = '#2d2e2b'; e.currentTarget.style.color = '#9a8870'; }}
               >
                 Save this date →
               </button>
@@ -239,10 +239,10 @@ export default function ConvertTab() {
                   style={{
                     flex: 1,
                     padding: '0.5rem 0.75rem',
-                    background: '#1a1816',
-                    border: '1px solid #2e2924',
+                    background: '#1d1d1c',
+                    border: '1px solid #2d2e2b',
                     borderRadius: 6,
-                    color: '#f0ede8',
+                    color: '#ede8de',
                     fontFamily: 'var(--font-dm-mono)',
                     fontSize: '0.75rem',
                     outline: 'none',
@@ -256,8 +256,8 @@ export default function ConvertTab() {
                     padding: '0.5rem 1rem',
                     border: 'none',
                     borderRadius: 6,
-                    background: saveName.trim() ? accent : '#2e2924',
-                    color: saveName.trim() ? '#0f0e0c' : '#3d3830',
+                    background: saveName.trim() ? accent : '#2d2e2b',
+                    color: saveName.trim() ? '#121110' : '#8a7460',
                     fontFamily: 'var(--font-dm-mono)',
                     fontSize: '0.6rem',
                     letterSpacing: '0.1em',
@@ -272,10 +272,10 @@ export default function ConvertTab() {
                   onClick={() => setShowSaveForm(false)}
                   style={{
                     padding: '0.5rem 0.75rem',
-                    border: '1px solid #2e2924',
+                    border: '1px solid #2d2e2b',
                     borderRadius: 6,
                     background: 'transparent',
-                    color: '#4d4740',
+                    color: '#9a8870',
                     fontFamily: 'var(--font-dm-mono)',
                     fontSize: '0.6rem',
                     cursor: 'pointer',
@@ -290,13 +290,13 @@ export default function ConvertTab() {
 
         {/* Saved dates */}
         {saved.length > 0 && (
-          <div style={{ borderTop: '1px solid #2e2924', paddingTop: '1.5rem' }}>
+          <div style={{ borderTop: '1px solid #2d2e2b', paddingTop: '1.5rem' }}>
             <div style={{
               fontFamily: 'var(--font-dm-mono)',
               fontSize: '0.58rem',
               letterSpacing: '0.2em',
               textTransform: 'uppercase',
-              color: '#3d3830',
+              color: '#8a7460',
               marginBottom: '0.75rem',
             }}>
               Saved Dates
@@ -305,9 +305,9 @@ export default function ConvertTab() {
               {saved.map(s => {
                 const d = new Date(s.gregorian + 'T12:00:00');
                 const aptus = getAptusDate(d, hemisphere);
-                const col = aptus.season ? SEASON_COLORS[aptus.season].primary : '#7a7368';
-                const label = aptus.isLacuna
-                  ? `Lacuna · ${aptus.year} NE`
+                const col = aptus.season ? SEASON_COLORS[aptus.season].primary : '#c0a880';
+                const label = aptus.isOtium
+                  ? `Otium · ${aptus.year} NE`
                   : `${aptus.month} ${aptus.dayInMonth} · ${aptus.year} NE`;
                 return (
                   <div
@@ -317,15 +317,15 @@ export default function ConvertTab() {
                       alignItems: 'center',
                       gap: '0.75rem',
                       padding: '0.6rem 0.75rem',
-                      background: '#1a1816',
-                      border: '1px solid #2e2924',
+                      background: '#1d1d1c',
+                      border: '1px solid #2d2e2b',
                       borderRadius: 6,
                       cursor: 'pointer',
                       transition: 'border-color 0.15s',
                     }}
                     onClick={() => loadSaved(s)}
-                    onMouseEnter={e => { e.currentTarget.style.borderColor = '#3d3830'; }}
-                    onMouseLeave={e => { e.currentTarget.style.borderColor = '#2e2924'; }}
+                    onMouseEnter={e => { e.currentTarget.style.borderColor = '#8a7460'; }}
+                    onMouseLeave={e => { e.currentTarget.style.borderColor = '#2d2e2b'; }}
                   >
                     <div style={{
                       width: 6, height: 6, borderRadius: '50%',
@@ -335,7 +335,7 @@ export default function ConvertTab() {
                       <div style={{
                         fontFamily: 'var(--font-dm-mono)',
                         fontSize: '0.7rem',
-                        color: '#f0ede8',
+                        color: '#ede8de',
                         letterSpacing: '0.04em',
                         marginBottom: '0.1rem',
                       }}>
@@ -352,8 +352,8 @@ export default function ConvertTab() {
                     </div>
                     <div style={{
                       fontFamily: 'var(--font-dm-mono)',
-                      fontSize: '0.55rem',
-                      color: '#3d3830',
+                      fontSize: '0.62rem',
+                      color: '#8a7460',
                       letterSpacing: '0.06em',
                     }}>
                       {s.gregorian}
@@ -362,7 +362,7 @@ export default function ConvertTab() {
                       onClick={e => { e.stopPropagation(); removeDate(s.id); }}
                       style={{
                         background: 'none', border: 'none',
-                        color: '#3d3830', cursor: 'pointer',
+                        color: '#8a7460', cursor: 'pointer',
                         fontFamily: 'var(--font-dm-mono)',
                         fontSize: '0.7rem',
                         lineHeight: 1,
@@ -370,7 +370,7 @@ export default function ConvertTab() {
                         transition: 'color 0.15s',
                       }}
                       onMouseEnter={e => { e.currentTarget.style.color = '#c85428'; }}
-                      onMouseLeave={e => { e.currentTarget.style.color = '#3d3830'; }}
+                      onMouseLeave={e => { e.currentTarget.style.color = '#8a7460'; }}
                       aria-label={`Remove ${s.name}`}
                     >
                       ✕

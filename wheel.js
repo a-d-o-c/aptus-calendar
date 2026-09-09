@@ -100,7 +100,7 @@
     // ── Ghost discs — very pale rotating content (visible outside window too) ──
 
     _ghostDiscs(now) {
-      if (now.isLacuna) return;
+      if (now.isOtium) return;
       const { r } = this;
       const si = SEASONS.findIndex(s => s.key === now.season);
 
@@ -168,7 +168,7 @@
     // ── Active discs — bright content, clipped to aperture window ──────────────
 
     _activeDiscs(now) {
-      if (now.isLacuna) return;
+      if (now.isOtium) return;
       const { r, R } = this;
 
       // Season
@@ -284,12 +284,12 @@
       ctx.lineWidth   = 0.6;
       ctx.stroke();
 
-      if (now.isLacuna) {
+      if (now.isOtium) {
         ctx.font         = `italic ${R * 0.044}px 'Lora', serif`;
         ctx.fillStyle    = '#7a60a8';
         ctx.textAlign    = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillText('Lacuna', cx, cy);
+        ctx.fillText('Otium', cx, cy);
       } else {
         // NE year
         ctx.font         = `${R * 0.021}px 'Space Mono', monospace`;
@@ -632,7 +632,7 @@
       });
 
       // Today — highlight current arc position
-      if (!now.isLacuna) {
+      if (!now.isOtium) {
         const a   = this._angle(now.dayOfYear);
         const col = APTUS_DATA.SEASON_COLORS[now.season];
         const sp  = (2 / 365) * Math.PI * 2;

@@ -69,7 +69,7 @@
                 <div class="intro-body">
                     <p><strong>Aptus</strong> (Latin: <em>aligned, fitted, suited to the time</em>) is a calendar system designed for seasonal coherence rather than historical accident.</p>
                     <p>The Gregorian calendar works for coordination, but it's poorly aligned with observable reality. Months are uneven, the year begins arbitrarily, and for the Southern Hemisphere, the seasonal labels are backwards.</p>
-                    <p>Aptus addresses this: <strong>13 months × 28 days</strong> = 364 days, every month identical. The year begins at spring equinox (Sept 22 SH). Day 365 is <em>Lacuna</em> — a threshold day outside the structure. Every month follows the same four-phase weekly cycle: Orient → Engage → Amplify → Integrate.</p>
+                    <p>Aptus addresses this: <strong>13 months × 28 days</strong> = 364 days, every month identical. The year begins at spring equinox (Sept 22 SH). Day 365 is <em>Otium</em> — a threshold day outside the structure. Every month follows the same four-phase weekly cycle: Orient → Engage → Amplify → Integrate.</p>
                     <p>This is a temporal operating system, not a doctrine. Use it if it helps.</p>
                 </div>
             </div>
@@ -113,8 +113,8 @@
 
             // Date heading
             const dateEl = document.getElementById('aptus-date');
-            if (info.isLacuna) {
-                dateEl.textContent = 'Lacuna';
+            if (info.isOtium) {
+                dateEl.textContent = 'Otium';
             } else {
                 dateEl.textContent = info.month + ' ' + info.dayInMonth;
             }
@@ -125,7 +125,7 @@
             // Tags
             const tagsEl = document.getElementById('today-tags');
             const tags = [];
-            if (!info.isLacuna) {
+            if (!info.isOtium) {
                 tags.push({ text: info.season,                    cls: 'tag tag-' + info.season });
                 tags.push({ text: info.weekPhase + ' week',       cls: 'tag' });
                 tags.push({ text: 'Week ' + (info.weekIndex + 1) + ' of 4', cls: 'tag' });
@@ -144,7 +144,7 @@
 
             // Month focus
             const focusEl = document.getElementById('month-focus');
-            if (!info.isLacuna) {
+            if (!info.isOtium) {
                 const month = APTUS_DATA.MONTHS.find(m => m.name === info.month);
                 focusEl.textContent = info.month + ': ' + month.focus;
             } else {
@@ -154,7 +154,7 @@
             // ── Build 13-month grid ──────────────────────────────────
             const SEASON_LABELS = { spring: 'Spring', summer: 'Summer', autumn: 'Autumn', winter: 'Winter' };
             const grid = document.getElementById('months-grid');
-            const isCurrent = !info.isLacuna;
+            const isCurrent = !info.isOtium;
 
             APTUS_DATA.MONTHS.forEach((month, i) => {
                 const isActive = isCurrent && month.name === info.month;

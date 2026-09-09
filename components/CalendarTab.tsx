@@ -11,6 +11,7 @@ import {
   type Season,
 } from '@/lib/aptus';
 import { useHemisphere } from '@/lib/hemisphere-context';
+import { useIsMobile } from '@/lib/use-mobile';
 
 const SEASON_LABELS: Record<Season, string> = {
   spring: 'Spring',
@@ -30,13 +31,13 @@ interface MonthCardProps {
 function MonthCard({ monthIndex, today, neYear }: MonthCardProps) {
   const { hemisphere } = useHemisphere();
   const month = MONTHS[monthIndex];
-  const color = SEASON_COLORS[month.season].primary;
-  const isCurrentMonth = !!(today && !today.isLacuna && today.monthIndex === monthIndex);
+  const color = month.color;
+  const isCurrentMonth = !!(today && !today.isOtium && today.monthIndex === monthIndex);
 
   return (
     <div style={{
-      background: '#1a1816',
-      border: `1px solid ${isCurrentMonth ? color + '40' : '#2e2924'}`,
+      background: '#1d1d1c',
+      border: `1px solid ${isCurrentMonth ? color + '40' : '#2d2e2b'}`,
       borderTop: `2px solid ${isCurrentMonth ? color : color + '30'}`,
       borderRadius: 6,
       overflow: 'hidden',
@@ -44,21 +45,21 @@ function MonthCard({ monthIndex, today, neYear }: MonthCardProps) {
       {/* Month header */}
       <div style={{
         padding: '0.75rem 0.875rem 0.6rem',
-        borderBottom: '1px solid #222018',
+        borderBottom: '1px solid #232322',
       }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
           <span style={{
             fontFamily: 'var(--font-cormorant)',
-            fontSize: '1.25rem',
-            fontWeight: 300,
-            color: isCurrentMonth ? '#f0ede8' : '#c4c0ba',
+            fontSize: '1.5rem',
+            fontWeight: 400,
+            color: isCurrentMonth ? '#ede8de' : '#c8c0b0',
             lineHeight: 1,
           }}>
             {month.name}
           </span>
           <span style={{
             fontFamily: 'var(--font-dm-mono)',
-            fontSize: '0.52rem',
+            fontSize: '0.6rem',
             color: color,
             letterSpacing: '0.1em',
             textTransform: 'uppercase',
@@ -69,8 +70,8 @@ function MonthCard({ monthIndex, today, neYear }: MonthCardProps) {
         </div>
         <div style={{
           fontFamily: 'var(--font-dm-mono)',
-          fontSize: '0.5rem',
-          color: '#3d3830',
+          fontSize: '0.58rem',
+          color: '#8a7460',
           letterSpacing: '0.08em',
           marginTop: '0.2rem',
         }}>
@@ -97,7 +98,7 @@ function MonthCard({ monthIndex, today, neYear }: MonthCardProps) {
                 paddingRight: '0.4rem',
                 fontFamily: 'var(--font-dm-mono)',
                 fontSize: '0.48rem',
-                color: isCurrentWeek ? color : '#3d3830',
+                color: isCurrentWeek ? color : '#8a7460',
                 letterSpacing: '0.06em',
                 textTransform: 'uppercase',
                 height: 24,
@@ -110,7 +111,7 @@ function MonthCard({ monthIndex, today, neYear }: MonthCardProps) {
               ...Array.from({ length: 7 }, (_, di) => {
                 const dayInMonth = dayStart + di;
                 const dayOfYear = month.start + dayStart + di - 1;
-                const isToday = !!(today && !today.isLacuna &&
+                const isToday = !!(today && !today.isOtium &&
                   today.monthIndex === monthIndex &&
                   today.dayInMonth === dayInMonth);
                 const isThisWeek = isCurrentWeek;
@@ -132,12 +133,12 @@ function MonthCard({ monthIndex, today, neYear }: MonthCardProps) {
                           ? color + '14'
                           : 'transparent',
                       fontFamily: 'var(--font-dm-mono)',
-                      fontSize: '0.52rem',
+                      fontSize: '0.6rem',
                       color: isToday
-                        ? '#0f0e0c'
+                        ? '#121110'
                         : isThisWeek
                           ? color
-                          : '#3d3830',
+                          : '#8a7460',
                       fontWeight: isToday ? '500' : '400',
                       cursor: 'default',
                       transition: 'background 0.2s',
@@ -165,6 +166,7 @@ function MonthCard({ monthIndex, today, neYear }: MonthCardProps) {
 export default function CalendarTab() {
   const { hemisphere } = useHemisphere();
   const [today, setToday] = useState<AptusDate | null>(null);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     setToday(getAptusDate(new Date(), hemisphere));
@@ -176,7 +178,7 @@ export default function CalendarTab() {
     <div style={{
       height: '100%',
       overflow: 'hidden auto',
-      padding: '2rem',
+      padding: isMobile ? '1.25rem 1rem' : '2rem',
     }}>
       <div style={{ maxWidth: 1160, margin: '0 auto' }}>
 
@@ -187,21 +189,21 @@ export default function CalendarTab() {
           justifyContent: 'space-between',
           marginBottom: '2rem',
           paddingBottom: '1rem',
-          borderBottom: '1px solid #2e2924',
+          borderBottom: '1px solid #2d2e2b',
         }}>
           <h2 style={{
             fontFamily: 'var(--font-cormorant)',
             fontSize: 'clamp(1.8rem, 3vw, 2.4rem)',
             fontWeight: 300,
-            color: '#f0ede8',
+            color: '#ede8de',
             lineHeight: 1,
           }}>
             {neYear} NE
           </h2>
           <div style={{
             fontFamily: 'var(--font-dm-mono)',
-            fontSize: '0.55rem',
-            color: '#3d3830',
+            fontSize: '0.62rem',
+            color: '#8a7460',
             letterSpacing: '0.12em',
             textTransform: 'uppercase',
           }}>
@@ -239,8 +241,8 @@ export default function CalendarTab() {
 
               <div style={{
                 display: 'grid',
-                gridTemplateColumns: `repeat(${seasonMonths.length}, 1fr)`,
-                gap: '0.875rem',
+                gridTemplateColumns: isMobile ? '1fr' : `repeat(${seasonMonths.length}, 1fr)`,
+                gap: isMobile ? '0.75rem' : '0.875rem',
               }}>
                 {seasonMonths.map(m => (
                   <MonthCard
@@ -255,11 +257,11 @@ export default function CalendarTab() {
           );
         })}
 
-        {/* Lacuna */}
+        {/* Otium */}
         <div style={{
           padding: '1.25rem 1.5rem',
-          background: '#1a1816',
-          border: '1px solid #2e2924',
+          background: '#1d1d1c',
+          border: '1px solid #2d2e2b',
           borderRadius: 6,
           display: 'flex',
           alignItems: 'center',
@@ -271,16 +273,16 @@ export default function CalendarTab() {
               fontFamily: 'var(--font-cormorant)',
               fontSize: '1.4rem',
               fontWeight: 300,
-              color: '#f0ede8',
+              color: '#ede8de',
               lineHeight: 1,
               marginBottom: '0.3rem',
             }}>
-              Lacuna
+              Otium
             </div>
             <div style={{
               fontFamily: 'var(--font-dm-mono)',
-              fontSize: '0.55rem',
-              color: '#3d3830',
+              fontSize: '0.62rem',
+              color: '#8a7460',
               letterSpacing: '0.1em',
             }}>
               Day 365 · Outside the structure
@@ -289,8 +291,8 @@ export default function CalendarTab() {
           <div style={{
             fontFamily: 'var(--font-libre)',
             fontStyle: 'italic',
-            fontSize: '0.85rem',
-            color: '#4d4740',
+            fontSize: '0.95rem',
+            color: '#9a8870',
             maxWidth: 400,
             textAlign: 'right',
           }}>
