@@ -34,6 +34,18 @@ body {
   min-height: 100vh;
 }
 
+/* Grain texture overlay — adds material depth to the cream ground */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9998;
+  opacity: 0.032;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 220px 220px;
+}
+
 /* ── Typography ─────────────────────────────────────────────────── */
 
 h1, h2, h3 { font-family: var(--serif); font-weight: 400; line-height: 1.2; }
@@ -98,7 +110,7 @@ ul li { margin-bottom: 0.4em; }
 /* ── Today / Hero ────────────────────────────────────────────────── */
 
 .today {
-  padding: 4rem 0 3rem;
+  padding: 5rem 0 4rem;
   border-bottom: 1px solid var(--border);
 }
 
@@ -110,12 +122,12 @@ ul li { margin-bottom: 0.4em; }
   gap: 2.5rem;
 }
 
-.today-wheel { width: 100%; max-width: 780px; }
+.today-wheel { width: 100%; max-width: 920px; }
 
 /* Info strip below the wheel */
 .today-info {
   width: 100%;
-  max-width: 780px;
+  max-width: 920px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -124,9 +136,9 @@ ul li { margin-bottom: 0.4em; }
 
 .today-date {
   font-family: var(--serif);
-  font-size: clamp(2.2rem, 4vw, 3.4rem);
+  font-size: clamp(2.8rem, 5vw, 4.2rem);
   line-height: 1;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
   color: var(--text);
   text-align: center;
 }
@@ -173,13 +185,14 @@ ul li { margin-bottom: 0.4em; }
 .today-focus {
   font-family: var(--body);
   font-style: italic;
-  font-size: 1rem;
+  font-size: 1.05rem;
   color: var(--muted);
-  padding: 0.9rem 1.25rem;
+  padding: 0.9rem 1.5rem;
   border-left: 2px solid var(--border);
-  line-height: 1.55;
-  max-width: 600px;
+  line-height: 1.6;
+  max-width: 640px;
   text-align: left;
+  letter-spacing: 0.01em;
 }
 
 .year-clock-wrap {
@@ -187,7 +200,7 @@ ul li { margin-bottom: 0.4em; }
   padding-top: 2rem;
   border-top: 1px solid var(--border);
   width: 100%;
-  max-width: 260px;
+  max-width: 280px;
 }
 
 /* Label above wheel */
@@ -272,9 +285,10 @@ ul li { margin-bottom: 0.4em; }
 
 .month-card-focus {
   font-family: var(--body);
-  font-size: 0.78rem;
+  font-size: 0.82rem;
   color: var(--muted);
   font-style: italic;
+  letter-spacing: 0.01em;
 }
 
 /* ── Intro ───────────────────────────────────────────────────────── */
@@ -356,6 +370,16 @@ ul li { margin-bottom: 0.4em; }
 
 .cta-card p { font-size: 0.875rem; color: var(--muted); margin: 0; line-height: 1.5; }
 
+/* ── Page reveal ─────────────────────────────────────────────────── */
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.today-wheel  { animation: fadeUp 0.9s ease both; }
+.today-info   { animation: fadeUp 0.9s 0.18s ease both; }
+
 /* ── Footer ──────────────────────────────────────────────────────── */
 
 .footer { border-top: 1px solid var(--border); padding: 2.5rem 0; }
@@ -380,11 +404,45 @@ ul li { margin-bottom: 0.4em; }
 }
 
 @media (max-width: 600px) {
-  .container     { padding: 0 1.25rem; }
-  .nav-container { padding: 0 1.25rem; }
-  .today         { padding: 3rem 0 2.5rem; }
-  .nav-links     { gap: 1.25rem; }
-  .months-grid   { grid-template-columns: 1fr 1fr; gap: 0.75rem; }
-  .feature-grid  { grid-template-columns: 1fr; gap: 2rem; }
-  .cta-grid      { grid-template-columns: 1fr; }
+  .container       { padding: 0 1.25rem; }
+  .nav-container   { padding: 0 1.25rem; }
+  .today           { padding: 2.5rem 0 2rem; }
+  .months-section  { padding: 3rem 0; }
+  .intro           { padding: 3rem 0; }
+  .cta             { padding: 3rem 0; }
+  .nav-links       { gap: 1.25rem; }
+  .months-grid     { grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+  .feature-grid    { grid-template-columns: 1fr; gap: 2rem; }
+  .cta-grid        { grid-template-columns: 1fr; }
+  .year-clock-wrap { max-width: 220px; }
+  .today-focus     { padding: 0.75rem 1rem; font-size: 1rem; }
+
+  /* Text size increases for mobile */
+  .section-label   { font-size: 0.76rem; }
+  .tag             { font-size: 0.74rem; }
+  .today-gregorian { font-size: 0.9rem; }
+  .today-year      { font-size: 0.86rem; }
+  .month-card-name { font-size: 1.15rem; }
+  .month-card-focus { font-size: 0.88rem; }
+  .month-card-season { font-size: 0.68rem; }
+  .months-intro    { font-size: 0.95rem; }
+  .cta-card p      { font-size: 0.925rem; }
+  .intro-body      { font-size: 1rem; }
+  h2               { margin-bottom: 1.25rem; }
+}
+
+/* Nav stacks on small phones — 5 links don't fit inline at 375px */
+@media (max-width: 520px) {
+  .nav-container {
+    height: auto;
+    flex-direction: column;
+    align-items: flex-start;
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+    gap: 0.5rem;
+  }
+  .nav-links {
+    gap: 0.9rem;
+    flex-wrap: wrap;
+  }
 }
