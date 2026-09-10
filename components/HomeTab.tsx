@@ -139,7 +139,7 @@ function CelebrationCountdown({
         background: isToday ? `${cel.color}1a` : '#1d1d1c',
         border: `1px solid ${isToday ? cel.color : '#2d2e2b'}`,
         borderLeft: `3px solid ${cel.color}`,
-        borderRadius: 8,
+        borderRadius: 6,
         padding: isMobile ? '1rem 1.1rem' : '1.15rem 1.4rem',
         transition: 'border-color 0.2s, background 0.2s',
       }}
@@ -329,7 +329,7 @@ export default function HomeTab() {
 
         {/* Reserve the hero's height before the client effect resolves, so the
             marketing content below doesn't jump on first paint. */}
-        {!aptusInfo && <div style={{ height: isMobile ? 380 : 460 }} />}
+        {!aptusInfo && <div style={{ height: isMobile ? 430 : 520 }} />}
 
         {/* ── Headline ── */}
         <div style={{
@@ -390,7 +390,7 @@ export default function HomeTab() {
           {isMobile ? (
             /* Mobile: stacked cards */
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-              <div style={{ background: '#1d1d1c', border: '1px solid #2d2e2b', borderRadius: 8, overflow: 'hidden' }}>
+              <div style={{ background: '#1d1d1c', border: '1px solid #2d2e2b', borderRadius: 6, overflow: 'hidden' }}>
                 <div style={{ padding: '0.75rem 1rem', borderBottom: '1px solid #2d2e2b', fontFamily: 'var(--font-dm-mono)', fontSize: '0.6rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: '#8a7460' }}>Gregorian</div>
                 {COMPARISON_ROWS.map((row, i) => (
                   <div key={i} style={{ padding: '0.65rem 1rem', borderBottom: i < COMPARISON_ROWS.length - 1 ? '1px solid #232322' : 'none', display: 'flex', gap: '0.5rem', alignItems: 'flex-start' }}>
@@ -399,7 +399,7 @@ export default function HomeTab() {
                   </div>
                 ))}
               </div>
-              <div style={{ background: '#1d1d1c', border: '1px solid #2d2e2b', borderRadius: 8, overflow: 'hidden' }}>
+              <div style={{ background: '#1d1d1c', border: '1px solid #2d2e2b', borderRadius: 6, overflow: 'hidden' }}>
                 <div style={{ padding: '0.75rem 1rem', borderBottom: '1px solid #2d2e2b', fontFamily: 'var(--font-dm-mono)', fontSize: '0.6rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: accentColor }}>Aptus</div>
                 {COMPARISON_ROWS.map((row, i) => (
                   <div key={i} style={{ padding: '0.65rem 1rem', borderBottom: i < COMPARISON_ROWS.length - 1 ? '1px solid #232322' : 'none', display: 'flex', gap: '0.5rem', alignItems: 'flex-start' }}>
@@ -411,7 +411,7 @@ export default function HomeTab() {
             </div>
           ) : (
             /* Desktop: side-by-side table */
-            <div style={{ border: '1px solid #2d2e2b', borderRadius: 8, overflow: 'hidden' }}>
+            <div style={{ border: '1px solid #2d2e2b', borderRadius: 6, overflow: 'hidden' }}>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 64px 1fr', background: '#121110', borderBottom: '1px solid #2d2e2b' }}>
                 <div style={{ padding: '1rem 1.5rem', fontFamily: 'var(--font-dm-mono)', fontSize: '0.62rem', letterSpacing: '0.22em', textTransform: 'uppercase', color: '#8a7460', textAlign: 'center' }}>Gregorian</div>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', borderLeft: '1px solid #2d2e2b', borderRight: '1px solid #2d2e2b' }}>

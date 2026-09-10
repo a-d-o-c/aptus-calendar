@@ -122,7 +122,7 @@ export default function CelebrationsTab() {
                   background: '#1d1d1c',
                   border: `1px solid ${isToday ? cel.color : '#2d2e2b'}`,
                   borderLeft: `3px solid ${cel.color}`,
-                  borderRadius: 8,
+                  borderRadius: 6,
                   overflow: 'hidden',
                   scrollMarginTop: '1rem',
                 }}
