@@ -64,10 +64,18 @@ const ANCHORS: Record<Hemisphere, { date: Date; year: number }> = {
   NH: { date: new Date('2026-03-20T00:00:00'), year: 12026 },
 };
 
+// Aptus days are local calendar days, so day arithmetic has to ignore
+// time-of-day. Subtracting raw timestamps drifts by an hour across a DST
+// changeover, which is enough to report the wrong day.
+function daysBetween(from: Date, to: Date): number {
+  const a = Date.UTC(from.getFullYear(), from.getMonth(), from.getDate());
+  const b = Date.UTC(to.getFullYear(), to.getMonth(), to.getDate());
+  return Math.round((b - a) / 86400000);
+}
+
 export function getAptusDate(date: Date = new Date(), hemisphere: Hemisphere = 'SH'): AptusDate {
   const { date: anchor, year: anchorYear } = ANCHORS[hemisphere];
-  const msPerDay = 86400000;
-  const daysSinceAnchor = Math.floor((date.getTime() - anchor.getTime()) / msPerDay);
+  const daysSinceAnchor = daysBetween(anchor, date);
 
   let year: number;
   let dayOfYear: number;
@@ -119,7 +127,9 @@ export function getAptusDate(date: Date = new Date(), hemisphere: Hemisphere = '
 export function gregDateFromAptus(dayOfYear: number, neYear: number, hemisphere: Hemisphere = 'SH'): Date {
   const { date: anchor, year: anchorYear } = ANCHORS[hemisphere];
   const totalDays = (neYear - anchorYear) * 365 + (dayOfYear - 1);
-  return new Date(anchor.getTime() + totalDays * 86400000);
+  // Step by calendar date rather than milliseconds so the result stays at
+  // local midnight even when a DST boundary falls in between.
+  return new Date(anchor.getFullYear(), anchor.getMonth(), anchor.getDate() + totalDays);
 }
 
 export function formatGregorian(date: Date): string {
