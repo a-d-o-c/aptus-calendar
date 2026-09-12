@@ -143,6 +143,10 @@ These are load-bearing and verifiable. Keep them; state them flatly.
 - **Card radius is 6.** Pills and chips are 99.
 - **Date logic** lives only in `lib/aptus.ts`; celebration data and timing
   only in `lib/celebrations.ts`. Do not duplicate either into components.
+  Components hold the Aptus position only ("Solaris 6–8 · three days") and
+  derive every Gregorian date through `formatOccurrence` for the selected
+  hemisphere. Hardcoded dates in `AboutTab` were wrong for six of seven
+  celebrations in NH before this rule was enforced (13 Sept 2026).
 - **Celebration length** is the `days` field. `startDay`/`endDay` derive the
   span, centred on the observed day; `isActive` is true for every day of it;
   `daysUntil` counts to the first day and returns 0 throughout. A celebration
@@ -183,9 +187,23 @@ seven consecutive failed production deploys. Pull, build locally, push once.
    should the other defer to it or be cut?
 3. **`index.html` links to `calendar.html`**, which does not exist in the
    repo. Dead link on the live v1 site.
-4. **Northern Hemisphere celebration framing** — Samna is written as the
-   summer solstice and displacing Christmas, which is Southern-specific. The
-   anchor flips for NH but the celebration prose does not.
+4. **Northern Hemisphere celebrations miss their astronomical events.** Not
+   a copy problem — the fixed day-of-year offsets only land on the solstices
+   from the SH anchor. Equinox→solstice is ~90 days Sept→Dec but ~93 days
+   March→June, because Earth's orbit is elliptical. Measured from the 20
+   March anchor:
+
+   | Celebration | Aptus day | NH date | Actual event | Out by |
+   |---|---|---|---|---|
+   | Samna | 90–92 | 17–19 Jun | 21 Jun | 2–4 days early, event outside the span |
+   | Vona | 272–274 | 16–18 Dec | 21 Dec | 3–5 days early, event outside the span |
+   | Nesti | 180 | 15 Sept | 22 Sept | 7 days early |
+
+   As of 13 Sept 2026 the UI states these dates honestly rather than the
+   wrong ones it claimed before. Two ways out, both Adan's call: give NH its
+   own day-of-year offsets (which reopens §2, currently settled), or reword
+   the astronomical claim for NH. Separately, Samna's prose still describes
+   displacing Christmas, which is Southern-specific.
 
 ### Closed
 
