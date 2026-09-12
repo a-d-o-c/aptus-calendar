@@ -8,7 +8,7 @@ import {
   SEASON_COLORS,
   type AptusDate,
 } from '@/lib/aptus';
-import { nextCelebration, nextGregorian } from '@/lib/celebrations';
+import { nextCelebration, formatOccurrence } from '@/lib/celebrations';
 import { useHemisphere } from '@/lib/hemisphere-context';
 import { useTabNav } from '@/lib/tab-context';
 import { useIsMobile } from '@/lib/use-mobile';
@@ -127,7 +127,7 @@ function CelebrationCountdown({
 
   const { celebration: cel, daysAway } = upcoming;
   const isToday = daysAway === 0;
-  const date = nextGregorian(info, cel, hemisphere);
+  const when = formatOccurrence(info, cel, hemisphere);
 
   return (
     <button
@@ -151,7 +151,7 @@ function CelebrationCountdown({
           fontFamily: 'var(--font-dm-mono)', fontSize: '0.58rem', letterSpacing: '0.18em',
           textTransform: 'uppercase', color: '#8a7460', marginBottom: '0.45rem',
         }}>
-          {isToday ? 'Today is' : 'Next celebration'}
+          {isToday ? (cel.days > 1 ? 'Happening now' : 'Today is') : 'Next celebration'}
         </div>
         <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.6rem', flexWrap: 'wrap' }}>
           <span style={{
@@ -166,7 +166,7 @@ function CelebrationCountdown({
           fontFamily: 'var(--font-dm-mono)', fontSize: '0.6rem', color: '#8a7460',
           marginTop: '0.35rem', lineHeight: 1.5,
         }}>
-          {cel.position}{date ? ` · ${formatGregorian(date)}` : ''}
+          {cel.position}{when ? ` · ${when}` : ''}
         </div>
       </div>
 

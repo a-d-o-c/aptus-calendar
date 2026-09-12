@@ -1,12 +1,13 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { getAptusDate, formatGregorian, type AptusDate } from '@/lib/aptus';
+import { getAptusDate, type AptusDate } from '@/lib/aptus';
 import {
   CELEBRATIONS,
   KIND_LABEL,
   daysUntil,
-  nextGregorian,
+  isActive,
+  formatOccurrence,
 } from '@/lib/celebrations';
 import { useHemisphere } from '@/lib/hemisphere-context';
 import { useIsMobile } from '@/lib/use-mobile';
@@ -68,11 +69,37 @@ export default function CelebrationsTab() {
           solstices happen regardless of whether anyone marks them. This is what marking them can look like.
         </p>
 
+        <div style={{
+          borderLeft: '2px solid #2d2e2b',
+          paddingLeft: isMobile ? '1rem' : '1.25rem',
+          maxWidth: 620,
+          marginBottom: '2.5rem',
+        }}>
+          <div style={{
+            fontFamily: 'var(--font-dm-mono)', fontSize: '0.58rem', letterSpacing: '0.18em',
+            textTransform: 'uppercase', color: '#8a7460', marginBottom: '0.65rem',
+          }}>
+            Form follows the act
+          </div>
+          <p style={{
+            fontFamily: 'var(--font-libre)', fontSize: isMobile ? '0.88rem' : '0.92rem',
+            color: '#9a8870', lineHeight: 1.8, margin: 0,
+          }}>
+            Two of the seven run for three days, and the number of names tells you why. The turn of the year
+            is three days and three names, because each day is a different act:{' '}
+            <strong style={{ color: '#c0a880', fontWeight: 500 }}>Arfa</strong> closes,{' '}
+            <strong style={{ color: '#c0a880', fontWeight: 500 }}>Otium</strong> rests,{' '}
+            <strong style={{ color: '#c0a880', fontWeight: 500 }}>Hayta</strong> opens. The solstices also run
+            three days — the days the sun holds its position — but each carries a single name, because it is
+            one sustained moment rather than three separate ones.
+          </p>
+        </div>
+
         {today && (
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '2.5rem' }}>
             {CELEBRATIONS.filter(c => c.dayOfYear !== null).map(c => {
-              const until = daysUntil(today, c.dayOfYear);
-              const isToday = until === 0;
+              const until = daysUntil(today, c);
+              const isToday = isActive(today, c);
               return (
                 <button
                   key={c.name}
@@ -108,11 +135,10 @@ export default function CelebrationsTab() {
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           {CELEBRATIONS.map(cel => {
-            const until = today ? daysUntil(today, cel.dayOfYear) : null;
-            const isToday = until === 0;
+            const until = today ? daysUntil(today, cel) : null;
+            const isToday = today ? isActive(today, cel) : false;
             const isOpen = openName === cel.name;
-            const nextDate = today ? nextGregorian(today, cel, hemisphere) : null;
-            const dateLabel = nextDate ? formatGregorian(nextDate) : null;
+            const dateLabel = today ? formatOccurrence(today, cel, hemisphere) : null;
 
             return (
               <div

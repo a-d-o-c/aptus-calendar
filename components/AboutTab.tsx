@@ -145,27 +145,26 @@ export default function AboutTab() {
           <Body>
             The original Roman calendar had <strong style={{ color: '#ede8de', fontWeight: 400 }}>ten months</strong> and
             began in March. In order, they were: Martius, Aprilis, Maius, Junius, Quintilis, Sextilis,
-            September, October, November, December. The last four were simply named after their position —
-            the 7th, 8th, 9th, and 10th months. This was honest. It made sense.
+            September, October, November, December. The last four were named after their position —
+            the 7th, 8th, 9th, and 10th months.
           </Body>
           <Body>
-            Then January and February were added. The year was shifted to start in January. Nobody renamed the
-            last four months. September, which means <em>seventh</em>, became the ninth. October, meaning
-            <em> eighth</em>, became the tenth. The calendar had been factually incorrect for over two thousand
-            years before anyone reading this was born — and the chance that anyone in your lifetime will fix it
-            is essentially zero. We just all agree to live with the lie.
+            Then January and February were added, and the year was shifted to start in January. The last four
+            months kept their names. September, which means <em>seventh</em>, became the ninth. October, meaning
+            <em> eighth</em>, became the tenth. They have carried the wrong numbers for more than two thousand
+            years.
           </Body>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginTop: '1.5rem' }}>
             <Card
               title="Julius Caesar, 46 BCE"
               accent="#e8a020"
-              body="The Roman calendar had drifted so badly it was three months out of alignment with the seasons. Caesar brought in Egyptian astronomers to reform it. He invented the 365-day year, established the 12-month structure, and introduced the leap year. He also renamed Quintilis (the 5th month) after himself — July. A reasonable man might have renumbered the months while he was at it. He did not."
+              body="The Roman calendar had drifted three months out of alignment with the seasons. Caesar brought in Egyptian astronomers to reform it. He established the 365-day year, the 12-month structure, and the leap year. He also renamed Quintilis (the 5th month) after himself — July. He did not renumber the last four months."
             />
             <Card
               title="Augustus Caesar and the stolen day"
               accent="#c85428"
-              body="The month Sextilis was renamed August to honour Augustus. But July, named for Julius, had 31 days. August only had 30. This was considered an insult — his month was shorter than his predecessor's. Augustus solved this by taking a day from February, giving August 31 days. February was already the shortest month. It became shorter. This is why February exists as it does: not astronomy, not logic, but the bruised ego of a Roman emperor."
+              body="The month Sextilis was renamed August to honour Augustus. July, named for Julius, had 31 days; August had 30. A month shorter than his predecessor's was taken as an insult, so a day was moved from February to August. February was already the shortest month. It became shorter, and has stayed that way since."
             />
             <Card
               title="The Southern Hemisphere problem"
@@ -175,7 +174,7 @@ export default function AboutTab() {
             <Card
               title="The uneven month problem"
               accent="#8a7460"
-              body="Months consist of 28, 29, 30, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 days. There is no pattern. There is no reason. 'Thirty days hath September' exists as a mnemonic because the calendar is so arbitrary it needs a nursery rhyme to remember how long its months are. Aptus has one rule: every month is 28 days. You will never need the rhyme again."
+              body="Month lengths run 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 days, with no repeating pattern and no rule to derive them from. 'Thirty days hath September' exists because the lengths have to be memorised one by one. Aptus has a single rule: every month is 28 days."
             />
           </div>
         </div>
@@ -342,11 +341,11 @@ export default function AboutTab() {
             },
             {
               name: 'Samna',
-              timing: 'Around Solaris 7 · Summer Solstice · Dec 21–22 SH / Jun 20–21 NH',
+              timing: 'Solaris 6–8 · Summer Solstice · three days · Dec 20–22 SH / Jun 20–22 NH',
               color: '#e8a020',
-              what: 'The longest light, and the one day of the year built around other people rather than yourself. In the Southern Hemisphere it sits where Christmas sits — Samna displaces it honestly, with the same materials: people, food, the whole long evening.',
+              what: 'Three days at the height of the light, built around other people rather than yourself. The point is togetherness, not duration — being genuinely with people, not merely among them for a set number of hours. In the Southern Hemisphere it sits where Christmas sits, and displaces it honestly, with the same materials: people, food, the long evening.',
               ritual: [
-                'Be somewhere with people for the length of the day — not an hour, all of it.',
+                'Gather. Once across the three days is enough if it is real — a long table, not a long roster.',
                 'Give one purposeful thing: something made, something useful, a day of your labour. Not an obligation discharged with an object.',
                 'Say the Hayta vow out loud to someone at the gathering. Has it survived the first quarter?',
               ],
@@ -364,9 +363,9 @@ export default function AboutTab() {
             },
             {
               name: 'Vona',
-              timing: 'Around Umbra 21 · Winter Solstice · Jun 20–21 SH / Dec 21–22 NH',
+              timing: 'Umbra 20–22 · Winter Solstice · three days · Jun 20–22 SH / Dec 20–22 NH',
               color: '#4a6fa5',
-              what: '“Vona” is hope — the specific kind that comes from knowing the dark has a floor. The longest night, and the point in the count that turns back toward light, whether or not it feels that way yet. Not a vigil and not resolutions — the one night built for taking the long view on purpose.',
+              what: 'Hope — the specific kind that comes from knowing the dark has a floor. Three nights at the bottom of the light, across which the count turns back toward it, whether or not it feels that way yet. Not a vigil and not resolutions — the stretch built for taking the long view on purpose.',
               ritual: [
                 'What is furthest from resolved right now — and can it wait for spring without cost?',
                 'Name one sign, however small, that the direction is already turning.',

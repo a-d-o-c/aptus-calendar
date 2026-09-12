@@ -137,3 +137,10 @@ export function formatGregorian(date: Date): string {
     weekday: 'short', year: 'numeric', month: 'short', day: 'numeric',
   });
 }
+
+/** Same, without the year — for the opening end of a date range. */
+export function formatGregorianShort(date: Date): string {
+  return date.toLocaleDateString('en-NZ', {
+    weekday: 'short', month: 'short', day: 'numeric',
+  });
+}
