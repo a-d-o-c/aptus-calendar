@@ -21,7 +21,7 @@ const APTUS_DATA = {
     { name: 'Lumen',   focus: 'Integration',      season: 'winter', start: 337, end: 364 },
   ],
 
-  WEEK_PHASES: ['Orient', 'Engage', 'Amplify', 'Integrate'],
+  WEEK_PHASES: ['Orient', 'Engage', 'Release', 'Integrate'],
 
   SEASON_COLORS: {
     spring: { primary: '#4e8033', light: '#70b050', bg: '#eaf5e4' },

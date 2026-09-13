@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { moonPhase } from '@/lib/moon';
 import {
   getAptusDate,
   formatGregorian,
@@ -57,6 +58,7 @@ export default function TodayTab() {
   const { hemisphere } = useHemisphere();
   const [info, setInfo] = useState<AptusDate | null>(null);
   const [greg, setGreg] = useState('');
+  const [moon, setMoon] = useState('');
   const isMobile = useIsMobile();
 
   useEffect(() => {
@@ -64,6 +66,7 @@ export default function TodayTab() {
       const now = new Date();
       setInfo(getAptusDate(now, hemisphere));
       setGreg(formatGregorian(now));
+      setMoon(moonPhase(now).toLowerCase());
     }
     refresh();
     const id = setInterval(refresh, 60_000);
@@ -123,8 +126,16 @@ export default function TodayTab() {
             </div>
           )}
 
-          <div style={{ fontFamily: 'var(--font-dm-mono)', fontSize: '0.62rem', color: '#9a8870', letterSpacing: '0.14em', marginBottom: '1rem' }}>
+          <div style={{ fontFamily: 'var(--font-dm-mono)', fontSize: '0.62rem', color: '#9a8870', letterSpacing: '0.14em', marginBottom: '0.45rem' }}>
             {info.year} NE · {Math.round((info.dayOfYear / 365) * 100)}% through the year
+          </div>
+
+          {/* The moon is its own layer — Aptus doesn't track it, it just doesn't ignore it. */}
+          <div
+            title="Aptus months are 28 days and the moon's are 29.5, so the two drift apart. Shown as its own cycle, not part of the count."
+            style={{ fontFamily: 'var(--font-dm-mono)', fontSize: '0.58rem', color: '#8a7460', letterSpacing: '0.14em', marginBottom: '1rem' }}
+          >
+            Moon · {moon}
           </div>
 
           {!info.isOtium && (

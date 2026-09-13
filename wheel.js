@@ -17,12 +17,12 @@
     { key: 'winter', label: 'Winter' },
   ];
 
-  const PHASES = ['Orient', 'Engage', 'Amplify', 'Integrate'];
+  const PHASES = ['Orient', 'Engage', 'Release', 'Integrate'];
 
   const PHASE_COL = {
     Orient:    '#426480',
     Engage:    '#a06c10',
-    Amplify:   '#804030',
+    Release:   '#804030',
     Integrate: '#3a6048',
   };
 

@@ -35,7 +35,7 @@ strong enough without verdicts attached to it.
 - Anchor: Verna 1 = 22 Sept (Southern Hemisphere) / 20 March (Northern).
 - Year numbering: Natural Era (NE) = Gregorian + 10,000.
 - Weekly cadence, repeating every 7 days within each month:
-  Orient → Engage → Amplify → Integrate.
+  Orient → Engage → Release → Integrate.
 - Southern Hemisphere is the default.
 
 ### The 13 months
@@ -133,6 +133,46 @@ Meaning only. **Do not state language or etymology anywhere in the product.**
 - **Vona** — hope; the light turns and returns. Honour the recession; this
   too shall pass.
 - **Retta** — the setting-right; the day that returns the calendar to true.
+
+### The four weeks are the year in miniature
+
+Changed 13 Sept 2026: **Amplify → Release**, and the cadence is now framed as a
+reading of the month rather than a rule for working through it.
+
+Every other structural claim in Aptus points at something external — the
+equinox, the solar year, 364 dividing by 28. The cadence pointed at nothing:
+it was a productivity opinion asserted inside a product whose case against the
+Gregorian is that arrangements should be derived, not asserted.
+
+The fix is self-similarity. The four weeks carry the shape of the four
+seasons, so the month is justified by the year, which is justified by the sky:
+
+| Week | Phase | Season | |
+|---|---|---|---|
+| 1 | Orient | spring | choose the direction, take the first step |
+| 2 | Engage | summer | the work itself, at whatever volume is yours |
+| 3 | Release | autumn | let go of what isn't holding |
+| 4 | Integrate | winter | consolidate what remains |
+
+Amplify was the one to drop. The old arc had no autumn — it ran Orient,
+Engage, Amplify, Integrate, which is three beats of output and a rest, not a
+cycle. Amplify also carried the heaviest value judgement in the set ("push
+output, ship, add volume, this is the sprint"), which is the tone the
+suggestion framing exists to remove. Orient absorbs the first step, as spring
+does, so week 2 is free to be the work.
+
+Rejected: Review at week 3 — Integrate already means review, and it would
+leave autumn still missing.
+
+### The moon is a layer, not a claim
+
+Aptus months are 28 days; the synodic month is 29.53. They drift 1.53 days a
+month and are fully out of phase inside ten, so the calendar cannot track the
+moon and must not imply it does. `lib/moon.ts` shows where the moon actually
+is, as its own cycle beside the Aptus date. Mean-synodic model anchored to the
+measured new moon of 11 Sept 2026 03:27 UTC; checked against published new
+moons for Oct 2026, Jun 2027 and Dec 2027 at +0.4h, −21.6h and −5.0h. Good
+enough to name a phase, which is why nothing reports an exact time.
 
 ### The vow thread
 

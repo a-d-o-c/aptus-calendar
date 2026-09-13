@@ -1,6 +1,6 @@
 export type Hemisphere = 'SH' | 'NH';
 export type Season = 'spring' | 'summer' | 'autumn' | 'winter';
-export type WeekPhase = 'Orient' | 'Engage' | 'Amplify' | 'Integrate';
+export type WeekPhase = 'Orient' | 'Engage' | 'Release' | 'Integrate';
 
 export interface AptusMonth {
   name: string;
@@ -43,13 +43,23 @@ export const MONTHS: AptusMonth[] = [
   { name: 'Lumen',   focus: 'Integration',      season: 'winter', start: 337, end: 364, color: '#4e6870', intent: 'Make sense of the year. What held, what broke, what is worth carrying forward.' },
 ];
 
-export const WEEK_PHASES: WeekPhase[] = ['Orient', 'Engage', 'Amplify', 'Integrate'];
+export const WEEK_PHASES: WeekPhase[] = ['Orient', 'Engage', 'Release', 'Integrate'];
 
+/**
+ * The month as the year in miniature: the four weeks carry the shape of the
+ * four seasons. A suggestion for reading the month, not a rule for working
+ * through it.
+ */
 export const WEEK_PHASE_DESC: Record<WeekPhase, string> = {
-  Orient:    'Set direction. Reduce noise. Choose 1–3 priorities and nothing else.',
-  Engage:    'Begin. Do the first real reps. Momentum over perfection.',
-  Amplify:   'Push output. Ship, produce, add volume. This is the sprint.',
-  Integrate: 'Consolidate. Review. Repair and simplify what the sprint revealed.',
+  Orient:    'Spring. Choose the direction and take the first step.',
+  Engage:    'Summer. The work itself, at whatever volume is yours.',
+  Release:   'Autumn. Let go of what isn’t holding. Stopping counts as progress.',
+  Integrate: 'Winter. Consolidate what remains and make sense of it.',
+};
+
+/** The season each week rehearses — used where the mapping is shown explicitly. */
+export const WEEK_PHASE_SEASON: Record<WeekPhase, Season> = {
+  Orient: 'spring', Engage: 'summer', Release: 'autumn', Integrate: 'winter',
 };
 
 export const SEASON_COLORS: Record<Season, { primary: string; glow: string }> = {

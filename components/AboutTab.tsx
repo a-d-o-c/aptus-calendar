@@ -276,9 +276,15 @@ export default function AboutTab() {
           <Label>The Four Phases</Label>
           <SectionTitle>Every month, the same arc</SectionTitle>
           <Body>
-            Every week in Aptus has a phase. Not a name — a function. Orient, Engage, Amplify, Integrate.
-            The same four-beat cycle repeats through every month of every year. Once you internalise it,
-            you stop fighting the rhythm and start using it.
+            A month is four weeks, and the four weeks carry the same shape the year does: begin, work,
+            let go, consolidate. Spring, summer, autumn, winter — the year in miniature, thirteen times over.
+          </Body>
+          <Body>
+            This is a reading, not a rule. Nothing enforces it and nothing breaks if your month runs
+            differently. The structure is four weeks; what you do with them is yours. It is offered because
+            the shape is already in the year, and a month that rehearses it is easier to hold than four
+            undifferentiated weeks. The third week is the one most people skip — in the year, autumn is
+            where things are let go, and a cycle without it is just a sprint with a rest at the end.
           </Body>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
             {WEEK_PHASES.map((phase, i) => (

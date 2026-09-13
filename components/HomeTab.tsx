@@ -16,7 +16,7 @@ import { useIsMobile } from '@/lib/use-mobile';
 const COMPARISON_ROWS = [
   { greg: '12 months, 28–31 days each',        aptus: '13 months × 28 days exactly'          },
   { greg: 'Year begins January 1',              aptus: 'Year begins at spring equinox'         },
-  { greg: 'No weekly phase structure',          aptus: 'Orient · Engage · Amplify · Integrate' },
+  { greg: 'No weekly phase structure',          aptus: 'Orient · Engage · Release · Integrate' },
   { greg: 'Designed for Northern Hemisphere',   aptus: 'Southern Hemisphere default'           },
   { greg: '2026 CE',                            aptus: '12026 NE — Natural Era'                },
 ];
