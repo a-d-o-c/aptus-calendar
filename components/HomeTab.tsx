@@ -9,6 +9,7 @@ import {
   type AptusDate,
 } from '@/lib/aptus';
 import { nextCelebration, timingLabel } from '@/lib/celebrations';
+import Subscribe from './Subscribe';
 import { useHemisphere } from '@/lib/hemisphere-context';
 import { useTabNav } from '@/lib/tab-context';
 import { useIsMobile } from '@/lib/use-mobile';
@@ -437,6 +438,11 @@ export default function HomeTab() {
         {/* ── Birthday finder ── */}
         <div style={{ borderTop: '1px solid #2d2e2b', paddingTop: '2.5rem' }}>
           <BirthdayFinder hemisphere={hemisphere} />
+        </div>
+
+        {/* ── Calendar subscription ── */}
+        <div style={{ marginTop: isMobile ? '3rem' : '4rem' }}>
+          <Subscribe isMobile={isMobile} />
         </div>
 
       </div>

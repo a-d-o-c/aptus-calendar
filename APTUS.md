@@ -263,6 +263,37 @@ These are load-bearing and verifiable. Keep them; state them flatly.
 - **Hydration:** the page prerenders statically, so anything date-dependent
   resolves in a `useEffect`, never during render.
 
+### The subscription feed
+
+Added 13 Sept 2026. `/feed.ics` serves an RFC 5545 calendar that Google, Apple
+or Outlook polls and folds into the calendar someone already lives in. This is
+what makes Aptus a layer rather than a site you remember to visit.
+
+Every event is **all-day (DATE-valued), never timed**. An Aptus day is a local
+date with no hour attached; DATE values are floating, so there is no timezone
+to get wrong and no drift when someone travels.
+
+Options ride in the URL because a feed has no session: `h`, `months`,
+`seasons`, `celebrations`, `vow`, `weeks`, `days`, `alarm`. Defaults are months
++ celebrations — 19 events a year. **A coarse toggle wins over its own subset**:
+seasons are 4 of the 13 months and the vow thread is 5 of the 7 celebrations,
+so enabling both would put two events on one day. The UI disables the subset
+rather than hiding the rule.
+
+Horizon is 10 years, or 3 when `days` is on — 365 events a year is already a
+lot to hand a client, and nobody plans a decade of them. Fixed celebration
+dates are what make emitting a decade in one pass possible at all; a per-year
+astronomical model would have needed the same maths in the generator.
+
+Two things that are easy to get wrong and are handled: **folding counts octets,
+not characters** (em dashes and curly quotes are 3 bytes in UTF-8, and a
+character count emits over-long lines), and it backs off to a leading byte so a
+multi-byte character is never split. UIDs are stable per kind, year, day and
+hemisphere, so a client updates events rather than duplicating them.
+
+**Get the event shape right before promoting it.** Google caches subscription
+feeds hard, sometimes over a day, so changes reach existing subscribers slowly.
+
 ### Deployment — one repo, two live products
 
 `github.com/a-d-o-c/aptus-calendar`, branch `main`, feeds **both**:
