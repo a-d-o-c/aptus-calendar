@@ -260,6 +260,17 @@ These are load-bearing and verifiable. Keep them; state them flatly.
 - **Day arithmetic must be calendar-based, never raw milliseconds.** Both
   functions previously drifted across DST boundaries and displayed dates a
   day early in the Northern Hemisphere. Fixed 11 Sept 2026; keep it that way.
+- **Hemisphere is guessed, then remembered.** A stored choice always wins; a
+  first-time visitor is detected in `lib/detect-hemisphere.ts`. Until 13 Sept
+  2026 everyone got SH regardless of location, which meant every Northern
+  visitor met a calendar inverted from their sky and had to find the toggle
+  before deciding it was broken. Detection is the DST direction first (the
+  southern summer is in January, so a southern zone's January offset is the
+  smaller one), then a table for southern zones without DST — Brazil abolished
+  it in 2009, Argentina in 2009, northern Australia never had it. Argentina is
+  listed under both spellings: browsers report `America/Argentina/*` but some
+  runtimes canonicalise to the older `America/Buenos_Aires`, and the prefix
+  alone missed every Argentine visitor. Checked against 32 zones.
 - **Hydration:** the page prerenders statically, so anything date-dependent
   resolves in a `useEffect`, never during render.
 
