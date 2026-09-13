@@ -64,7 +64,7 @@ export default function CelebrationsTab() {
           fontFamily: 'var(--font-libre)', fontSize: isMobile ? '0.9rem' : '0.95rem',
           color: '#9a8870', lineHeight: 1.8, marginBottom: '2rem', maxWidth: 620,
         }}>
-          Three days where one year meets the next — <strong style={{ color: '#c0a880', fontWeight: 500 }}>Áramót</strong>.
+          Three days where one year meets the next — <strong style={{ color: '#c0a880', fontWeight: 500 }}>Aramot</strong>.
           Three more mark the solstices and the autumn equinox, each a place to hold the Hayta vow up to the light.
           A seventh, Retta, corrects the calendar every few years. None of it requires belief — the equinoxes and
           solstices happen regardless of whether anyone marks them. This is what marking them can look like.

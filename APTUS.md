@@ -64,7 +64,7 @@ here.
 
 ## 3. The seven celebrations
 
-The three year-turn days — Arfa, Otium, Hayta — are together called **Áramót**.
+The three year-turn days — Arfa, Otium, Hayta — are together called **Aramot**.
 
 | Name | Observed day SH | Observed day NH | Length | Kind |
 |------|-----------------|-----------------|--------|------|
@@ -110,25 +110,32 @@ anyway, since intercalation does not move the sun.
 setting position either side of the solstice. The span is centred on the
 observed solstice day, so the solstice is the middle day, not the first.
 
-### The year-turn is called Áramót
+### The year-turn is called Aramot
 
-Renamed from **Kafla**, 14 Sept 2026. Áramót is the standard Icelandic word for
-New Year — *ár* (year) + *mót* (meeting, junction) — so it reads as the meeting
-of two years rather than one year rotating, which is what Arfa → Otium → Hayta
-actually is. The label became "Áramót — the meeting of the years."
+Renamed from **Kafla**, 14 Sept 2026. The source is the standard Icelandic word
+for New Year — *ár* (year) + *mót* (meeting, junction) — so it reads as the
+meeting of two years rather than one year rotating, which is what
+Arfa → Otium → Hayta actually is. The label is "Aramot — the meeting of the
+years."
+
+**Written without diacritics**, as Aramot rather than the Icelandic Áramót.
+Every other name in the calendar is plain ASCII — Arfa, Otium, Hayta, Samna,
+Nesti, Vona, Retta — so the accented form would have been the only one, and it
+would need typing into search boxes, URLs and calendar entries by people with
+no way to produce those characters.
 
 **Names are attested words, never invented ones.** That is the principle the
 rename was made on and it now constrains future naming. Note it is *attested*,
-not *Norse*: Arfa, Samna, Nesti, Vona, Retta and Áramót are Old Norse or
+not *Norse*: Arfa, Samna, Nesti, Vona, Retta and Aramot are Old Norse or
 Icelandic, Hayta reads as *heita* (to vow), but **Otium is Latin**. If the
 principle were "Old Norse only," Otium already breaks it — so the rule is a
 real word from a real language, and Otium stays.
 
 The meaning-only rule in §3 still holds: none of this etymology belongs in the
-product. The product says "Áramót — the meeting of the years" and stops there.
+product. The product says "Aramot — the meeting of the years" and stops there.
 
 Internally the `CelKind` value stays `'hinge'`. That names the structural role —
-the three days the year pivots on — while Áramót is what it is called. A role
+the three days the year pivots on — while Aramot is what it is called. A role
 and a name are allowed to differ.
 
 ### Form follows the act

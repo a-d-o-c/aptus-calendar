@@ -8,7 +8,7 @@ import {
 } from './aptus';
 
 // ── Data ──────────────────────────────────────────────────────────
-// Áramót: the three days where one year meets the next — Arfa, Otium, Hayta.
+// Aramot: the three days where one year meets the next — Arfa, Otium, Hayta.
 // Turns: the other three vow-check points. Retta: the rare calibration day.
 // Retta: the rare calibration day, outside the annual cycle.
 
@@ -142,7 +142,7 @@ export const CELEBRATIONS: Celebration[] = [
 ];
 
 export const KIND_LABEL: Record<CelKind, string> = {
-  hinge: 'Áramót — the meeting of the years',
+  hinge: 'Aramot — the meeting of the years',
   turn: 'Vow check',
   calibration: 'Calibration',
 };
