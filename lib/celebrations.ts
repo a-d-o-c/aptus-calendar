@@ -8,7 +8,8 @@ import {
 } from './aptus';
 
 // ── Data ──────────────────────────────────────────────────────────
-// Kafla: the three-day hinge. Turns: the other three vow-check points.
+// Áramót: the three days where one year meets the next — Arfa, Otium, Hayta.
+// Turns: the other three vow-check points. Retta: the rare calibration day.
 // Retta: the rare calibration day, outside the annual cycle.
 
 export type CelKind = 'hinge' | 'turn' | 'calibration';
@@ -141,7 +142,7 @@ export const CELEBRATIONS: Celebration[] = [
 ];
 
 export const KIND_LABEL: Record<CelKind, string> = {
-  hinge: 'Kafla — the hinge',
+  hinge: 'Áramót — the meeting of the years',
   turn: 'Vow check',
   calibration: 'Calibration',
 };
