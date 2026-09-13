@@ -1,0 +1,95 @@
+<svg width="1150" height="1150" viewBox="0 0 1150 1150" xmlns="http://www.w3.org/2000/svg" role="img">
+<title>Aptus Calendar Wheel</title>
+<desc>A 13-month radial calendar wheel. Inner ring: 13 named months colored by season (spring green, summer gold, autumn rust, winter purple). Middle ring: 52 week ticks. Outer ring: 364 day ticks. Markers for Otium, equinoxes and solstices sit outside the day ring.</desc>
+<defs>
+<style>
+  .month-name { font-family: 'Crimson Pro', Georgia, serif; font-size: 21px; font-weight: 600; fill: #faf9f7; text-anchor: middle; }
+  .month-dates { font-family: 'DM Mono', 'Courier New', monospace; font-size: 11px; fill: #faf9f7; fill-opacity: 0.82; text-anchor: middle; letter-spacing: 0.02em; }
+  .marker-label { font-family: 'DM Mono', 'Courier New', monospace; font-size: 12.5px; fill: #1a1816; text-anchor: middle; letter-spacing: 0.04em; }
+  .hub-title { font-family: 'Crimson Pro', Georgia, serif; font-size: 40px; font-weight: 600; fill: #1a1816; text-anchor: middle; }
+  .hub-sub { font-family: 'DM Mono', 'Courier New', monospace; font-size: 12px; fill: #6b6560; text-anchor: middle; letter-spacing: 0.12em; }
+  .hub-year { font-family: 'DM Mono', 'Courier New', monospace; font-size: 13px; fill: #5fb045; text-anchor: middle; letter-spacing: 0.08em; }
+</style>
+</defs>
+
+<rect x="0" y="0" width="1150" height="1150" fill="#faf9f7"/>
+
+<circle cx="575" cy="575" r="452" fill="none" stroke="#e8e5e1" stroke-width="1"/>
+
+<circle cx="575" cy="575" r="441" fill="none" stroke="#1a1816" stroke-opacity="0.38" stroke-width="10" stroke-dasharray="2,5.61"/>
+
+<circle cx="575" cy="575" r="409" fill="none" stroke="#c9a876" stroke-width="38" stroke-dasharray="3,46.4"/>
+
+<g stroke="#faf9f7" stroke-width="2" stroke-linejoin="round">
+<path d="M575,195 A380,380 0 0 1 751.6,238.5 L677.3,380.2 A220,220 0 0 0 575,355 Z" fill="#4a9d3a"/>
+<path d="M751.6,238.5 A380,380 0 0 1 887.9,359.1 L756.1,450.0 A220,220 0 0 0 677.3,380.2 Z" fill="#5fb045"/>
+<path d="M887.9,359.1 A380,380 0 0 1 952.2,529.2 L793.4,548.5 A220,220 0 0 0 756.1,450.0 Z" fill="#7ec25a"/>
+<path d="M952.2,529.2 A380,380 0 0 1 930.3,709.7 L780.7,653.0 A220,220 0 0 0 793.4,548.5 Z" fill="#e8b23d"/>
+<path d="M930.3,709.7 A380,380 0 0 1 827.0,859.4 L720.9,739.6 A220,220 0 0 0 780.7,653.0 Z" fill="#f0c14b"/>
+<path d="M827.0,859.4 A380,380 0 0 1 665.9,944.0 L627.6,788.6 A220,220 0 0 0 720.9,739.6 Z" fill="#d99a2b"/>
+<path d="M665.9,944.0 A380,380 0 0 1 484.1,944.0 L522.4,788.6 A220,220 0 0 0 627.6,788.6 Z" fill="#c1602e"/>
+<path d="M484.1,944.0 A380,380 0 0 1 323.0,859.4 L429.1,739.6 A220,220 0 0 0 522.4,788.6 Z" fill="#a8492a"/>
+<path d="M323.0,859.4 A380,380 0 0 1 219.7,709.7 L369.3,653.0 A220,220 0 0 0 429.1,739.6 Z" fill="#8f3a24"/>
+<path d="M219.7,709.7 A380,380 0 0 1 197.8,529.2 L356.6,548.5 A220,220 0 0 0 369.3,653.0 Z" fill="#5b4b8a"/>
+<path d="M197.8,529.2 A380,380 0 0 1 262.1,359.1 L393.9,450.0 A220,220 0 0 0 356.6,548.5 Z" fill="#4a3d73"/>
+<path d="M262.1,359.1 A380,380 0 0 1 398.4,238.5 L472.7,380.2 A220,220 0 0 0 393.9,450.0 Z" fill="#3d3260"/>
+<path d="M398.4,238.5 A380,380 0 0 1 575,195 L575,355 A220,220 0 0 0 472.7,380.2 Z" fill="#6b5a9e"/>
+</g>
+
+<g>
+<text class="month-name" x="634.8" y="335">Verna</text>
+<text class="month-dates" x="648.0" y="283">Sept 22–Oct 19</text>
+<text class="month-name" x="740.8" y="392">Cresca</text>
+<text class="month-dates" x="777.2" y="351">Oct 20–Nov 16</text>
+<text class="month-name" x="808.8" y="490">Flora</text>
+<text class="month-dates" x="860.2" y="471">Nov 17–Dec 14</text>
+<text class="month-name" x="823.2" y="609">Solaris</text>
+<text class="month-dates" x="877.8" y="616">Dec 15–Jan 11</text>
+<text class="month-name" x="780.8" y="721">Arden</text>
+<text class="month-dates" x="826.0" y="753">Jan 12–Feb 8</text>
+<text class="month-name" x="691.2" y="800">Plena</text>
+<text class="month-dates" x="716.7" y="850">Feb 9–Mar 8</text>
+<text class="month-name" x="575" y="829">Axia</text>
+<text class="month-dates" x="575" y="885">Mar 9–Apr 5</text>
+<text class="month-name" x="458.8" y="800">Valla</text>
+<text class="month-dates" x="433.3" y="850">Apr 6–May 3</text>
+<text class="month-name" x="369.2" y="721">Lenia</text>
+<text class="month-dates" x="324.0" y="753">May 4–May 31</text>
+<text class="month-name" x="326.8" y="609">Umbra</text>
+<text class="month-dates" x="272.2" y="616">Jun 1–Jun 28</text>
+<text class="month-name" x="341.2" y="490">Noctis</text>
+<text class="month-dates" x="289.8" y="471">Jun 29–Jul 26</text>
+<text class="month-name" x="409.2" y="392">Spyra</text>
+<text class="month-dates" x="372.8" y="351">Jul 27–Aug 23</text>
+<text class="month-name" x="515.2" y="335">Lumen</text>
+<text class="month-dates" x="502.0" y="283">Aug 24–Sep 20</text>
+</g>
+
+<g>
+<circle cx="575" cy="107" r="7" fill="#1a1816"/>
+<text class="marker-label" x="575" y="72">SPRING EQUINOX</text>
+<circle cx="1039.6" cy="631.4" r="7" fill="#1a1816"/>
+<text class="marker-label" x="1067" y="618" text-anchor="start">SUMMER</text>
+<text class="marker-label" x="1067" y="634" text-anchor="start">SOLSTICE</text>
+<circle cx="599.3" cy="1042.5" r="7" fill="#1a1816"/>
+<text class="marker-label" x="599.3" y="1079">AUTUMN EQUINOX</text>
+<circle cx="110.4" cy="631.4" r="7" fill="#1a1816"/>
+<text class="marker-label" x="83" y="618" text-anchor="end">WINTER</text>
+<text class="marker-label" x="83" y="634" text-anchor="end">SOLSTICE</text>
+<circle cx="542.3" cy="107.1" r="7" fill="#c1602e"/>
+<text class="marker-label" x="530" y="45" text-anchor="middle">OTIUM</text>
+<line x1="542.3" y1="107.1" x2="575" y2="107" stroke="#c1602e" stroke-width="1" stroke-dasharray="2,2"/>
+</g>
+
+<circle cx="575" cy="575" r="214" fill="#faf9f7" stroke="#e8e5e1" stroke-width="1.5"/>
+<circle cx="575" cy="575" r="200" fill="none" stroke="#e8e5e1" stroke-width="0.5"/>
+
+<line x1="575" y1="575" x2="575" y2="196" stroke="#1a1816" stroke-width="2"/>
+<circle cx="575" cy="575" r="6" fill="#1a1816"/>
+<circle cx="575" cy="196" r="4" fill="#1a1816"/>
+
+<text class="hub-title" x="575" y="558">APTUS</text>
+<text class="hub-sub" x="575" y="588">13 MONTHS · 4 WEEKS · A YEAR IN HARMONY</text>
+<text class="hub-year" x="575" y="618">12026 NE</text>
+
+</svg>

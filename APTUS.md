@@ -244,14 +244,21 @@ These are load-bearing and verifiable. Keep them; state them flatly.
 `github.com/a-d-o-c/aptus-calendar`, branch `main`, feeds **both**:
 
 - **Vercel** builds `aptus-next/` → aptuscalendar.com (the v2 app).
-- **GitHub Pages** serves the repo-root `index.html` + `aptus.js` +
-  `wheel.js` + `styles.css` → a-d-o-c.github.io/aptus-calendar (the v1
-  static site, still live).
+- **GitHub Pages** serves the repo-root `index.html` →
+  a-d-o-c.github.io/aptus-calendar.
 
-A push to `main` deploys both. The root static files are **not** dead — they
-serve real traffic. Duplicate copies of `aptus.js`/`wheel.js` also exist in
-the parent `Aptus Calendar/` folder, outside the repo; those are not
-deployed and are a known divergence trap.
+**v1 is retired.** As of 13 Sept 2026 the root `index.html` is a redirect to
+aptuscalendar.com, nothing more. Its four nav links — `about.html`,
+`calendar.html`, `converter.html`, `guide.html` — never existed in the repo
+and were 404s on the live site for as long as it was up, so the old page was
+a working homepage attached to a broken menu. `aptus.js`, `wheel.js` and
+`styles.css` remain in the repo but nothing references them now; git history
+holds the full v1 site if it is ever wanted back.
+
+The duplicate copies of these files in the parent `Aptus Calendar/` folder
+are gone (13 Sept 2026). They were identical to the repo's, one commit
+behind, and carried nothing unique. `wheel.svg`, which existed only there
+and was in no backup, moved into the repo.
 
 Editing through the GitHub web editor commits straight to `main` and deploys
 each commit with no local build to catch errors. In Sept 2026 this produced
@@ -261,18 +268,13 @@ seven consecutive failed production deploys. Pull, build locally, push once.
 
 ## 6. Open questions — not decided, do not guess
 
-1. **Is the v1 GitHub Pages site deliberately still live?** If yes, it needs
-   to stay in sync with naming changes. If it is superseded, it should come
-   down. Currently it receives renames by accident of sharing a branch.
-2. **The celebrations are described twice** — in `CelebrationsTab.tsx` and
+1. **The celebrations are described twice** — in `CelebrationsTab.tsx` and
    again in `AboutTab.tsx`, with different prose. Which is canonical, and
    should the other defer to it or be cut?
-3. **`index.html` links to `calendar.html`**, which does not exist in the
-   repo. Dead link on the live v1 site.
-4. **Samna's prose still describes displacing Christmas**, which is
+2. **Samna's prose still describes displacing Christmas**, which is
    Southern-specific. The dates are now right in both hemispheres; the
    framing is not.
-5. **Tabs are client state, not routes.** Nothing is linkable but the
+3. **Tabs are client state, not routes.** Nothing is linkable but the
    homepage — no sharing a specific tab, and one page for search engines to
    index. Making tabs routable is a structural change, not a polish pass.
 
@@ -282,3 +284,8 @@ seven consecutive failed production deploys. Pull, build locally, push once.
   span, on the intent recorded in §3.
 - **Etymology statements** — the last one (Retta's "Old Norse name") removed
   13 Sept 2026. Shipped copy now states meaning only.
+- **Northern Hemisphere celebration dates** — the sun-anchored three got a day
+  per hemisphere on 13 Sept 2026. See §3.
+- **Is v1 deliberately still live?** No. Retired to a redirect 13 Sept 2026,
+  which also closes its four dead nav links. See §5.
+- **Which domain is canonical?** The apex, 13 Sept 2026. See §5.
