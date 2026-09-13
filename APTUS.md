@@ -204,6 +204,14 @@ seven consecutive failed production deploys. Pull, build locally, push once.
    own day-of-year offsets (which reopens §2, currently settled), or reword
    the astronomical claim for NH. Separately, Samna's prose still describes
    displacing Christmas, which is Southern-specific.
+5. **Which domain is canonical — apex or www?** Both `aptuscalendar.com` and
+   `www.aptuscalendar.com` return 200 with no redirect between them, while
+   `metadataBase`, `og:url`, `robots.ts` and `sitemap.ts` all say www. Search
+   engines see two copies of one site. The redirect is a Vercel domain
+   setting, not a code change; whichever is chosen, the metadata must match.
+6. **Tabs are client state, not routes.** Nothing is linkable but the
+   homepage — no sharing a specific tab, and one page for search engines to
+   index. Making tabs routable is a structural change, not a polish pass.
 
 ### Closed
 

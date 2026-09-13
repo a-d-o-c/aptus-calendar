@@ -38,7 +38,7 @@ export const metadata: Metadata = {
     url: 'https://www.aptuscalendar.com',
   },
   twitter: {
-    card: 'summary',
+    card: 'summary_large_image',
     title: 'Aptus Calendar',
     description: 'Aligned with natural cycles. Not a replacement — a correction.',
   },
