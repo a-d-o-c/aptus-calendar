@@ -274,6 +274,21 @@ These are load-bearing and verifiable. Keep them; state them flatly.
 - **Hydration:** the page prerenders statically, so anything date-dependent
   resolves in a `useEffect`, never during render.
 
+### Launch plumbing
+
+Added 13 Sept 2026, all of it previously missing or broken:
+
+- **`app/opengraph-image.tsx`** generates the 1200×630 share card at build time
+  from the month colours in `lib/aptus.ts`, so the card cannot drift from the
+  calendar. Before this there was no `og:image` at all and every shared link —
+  X, Slack, Reddit, iMessage — rendered as bare text. `twitter:card` is
+  `summary_large_image`.
+- **`app/robots.ts` and `app/sitemap.ts`** — both were 404s.
+- **`app/icon-192.png`, `icon-512.png`, `icon-maskable.png`** are route
+  handlers rendering `lib/icon-image.tsx`. `manifest.ts` had listed all three
+  for months and none existed, so installing to a home screen got no icon. The
+  wheel mark now lives in one file instead of being hand-written in three.
+
 ### The subscription feed
 
 Added 13 Sept 2026. `/feed.ics` serves an RFC 5545 calendar that Google, Apple
@@ -338,11 +353,29 @@ seven consecutive failed production deploys. Pull, build locally, push once.
    again in `AboutTab.tsx`, with different prose. Which is canonical, and
    should the other defer to it or be cut?
 2. **Samna's prose still describes displacing Christmas**, which is
-   Southern-specific. The dates are now right in both hemispheres; the
-   framing is not.
+   Southern-specific and is the line most likely to hijack a public thread.
+   The dates are right in both hemispheres now; the framing is not.
 3. **Tabs are client state, not routes.** Nothing is linkable but the
    homepage — no sharing a specific tab, and one page for search engines to
    index. Making tabs routable is a structural change, not a polish pass.
+4. **Nothing measures feed subscriptions.** Vercel Analytics counts page
+   views; `/feed.ics` fetches are invisible. The number that matters most
+   about the product is the one nobody can see.
+5. **Should the International Fixed Calendar be named in the product?** 13×28
+   is Cotsworth, 1902, and Kodak ran on it 1928–1989. Aptus differs in the
+   equinox anchor, the Southern default, the turning points and the feed.
+   Acknowledging the ancestor costs nothing and pre-empts the obvious
+   objection; not acknowledging it reads as not having done the reading.
+
+### Unverified, not unknown
+
+- **Print layout for worksheets** has never been through a real print preview.
+  The `@media print` rules hide the app shell by visibility, and the likely
+  failure is blank leading pages.
+- **The feed has never been added to a real calendar client.** It is valid
+  against RFC 5545 — folding, UIDs, DATE values all checked — but structural
+  validity is not the same as Google or Apple accepting it.
+- **The subscribe block has not been looked at on a phone.**
 
 ### Closed
 
@@ -355,3 +388,51 @@ seven consecutive failed production deploys. Pull, build locally, push once.
 - **Is v1 deliberately still live?** No. Retired to a redirect 13 Sept 2026,
   which also closes its four dead nav links. See §5.
 - **Which domain is canonical?** The apex, 13 Sept 2026. See §5.
+
+---
+
+## 7. What changed, 13 Sept 2026
+
+One session, in the order it happened. Recorded because most of it was undoing
+drift, and the pattern is worth recognising next time.
+
+**Corrections to things that were already wrong:**
+
+- Northern Hemisphere celebrations missed their astronomical events by 3–7
+  days; the solstice fell outside its own three-day span. §3.
+- Six of the seven celebration dates in `AboutTab` were hardcoded and wrong for
+  the north, because they assumed the equinox-to-solstice gap is symmetric.
+- Every first-time visitor was shown the Southern Hemisphere regardless of
+  where they were.
+- The manifest advertised three icons that did not exist.
+- No `og:image`, no `robots.txt`, no `sitemap.xml`.
+- Apex and www both answered 200 with no redirect and no canonical.
+- The v1 site was live with all four of its nav links 404ing.
+- Four files existed twice, in and out of the repo, one commit apart.
+
+**Decisions made:**
+
+- Solstices run three days; the observed day sits in the middle.
+- The sun-anchored celebrations carry a day per hemisphere.
+- The apex is canonical.
+- Amplify became Release, and the cadence is a reading rather than a rule.
+- The moon is a layer, not a structural claim.
+- v1 is retired to a redirect.
+
+**Built:**
+
+- Worksheets, fillable and printable, derived from the practice prompts.
+- The subscription feed and its options UI.
+- Hemisphere detection.
+- Share card, robots, sitemap, manifest icons.
+
+**Three bugs that only running the code would have found** — none were visible
+by reading it, which is the argument for checking behaviour against real values
+rather than reasoning about the source:
+
+- `America/Argentina/Buenos_Aires` canonicalises to `America/Buenos_Aires`, so
+  the prefix match sent every Argentine visitor north.
+- Filtering worksheet prompts by a trailing question mark silently dropped
+  Hayta's central prompt — the vow, which is the spine of the whole system.
+- The three-day span logic was written, typechecked and deployed without ever
+  executing, because today's date is nowhere near a solstice.
