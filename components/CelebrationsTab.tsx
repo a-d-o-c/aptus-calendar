@@ -7,7 +7,7 @@ import {
   KIND_LABEL,
   daysUntil,
   isActive,
-  formatOccurrence,
+  timingLabel,
 } from '@/lib/celebrations';
 import { useHemisphere } from '@/lib/hemisphere-context';
 import { useIsMobile } from '@/lib/use-mobile';
@@ -97,7 +97,7 @@ export default function CelebrationsTab() {
 
         {today && (
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '2.5rem' }}>
-            {CELEBRATIONS.filter(c => c.dayOfYear !== null).map(c => {
+            {CELEBRATIONS.filter(c => c.observed !== null).map(c => {
               const until = daysUntil(today, c);
               const isToday = isActive(today, c);
               return (
@@ -138,7 +138,7 @@ export default function CelebrationsTab() {
             const until = today ? daysUntil(today, cel) : null;
             const isToday = today ? isActive(today, cel) : false;
             const isOpen = openName === cel.name;
-            const dateLabel = today ? formatOccurrence(today, cel, hemisphere) : null;
+            const timing = today ? timingLabel(today, cel) : cel.position;
 
             return (
               <div
@@ -179,7 +179,7 @@ export default function CelebrationsTab() {
                       fontFamily: 'var(--font-dm-mono)', fontSize: '0.62rem', color: '#8a7460',
                       marginTop: '0.35rem', lineHeight: 1.5,
                     }}>
-                      {cel.position}{dateLabel ? ` · ${dateLabel}` : ''}
+                      {timing}
                     </div>
                   </div>
                   {isToday ? (

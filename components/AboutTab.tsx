@@ -10,7 +10,7 @@ import {
   type AptusDate,
   type Season,
 } from '@/lib/aptus';
-import { CELEBRATIONS, formatOccurrence } from '@/lib/celebrations';
+import { CELEBRATIONS, timingLabel } from '@/lib/celebrations';
 import { useHemisphere } from '@/lib/hemisphere-context';
 
 const SEASON_LABELS: Record<Season, string> = {
@@ -131,11 +131,11 @@ export default function AboutTab() {
     setToday(getAptusDate(new Date(), hemisphere));
   }, [hemisphere]);
 
-  /** The Aptus position is structural; the Gregorian dates come from the lib, never hardcoded. */
-  const datesFor = (name: string): string | null => {
+  /** Aptus position, what the day is, and its dates — all from the lib, never hardcoded. */
+  const timingFor = (name: string): string | null => {
     const cel = CELEBRATIONS.find(c => c.name === name);
     if (!cel || !today) return null;
-    return formatOccurrence(today, cel, hemisphere);
+    return timingLabel(today, cel);
   };
 
   return (
@@ -333,7 +333,6 @@ export default function AboutTab() {
           {[
             {
               name: 'Arfa',
-              position: 'Lumen 28 · Day 364',
               color: '#4e6870',
               what: 'The last day of the year. The estate closes: everything the year left you, wanted or not, comes due for a decision. Not a highlight reel and not a trial — an inventory.',
               ritual: [
@@ -344,7 +343,6 @@ export default function AboutTab() {
             },
             {
               name: 'Otium',
-              position: 'Day 365 · outside the count',
               color: '#b8c8c8',
               what: 'The threshold day. It exists outside the 13-month structure — not part of any month, not assigned to any season. The only day of the year that asks nothing of you, on purpose: yesterday closed the year, tomorrow opens it, and neither lands if the two ends never stop touching.',
               ritual: [
@@ -355,7 +353,6 @@ export default function AboutTab() {
             },
             {
               name: 'Hayta',
-              position: 'Verna 1 · New Year',
               color: '#5aad3e',
               what: 'Day and night are equal length, and from here light grows. The actual new year — it has more claim to the title than January 1st ever will. This is the day the year’s vow is set: not a list of intentions, one direction the year is for.',
               ritual: [
@@ -366,7 +363,6 @@ export default function AboutTab() {
             },
             {
               name: 'Samna',
-              position: 'Solaris 6–8 · summer solstice · three days',
               color: '#e8a020',
               what: 'Three days at the height of the light, built around other people rather than yourself. The point is togetherness, not duration — being genuinely with people, not merely among them for a set number of hours. In the Southern Hemisphere it sits where Christmas sits, and displaces it honestly, with the same materials: people, food, the long evening.',
               ritual: [
@@ -377,7 +373,6 @@ export default function AboutTab() {
             },
             {
               name: 'Nesti',
-              position: 'Axia 12 · autumn equinox',
               color: '#c85428',
               what: '“Nesti” is the food packed for a journey. Equal day and night again, but now light is retreating — the balance point before the dark half of the year. Not sentimental: thanks and remembrance sit inside a practical act of provisioning.',
               ritual: [
@@ -388,7 +383,6 @@ export default function AboutTab() {
             },
             {
               name: 'Vona',
-              position: 'Umbra 20–22 · winter solstice · three days',
               color: '#4a6fa5',
               what: 'Hope — the specific kind that comes from knowing the dark has a floor. Three nights at the bottom of the light, across which the count turns back toward it, whether or not it feels that way yet. Not a vigil and not resolutions — the stretch built for taking the long view on purpose.',
               ritual: [
@@ -399,7 +393,6 @@ export default function AboutTab() {
             },
             {
               name: 'Retta',
-              position: 'Day 366 · roughly every 6 years · next: 12030 NE',
               color: '#c0a880',
               what: 'The calibration day. The solar year is 365.2422 days, not 365 — each Aptus year accumulates roughly a quarter-day of drift, and Retta is added as Day 366 to bring the calendar back into alignment with the actual equinox.',
               ritual: [
@@ -429,7 +422,7 @@ export default function AboutTab() {
                     fontFamily: 'var(--font-dm-mono)', fontSize: '0.58rem',
                     color: cel.color, letterSpacing: '0.08em',
                   }}>
-                    {[cel.position, datesFor(cel.name)].filter(Boolean).join(' · ')}
+                    {timingFor(cel.name)}
                   </span>
                 </div>
                 <p style={{

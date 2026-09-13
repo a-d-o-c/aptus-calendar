@@ -8,7 +8,7 @@ import {
   SEASON_COLORS,
   type AptusDate,
 } from '@/lib/aptus';
-import { nextCelebration, formatOccurrence } from '@/lib/celebrations';
+import { nextCelebration, timingLabel } from '@/lib/celebrations';
 import { useHemisphere } from '@/lib/hemisphere-context';
 import { useTabNav } from '@/lib/tab-context';
 import { useIsMobile } from '@/lib/use-mobile';
@@ -115,10 +115,9 @@ function TodayHero({ info, now, isMobile }: { info: AptusDate; now: Date; isMobi
 // ── Countdown to the nearest celebration ──────────────────────────
 
 function CelebrationCountdown({
-  info, hemisphere, isMobile, onOpen,
+  info, isMobile, onOpen,
 }: {
-  info: AptusDate;
-  hemisphere: 'SH' | 'NH';
+  info: AptusDate;           // carries its own hemisphere
   isMobile: boolean;
   onOpen: () => void;
 }) {
@@ -127,7 +126,7 @@ function CelebrationCountdown({
 
   const { celebration: cel, daysAway } = upcoming;
   const isToday = daysAway === 0;
-  const when = formatOccurrence(info, cel, hemisphere);
+  const when = timingLabel(info, cel);
 
   return (
     <button
@@ -166,7 +165,7 @@ function CelebrationCountdown({
           fontFamily: 'var(--font-dm-mono)', fontSize: '0.6rem', color: '#8a7460',
           marginTop: '0.35rem', lineHeight: 1.5,
         }}>
-          {cel.position}{when ? ` · ${when}` : ''}
+          {when}
         </div>
       </div>
 
@@ -319,7 +318,6 @@ export default function HomeTab() {
             <div style={{ marginBottom: isMobile ? '2.5rem' : '3.5rem' }}>
               <CelebrationCountdown
                 info={aptusInfo}
-                hemisphere={hemisphere}
                 isMobile={isMobile}
                 onOpen={() => nav('celebrations')}
               />

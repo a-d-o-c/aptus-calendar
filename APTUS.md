@@ -64,15 +64,44 @@ here.
 
 ## 3. The seven celebrations
 
-| Name | Observed day | Length | Span | Kind |
-|------|--------------|--------|------|------|
-| Arfa | 364 (Lumen 28) | 1 day | 364 | year-turn |
-| Otium | 365 | 1 day | 365 | year-turn |
-| Hayta | 1 (Verna 1) | 1 day | 1 | year-turn |
-| Samna | 91 (Solaris 7) | **3 days** | 90–92 (Solaris 6–8) | solstice |
-| Nesti | 180 (Axia 12) | 1 day | 180 | equinox |
-| Vona | 273 (Umbra 21) | **3 days** | 272–274 (Umbra 20–22) | solstice |
-| Retta | — (no fixed day) | 1 day | — | calibration |
+| Name | Observed day SH | Observed day NH | Length | Kind |
+|------|-----------------|-----------------|--------|------|
+| Arfa | 364 (Lumen 28) | same | 1 day | year-turn |
+| Otium | 365 | same | 1 day | year-turn |
+| Hayta | 1 (Verna 1) | same | 1 day | year-turn |
+| Samna | 91 (Solaris 7) | **94 (Solaris 10)** | **3 days** | solstice |
+| Nesti | 180 (Axia 12) | **187 (Axia 19)** | 1 day | equinox |
+| Vona | 273 (Umbra 21) | **277 (Umbra 25)** | **3 days** | solstice |
+| Retta | — (no fixed day) | — | 1 day | calibration |
+
+### The sun-anchored three carry a day per hemisphere
+
+Decided 13 Sept 2026. Arfa, Otium and Hayta are defined by the count, so they
+are the same number in both hemispheres — Hayta *is* the anchor equinox.
+Samna, Nesti and Vona are defined by the sun, and one offset from the anchor
+cannot reach the sun in both hemispheres, because the equinoxes are not the
+midpoints between the solstices: Sept→Mar is 179 days and Mar→Sept is 186.
+Earth is at perihelion in early January and moves fastest there.
+
+The numbers stay fixed rather than being computed per year. The anchor itself
+is fixed while the true equinox moves between the 22nd and 23rd, so chasing
+the sun annually for celebrations but not for the anchor would be two
+philosophies in one calendar. Retta is what absorbs accumulated drift, and the
+three-day spans absorb the solstice's one-day wobble. Nesti, being a single
+day, is a day off in some years — equally in both hemispheres.
+
+**Consequence worth keeping:** once each hemisphere points at the sun, the two
+coincide exactly. On 20–22 June the north keeps Samna while the south keeps
+Vona; at the September equinox the south opens its year at Hayta while the
+north packs provisions at Nesti. One event, two honest readings. Under the
+old single-number scheme they missed each other by three days.
+
+Rejected: averaging the two day numbers (wrong in both hemispheres instead of
+one), and moving the turning points outside the count as intercalary days.
+The latter is arithmetically sound — 8 space days leaves 357 counted, which is
+12 months of 28 plus one of 21, and 1 and 8 are the only two counts that close
+at all — but it costs the four-week month, and it does not fix the hemispheres
+anyway, since intercalation does not move the sun.
 
 **The solstices run three days; everything else is one day.** Decided 12 Sept
 2026. The three days are the days the sun suspends — it holds its rising and
@@ -152,6 +181,14 @@ These are load-bearing and verifiable. Keep them; state them flatly.
   derive every Gregorian date through `formatOccurrence` for the selected
   hemisphere. Hardcoded dates in `AboutTab` were wrong for six of seven
   celebrations in NH before this rule was enforced (13 Sept 2026).
+- **`observed` is a number or a per-hemisphere pair.** A plain number means
+  the count defines the day; a pair means the sun does. `observedDay`,
+  `startDay`, `endDay` and `aptusPosition` take a hemisphere; everything
+  taking an `AptusDate` reads `today.hemisphere` instead, so a mismatched
+  pair is unrepresentable.
+- **`timingLabel` builds the one line every tab shows** under a celebration —
+  Aptus position, what the day is, length, Gregorian dates. Tabs must not
+  assemble that themselves; three copies is how the hemispheres drifted.
 - **Celebration length** is the `days` field. `startDay`/`endDay` derive the
   span, centred on the observed day; `isActive` is true for every day of it;
   `daysUntil` counts to the first day and returns 0 throughout. A celebration
@@ -192,23 +229,9 @@ seven consecutive failed production deploys. Pull, build locally, push once.
    should the other defer to it or be cut?
 3. **`index.html` links to `calendar.html`**, which does not exist in the
    repo. Dead link on the live v1 site.
-4. **Northern Hemisphere celebrations miss their astronomical events.** Not
-   a copy problem — the fixed day-of-year offsets only land on the solstices
-   from the SH anchor. Equinox→solstice is ~90 days Sept→Dec but ~93 days
-   March→June, because Earth's orbit is elliptical. Measured from the 20
-   March anchor:
-
-   | Celebration | Aptus day | NH date | Actual event | Out by |
-   |---|---|---|---|---|
-   | Samna | 90–92 | 17–19 Jun | 21 Jun | 2–4 days early, event outside the span |
-   | Vona | 272–274 | 16–18 Dec | 21 Dec | 3–5 days early, event outside the span |
-   | Nesti | 180 | 15 Sept | 22 Sept | 7 days early |
-
-   As of 13 Sept 2026 the UI states these dates honestly rather than the
-   wrong ones it claimed before. Two ways out, both Adan's call: give NH its
-   own day-of-year offsets (which reopens §2, currently settled), or reword
-   the astronomical claim for NH. Separately, Samna's prose still describes
-   displacing Christmas, which is Southern-specific.
+4. **Samna's prose still describes displacing Christmas**, which is
+   Southern-specific. The dates are now right in both hemispheres; the
+   framing is not.
 5. **Tabs are client state, not routes.** Nothing is linkable but the
    homepage — no sharing a specific tab, and one page for search engines to
    index. Making tabs routable is a structural change, not a polish pass.

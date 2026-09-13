@@ -13,6 +13,7 @@ export interface AptusMonth {
 }
 
 export interface AptusDate {
+  hemisphere: Hemisphere;
   isOtium: boolean;
   day: number | string;
   month: string | null;
@@ -91,6 +92,7 @@ export function getAptusDate(date: Date = new Date(), hemisphere: Hemisphere = '
 
   if (dayOfYear === 365) {
     return {
+      hemisphere,
       isOtium: true,
       day: 'Otium',
       month: null,
@@ -110,6 +112,7 @@ export function getAptusDate(date: Date = new Date(), hemisphere: Hemisphere = '
   const weekIndex = Math.ceil(dayInMonth / 7) - 1;
 
   return {
+    hemisphere,
     isOtium: false,
     day: dayInMonth,
     month: monthData.name,
