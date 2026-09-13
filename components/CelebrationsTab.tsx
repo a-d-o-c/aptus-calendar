@@ -9,6 +9,7 @@ import {
   isActive,
   timingLabel,
 } from '@/lib/celebrations';
+import Worksheet from './Worksheet';
 import { useHemisphere } from '@/lib/hemisphere-context';
 import { useIsMobile } from '@/lib/use-mobile';
 
@@ -218,6 +219,7 @@ export default function CelebrationsTab() {
                         </li>
                       ))}
                     </ul>
+                    {today && <Worksheet cel={cel} neYear={today.year} isMobile={isMobile} />}
                   </div>
                 )}
               </div>

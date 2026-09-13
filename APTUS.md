@@ -174,6 +174,29 @@ measured new moon of 11 Sept 2026 03:27 UTC; checked against published new
 moons for Oct 2026, Jun 2027 and Dec 2027 at +0.4h, −21.6h and −5.0h. Good
 enough to name a phase, which is why nothing reports an exact time.
 
+### Worksheets
+
+Added 13 Sept 2026, a week before Arfa. Every celebration whose practice list
+contains a question gets a fillable worksheet inside its card — Arfa 5 prompts,
+Hayta 4, Nesti 4, Vona 4, Samna and Retta 1 each. Otium has none by design: its
+practice is "nothing is required," and a worksheet for that would be a joke at
+the day's expense.
+
+The prompts are **derived** from `practice`, not duplicated: anything
+containing a question mark is fillable, the rest stays guidance. Match anywhere
+in the string rather than at the end — Hayta's central prompt is "What is the
+one thing this year is for? Not a list — one direction," and an end-anchored
+test drops the vow.
+
+Answers live in `localStorage`, keyed by celebration and NE year, so last
+year's Arfa stays readable beside this year's. No account, no server, nothing
+leaves the device — and every access is guarded, because storage can be absent.
+
+Printing is the same worksheet on paper: `@media print` in `globals.css` hides
+the app shell, swaps each textarea for ruled space, and carries whatever was
+typed onto the lines. One set of prompts feeds both, so paper and screen cannot
+drift.
+
 ### The vow thread
 
 The Hayta vow is set at Hayta, checked at Samna, Nesti and Vona, and settled

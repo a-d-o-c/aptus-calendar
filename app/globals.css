@@ -70,3 +70,69 @@ nav::-webkit-scrollbar { display: none; }
 
 /* Selection */
 ::selection { background: rgba(180, 150, 100, 0.28); color: #ede8de; }
+
+/* ── Printing a worksheet ──────────────────────────────────────────
+   The app is a fixed-height, overflow-hidden shell, which paper is not.
+   Print hides everything but the open worksheet, unclips its ancestors,
+   and swaps each textarea for ruled space carrying whatever was typed. */
+@media print {
+  html, body {
+    height: auto !important;
+    overflow: visible !important;
+    background: #fff !important;
+  }
+
+  body * {
+    visibility: hidden;
+    overflow: visible !important;
+  }
+
+  .worksheet, .worksheet * {
+    visibility: visible;
+  }
+
+  .worksheet {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 0 !important;
+    border: none !important;
+    color: #000 !important;
+  }
+
+  .worksheet label {
+    color: #000 !important;
+    font-size: 11pt !important;
+    page-break-after: avoid;
+  }
+
+  .worksheet textarea,
+  .worksheet-print-button {
+    display: none !important;
+  }
+
+  .worksheet-print-title {
+    display: block !important;
+    font-size: 16pt;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+  }
+
+  /* Ruled space: typed answers sit on the lines, blank ones leave room. */
+  .worksheet-answer {
+    display: block !important;
+    min-height: 5.1rem;
+    line-height: 1.7rem;
+    white-space: pre-wrap;
+    font-size: 11pt;
+    background-image: repeating-linear-gradient(
+      transparent,
+      transparent calc(1.7rem - 1px),
+      #bbb calc(1.7rem - 1px),
+      #bbb 1.7rem
+    );
+    page-break-inside: avoid;
+  }
+}
