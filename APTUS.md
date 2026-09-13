@@ -211,10 +211,11 @@ These are load-bearing and verifiable. Keep them; state them flatly.
   `lib/celebrations.ts`.
 - **Card radius is 6.** Pills and chips are 99.
 - **The apex is canonical.** `aptuscalendar.com`, not www — decided 13 Sept
-  2026. Every absolute URL in `app/` says apex; `www` redirects to it via a
-  Vercel domain setting, which is dashboard state, not code. Prefer relative
-  URLs (`/`) wherever an absolute one isn't required, so the choice only
-  lives in one place.
+  2026. Every absolute URL in `app/` says apex, and `next.config.ts` 308s any
+  request arriving on `www.aptuscalendar.com` to it. That redirect lives in
+  code rather than Vercel's dashboard so it is reviewable and survives a
+  project being relinked. Prefer relative URLs (`/`) wherever an absolute one
+  isn't required, so the choice only lives in one place.
 - **Date logic** lives only in `lib/aptus.ts`; celebration data and timing
   only in `lib/celebrations.ts`. Do not duplicate either into components.
   Components hold the Aptus position only ("Solaris 6–8 · three days") and
