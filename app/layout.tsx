@@ -30,12 +30,12 @@ const libre = Libre_Baskerville({
 export const metadata: Metadata = {
   title: 'Aptus — A Temporal Operating System',
   description: 'A calendar aligned with natural cycles. 13 months, 28 days each, anchored to the equinox.',
-  metadataBase: new URL('https://www.aptuscalendar.com'),
+  metadataBase: new URL('https://aptuscalendar.com'),
   openGraph: {
     title: 'Aptus Calendar',
     description: 'Aligned with natural cycles. Not a replacement — a correction.',
     type: 'website',
-    url: 'https://www.aptuscalendar.com',
+    url: 'https://aptuscalendar.com',
   },
   twitter: {
     card: 'summary_large_image',

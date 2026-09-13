@@ -5,7 +5,7 @@ export default function manifest(): MetadataRoute.Manifest {
     name: 'Aptus Calendar',
     short_name: 'Aptus',
     description: 'A calendar aligned with natural cycles. 13 months, 28 days each, anchored to the equinox.',
-    start_url: 'https://www.aptuscalendar.com',
+    start_url: '/',
     display: 'standalone',
     orientation: 'portrait',
     background_color: '#0f0e0c',

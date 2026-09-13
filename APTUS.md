@@ -141,6 +141,11 @@ These are load-bearing and verifiable. Keep them; state them flatly.
   Per-month and per-celebration accent colours live in `lib/aptus.ts` and
   `lib/celebrations.ts`.
 - **Card radius is 6.** Pills and chips are 99.
+- **The apex is canonical.** `aptuscalendar.com`, not www — decided 13 Sept
+  2026. Every absolute URL in `app/` says apex; `www` redirects to it via a
+  Vercel domain setting, which is dashboard state, not code. Prefer relative
+  URLs (`/`) wherever an absolute one isn't required, so the choice only
+  lives in one place.
 - **Date logic** lives only in `lib/aptus.ts`; celebration data and timing
   only in `lib/celebrations.ts`. Do not duplicate either into components.
   Components hold the Aptus position only ("Solaris 6–8 · three days") and
@@ -204,12 +209,7 @@ seven consecutive failed production deploys. Pull, build locally, push once.
    own day-of-year offsets (which reopens §2, currently settled), or reword
    the astronomical claim for NH. Separately, Samna's prose still describes
    displacing Christmas, which is Southern-specific.
-5. **Which domain is canonical — apex or www?** Both `aptuscalendar.com` and
-   `www.aptuscalendar.com` return 200 with no redirect between them, while
-   `metadataBase`, `og:url`, `robots.ts` and `sitemap.ts` all say www. Search
-   engines see two copies of one site. The redirect is a Vercel domain
-   setting, not a code change; whichever is chosen, the metadata must match.
-6. **Tabs are client state, not routes.** Nothing is linkable but the
+5. **Tabs are client state, not routes.** Nothing is linkable but the
    homepage — no sharing a specific tab, and one page for search engines to
    index. Making tabs routable is a structural change, not a polish pass.
 
