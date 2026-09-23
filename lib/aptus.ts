@@ -85,9 +85,9 @@ export const SEASON_COLORS: Record<Season, { primary: string; glow: string }> = 
 // it lands a day early, as do Nesti and Vona.
 const ANCHOR_YEAR = 12026;
 
-const ANCHORS: Record<Hemisphere, { date: Date; year: number }> = {
-  SH: { date: new Date('2026-09-23T00:00:00'), year: ANCHOR_YEAR },
-  NH: { date: new Date('2026-03-20T00:00:00'), year: ANCHOR_YEAR },
+const ANCHORS: Record<Hemisphere, Date> = {
+  SH: new Date('2026-09-23T00:00:00'),
+  NH: new Date('2026-03-20T00:00:00'),
 };
 
 // The solar year is 365.2422 days and the counted year is 365, so every Aptus
@@ -132,7 +132,7 @@ function daysBetween(from: Date, to: Date): number {
 }
 
 export function getAptusDate(date: Date = new Date(), hemisphere: Hemisphere = 'SH'): AptusDate {
-  const { date: anchor } = ANCHORS[hemisphere];
+  const anchor = ANCHORS[hemisphere];
   const daysSinceAnchor = daysBetween(anchor, date);
 
   // Years are 365 or 366 days, so start from the mean length and settle it.
@@ -186,7 +186,7 @@ export function getAptusDate(date: Date = new Date(), hemisphere: Hemisphere = '
 }
 
 export function gregDateFromAptus(dayOfYear: number, neYear: number, hemisphere: Hemisphere = 'SH'): Date {
-  const { date: anchor } = ANCHORS[hemisphere];
+  const anchor = ANCHORS[hemisphere];
   const totalDays = daysToYearStart(neYear) + (dayOfYear - 1);
   // Step by calendar date rather than milliseconds so the result stays at
   // local midnight even when a DST boundary falls in between.
