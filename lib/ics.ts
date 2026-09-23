@@ -1,4 +1,7 @@
-import { MONTHS, WEEK_PHASES, WEEK_PHASE_DESC, gregDateFromAptus, type Hemisphere } from './aptus';
+import {
+  MONTHS, WEEK_PHASES, WEEK_PHASE_DESC, gregDateFromAptus, yearLength, isRettaYear,
+  type Hemisphere,
+} from './aptus';
 import { CELEBRATIONS, startDay, aptusPosition } from './celebrations';
 
 /**
@@ -174,6 +177,25 @@ function eventsForYear(neYear: number, o: FeedOptions): Event[] {
         ].filter(l => l !== null).join('\n'),
       });
     }
+
+    // Retta has no fixed annual day, so the loop above skips it. In a Retta
+    // year it has one: day 366, appended after Otium.
+    const retta = CELEBRATIONS.find(c => c.name === 'Retta');
+    if (o.celebrations && retta && isRettaYear(neYear)) {
+      events.push({
+        uid: id('cel', 'Retta'),
+        start: greg(366),
+        length: 1,
+        summary: 'Retta · the calibration day',
+        description: [
+          'Day 366 — outside the count, and outside the ordinary year.',
+          '',
+          retta.meaning,
+          '',
+          ...retta.practice.map(pr => `— ${pr}`),
+        ].join('\n'),
+      });
+    }
   }
 
   if (o.weeks) {
@@ -193,15 +215,16 @@ function eventsForYear(neYear: number, o: FeedOptions): Event[] {
   }
 
   if (o.days) {
-    for (let doy = 1; doy <= 365; doy++) {
+    for (let doy = 1; doy <= yearLength(neYear); doy++) {
       const m = MONTHS.find(x => doy >= x.start && doy <= x.end);
+      const outside = doy === 366 ? 'Retta · the calibration day' : 'Otium · outside the count';
       events.push({
         uid: id('day', doy),
         start: greg(doy),
         length: 1,
         summary: m
           ? `${m.name} ${doy - m.start + 1} · ${WEEK_PHASES[Math.ceil((doy - m.start + 1) / 7) - 1]}`
-          : 'Otium · outside the count',
+          : outside,
       });
     }
   }

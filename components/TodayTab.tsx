@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { moonPhase } from '@/lib/moon';
 import {
   getAptusDate,
+  yearLength,
   formatGregorian,
   MONTHS,
   SEASON_COLORS,
@@ -22,8 +23,8 @@ const SEASON_LABELS: Record<Season, string> = {
   winter: 'Winter',
 };
 
-function YearArc({ dayOfYear, season, size = 106 }: { dayOfYear: number; season: Season | null; size?: number }) {
-  const pct = dayOfYear / 365;
+function YearArc({ dayOfYear, total, season, size = 106 }: { dayOfYear: number; total: number; season: Season | null; size?: number }) {
+  const pct = dayOfYear / total;
   const color = season ? SEASON_COLORS[season].primary : '#8a7460';
   const r = size * 0.415;
   const cx = size / 2;
@@ -107,13 +108,13 @@ export default function TodayTab() {
               )}
               <div style={{ fontFamily: 'var(--font-dm-mono)', fontSize: '0.62rem', color: '#8a7460', letterSpacing: '0.08em' }}>{greg}</div>
             </div>
-            <YearArc dayOfYear={info.dayOfYear} season={info.season} size={84} />
+            <YearArc dayOfYear={info.dayOfYear} total={yearLength(info.year)} season={info.season} size={84} />
           </div>
 
           {/* Big date */}
-          {info.isOtium ? (
+          {info.isOutsideCount ? (
             <h1 style={{ fontFamily: 'var(--font-cormorant)', fontSize: 'clamp(3.5rem, 18vw, 5rem)', fontWeight: 300, lineHeight: 0.9, color: '#ede8de', fontStyle: 'italic', marginBottom: '1rem' }}>
-              Otium
+              {info.day}
             </h1>
           ) : (
             <div style={{ marginBottom: '1rem' }}>
@@ -127,7 +128,7 @@ export default function TodayTab() {
           )}
 
           <div style={{ fontFamily: 'var(--font-dm-mono)', fontSize: '0.62rem', color: '#9a8870', letterSpacing: '0.14em', marginBottom: '0.45rem' }}>
-            {info.year} NE · {Math.round((info.dayOfYear / 365) * 100)}% through the year
+            {info.year} NE · {Math.round((info.dayOfYear / yearLength(info.year)) * 100)}% through the year
           </div>
 
           {/* The moon is its own layer — Aptus doesn't track it, it just doesn't ignore it. */}
@@ -138,7 +139,7 @@ export default function TodayTab() {
             Moon · {moon}
           </div>
 
-          {!info.isOtium && (
+          {!info.isOutsideCount && (
             <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap', marginBottom: '1.5rem' }}>
               {[info.weekPhase, `Week ${(info.weekIndex ?? 0) + 1} of 4`, info.monthFocus].map(tag => (
                 <span key={String(tag)} style={{ padding: '0.3rem 0.75rem', border: '1px solid #2d2e2b', borderRadius: 99, fontFamily: 'var(--font-dm-mono)', fontSize: '0.62rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#9a8870', background: '#1d1d1c' }}>
@@ -148,7 +149,7 @@ export default function TodayTab() {
             </div>
           )}
 
-          {!info.isOtium && info.weekPhase && (
+          {!info.isOutsideCount && info.weekPhase && (
             <p style={{ fontFamily: 'var(--font-libre)', fontStyle: 'italic', fontSize: '0.95rem', color: '#c0a880', lineHeight: 1.7, borderLeft: `2px solid ${accent}`, paddingLeft: '1rem', marginBottom: '1rem' }}>
               {WEEK_PHASE_DESC[info.weekPhase as WeekPhase]}
             </p>
@@ -180,8 +181,8 @@ export default function TodayTab() {
               {SEASON_LABELS[season]}
             </div>
           )}
-          {info.isOtium ? (
-            <h1 style={{ fontFamily: 'var(--font-cormorant)', fontSize: 'clamp(3.5rem, 8vw, 6.5rem)', fontWeight: 300, lineHeight: 0.9, color: '#ede8de', fontStyle: 'italic' }}>Otium</h1>
+          {info.isOutsideCount ? (
+            <h1 style={{ fontFamily: 'var(--font-cormorant)', fontSize: 'clamp(3.5rem, 8vw, 6.5rem)', fontWeight: 300, lineHeight: 0.9, color: '#ede8de', fontStyle: 'italic' }}>{info.day}</h1>
           ) : (
             <div>
               <h1 style={{ fontFamily: 'var(--font-cormorant)', fontSize: 'clamp(3.5rem, 8vw, 6.5rem)', fontWeight: 300, lineHeight: 0.88, letterSpacing: '-0.02em', color: '#ede8de' }}>{info.month}</h1>
@@ -189,7 +190,7 @@ export default function TodayTab() {
             </div>
           )}
           <div style={{ fontFamily: 'var(--font-dm-mono)', fontSize: '0.62rem', color: '#9a8870', letterSpacing: '0.14em' }}>{info.year} NE</div>
-          {!info.isOtium && (
+          {!info.isOutsideCount && (
             <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
               {[info.weekPhase, `Week ${(info.weekIndex ?? 0) + 1} of 4`, info.monthFocus].map(tag => (
                 <span key={String(tag)} style={{ padding: '0.25rem 0.7rem', border: '1px solid #2d2e2b', borderRadius: 99, fontFamily: 'var(--font-dm-mono)', fontSize: '0.64rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#9a8870', background: '#1d1d1c' }}>{tag}</span>
@@ -201,13 +202,13 @@ export default function TodayTab() {
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
-            <YearArc dayOfYear={info.dayOfYear} season={info.season} />
+            <YearArc dayOfYear={info.dayOfYear} total={yearLength(info.year)} season={info.season} />
             <div>
               <div style={{ fontFamily: 'var(--font-dm-mono)', fontSize: '0.62rem', color: '#8a7460', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '0.3rem' }}>Year {info.year} NE</div>
-              <div style={{ fontFamily: 'var(--font-dm-mono)', fontSize: '0.7rem', color: '#ede8de' }}>{Math.round((info.dayOfYear / 365) * 100)}% complete</div>
+              <div style={{ fontFamily: 'var(--font-dm-mono)', fontSize: '0.7rem', color: '#ede8de' }}>{Math.round((info.dayOfYear / yearLength(info.year)) * 100)}% complete</div>
             </div>
           </div>
-          {!info.isOtium && info.weekPhase && (
+          {!info.isOutsideCount && info.weekPhase && (
             <p style={{ fontFamily: 'var(--font-libre)', fontStyle: 'italic', fontSize: '0.92rem', color: '#c0a880', lineHeight: 1.7, borderLeft: `2px solid ${accent}`, paddingLeft: '1rem', transition: 'border-color 0.6s ease' }}>
               {WEEK_PHASE_DESC[info.weekPhase as WeekPhase]}
             </p>

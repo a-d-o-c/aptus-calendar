@@ -29,12 +29,12 @@ function AptusResult({ info, accent }: { info: AptusDate; accent: string }) {
       borderRadius: 8,
     }}>
       {[
-        { label: 'Month',   value: info.isOtium ? '—' : info.month ?? '—' },
-        { label: 'Day',     value: info.isOtium ? 'Otium' : String(info.dayInMonth) },
+        { label: 'Month',   value: info.isOutsideCount ? '—' : info.month ?? '—' },
+        { label: 'Day',     value: info.isOutsideCount ? String(info.day) : String(info.dayInMonth) },
         { label: 'Year',    value: `${info.year} NE` },
         { label: 'Season',  value: info.season ? SEASON_LABELS[info.season] : '—' },
-        { label: 'Phase',   value: info.isOtium ? '—' : (info.weekPhase ?? '—') },
-        { label: 'Focus',   value: info.isOtium ? '—' : (info.monthFocus ?? '—') },
+        { label: 'Phase',   value: info.isOutsideCount ? '—' : (info.weekPhase ?? '—') },
+        { label: 'Focus',   value: info.isOutsideCount ? '—' : (info.monthFocus ?? '—') },
       ].map(row => (
         <div key={row.label}>
           <div style={{
@@ -63,7 +63,7 @@ function AptusResult({ info, accent }: { info: AptusDate; accent: string }) {
         </div>
       ))}
 
-      {!info.isOtium && info.weekPhase && (
+      {!info.isOutsideCount && info.weekPhase && (
         <div style={{ gridColumn: '1 / -1', marginTop: '0.5rem', paddingTop: '1rem', borderTop: '1px solid #2d2e2b' }}>
           <p style={{
             fontFamily: 'var(--font-libre)',
@@ -306,8 +306,8 @@ export default function ConvertTab() {
                 const d = new Date(s.gregorian + 'T12:00:00');
                 const aptus = getAptusDate(d, hemisphere);
                 const col = aptus.season ? SEASON_COLORS[aptus.season].primary : '#c0a880';
-                const label = aptus.isOtium
-                  ? `Otium · ${aptus.year} NE`
+                const label = aptus.isOutsideCount
+                  ? `${aptus.day} · ${aptus.year} NE`
                   : `${aptus.month} ${aptus.dayInMonth} · ${aptus.year} NE`;
                 return (
                   <div

@@ -1,6 +1,7 @@
 import { test, expect } from 'vitest';
-import { getAptusDate } from './aptus';
+import { getAptusDate, yearLength, isRettaYear, gregDateFromAptus } from './aptus';
 import { CELEBRATIONS, occurrence, isActive } from './celebrations';
+import { buildFeed, DEFAULT_OPTIONS } from './ics';
 
 /**
  * The turning points, pinned against real astronomy.
@@ -49,13 +50,14 @@ test('each side reads its own local date, and both stay self-consistent', () => 
   expect(nz.month).toBe('Verna');
   expect(isActive(nz, CELEBRATIONS.find(c => c.name === 'Hayta')!)).toBe(true);
 
-  // US Eastern is still on the 22nd, so still in Otium — the day outside the
-  // count that closes the old year. Not a bug: the same instant, read where
-  // the reader is standing.
+  // US Eastern is still on the 22nd, so still closing the old year. 12025 is a
+  // Retta year, so that last day is Retta rather than Otium — any rule that
+  // puts Retta in 12030 makes 12025 366 days long. Not a bug: the same
+  // instant, read where the reader is standing.
   const us = getAptusDate(viewerIn(SEP_EQUINOX_2026, 'America/New_York'), 'SH');
   expect(us.year).toBe(12025);
-  expect(us.dayOfYear).toBe(365);
-  expect(us.isOtium).toBe(true);
+  expect(us.isOutsideCount).toBe(true);
+  expect(us.dayOfYear).toBe(yearLength(12025));
 });
 
 test('the day count survives the NZ DST transition on 27 Sept 2026', () => {
@@ -93,13 +95,68 @@ test('the sun-anchored celebrations land on the true astronomical event', () => 
   }
 });
 
-test('Retta is not implemented yet: day 366 is unreachable', () => {
-  // Documents a known gap rather than endorsing it. Retta is described in the
-  // copy, but no arithmetic path can produce a 366th day, so the calendar does
-  // not calibrate and drifts ~0.24 days a year. Delete this when Retta ships.
-  let max = 0;
-  for (let i = 0; i < 365 * 12; i++) {
-    max = Math.max(max, getAptusDate(new Date(2026, 8, 23 + i), 'SH').dayOfYear);
+test('Retta falls on the years the spec names, and nowhere else', () => {
+  const years = Array.from({ length: 25 }, (_, i) => 12026 + i).filter(isRettaYear);
+  expect(years).toEqual([12030, 12034, 12038, 12042, 12046, 12050]);
+  expect(yearLength(12029)).toBe(365);
+  expect(yearLength(12030)).toBe(366);
+});
+
+test('Retta is day 366, after Otium, and only in a Retta year', () => {
+  const otium = getAptusDate(gregDateFromAptus(365, 12030, 'SH'), 'SH');
+  expect(otium.isOtium).toBe(true);
+  expect(otium.isRetta).toBe(false);
+
+  const retta = getAptusDate(gregDateFromAptus(366, 12030, 'SH'), 'SH');
+  expect(retta.isRetta).toBe(true);
+  expect(retta.isOtium).toBe(false);
+  expect(retta.day).toBe('Retta');
+  expect(retta.month).toBeNull();
+  expect(retta.isOutsideCount).toBe(true);
+
+  // The day after Retta is the next new year, not a 367th day.
+  const after = getAptusDate(gregDateFromAptus(367, 12030, 'SH'), 'SH');
+  expect(after.year).toBe(12031);
+  expect(after.dayOfYear).toBe(1);
+});
+
+test('every day of a Retta year round-trips', () => {
+  for (let doy = 1; doy <= 366; doy++) {
+    const back = getAptusDate(gregDateFromAptus(doy, 12030, 'SH'), 'SH');
+    expect(back.year, `day ${doy}`).toBe(12030);
+    expect(back.dayOfYear, `day ${doy}`).toBe(doy);
   }
-  expect(max).toBe(365);
+});
+
+test('Retta holds the year start within a day of the true equinox', () => {
+  // Without a backwards-correcting rule a 1950 date lands 18 days out, which
+  // matters because the converter takes birthdays. Pinned equinox dates (NZ
+  // local) from astronomy-engine.
+  const known: Array<[number, string]> = [
+    [11950, '1950-09-23'], [11985, '1985-09-23'],
+    [12026, '2026-09-23'], [12075, '2075-09-22'],
+  ];
+  for (const [neYear, equinox] of known) {
+    const start = gregDateFromAptus(1, neYear, 'SH');
+    const days = Math.round(
+      (start.getTime() - new Date(`${equinox}T00:00:00`).getTime()) / 86400000,
+    );
+    expect(Math.abs(days), `${neYear} NE`).toBeLessThanOrEqual(1);
+  }
+});
+
+test('the feed carries Retta in Retta years and nowhere else', () => {
+  const feed = buildFeed(12027, { ...DEFAULT_OPTIONS, celebrations: true });
+  const emitted = feed
+    .split('\r\n')
+    .filter(l => l.startsWith('UID:cel-') && l.includes('-Retta-'));
+  // buildFeed covers ten years, so the horizon holds two Retta years.
+  const expected = Array.from({ length: 10 }, (_, i) => 12027 + i).filter(isRettaYear);
+  expect(expected).toEqual([12030, 12034]);
+  expect(emitted).toHaveLength(expected.length);
+
+  // Retta is the last day of its year, so it sits the day before the next Hayta.
+  const rettaStart = gregDateFromAptus(366, 12030, 'SH');
+  const nextHayta = gregDateFromAptus(1, 12031, 'SH');
+  expect(nextHayta.getTime() - rettaStart.getTime()).toBe(86400000);
 });

@@ -115,7 +115,7 @@ export default function YearTab() {
     setToday(getAptusDate(new Date(), hemisphere));
   }, [hemisphere]);
 
-  const activeIndex = selected ?? (today && !today.isOtium ? today.monthIndex : null);
+  const activeIndex = selected ?? (today && !today.isOutsideCount ? today.monthIndex : null);
   const activeSegment = activeIndex !== null ? SEGMENTS[activeIndex] : null;
 
   const weekRows = useMemo(() => {
@@ -125,7 +125,7 @@ export default function YearTab() {
       const dayStart = month.start + wi * 7;
       const dayEnd   = dayStart + 6;
       const isCurrent =
-        !!(today && !today.isOtium &&
+        !!(today && !today.isOutsideCount &&
            today.monthIndex === activeIndex &&
            today.weekIndex === wi);
       const gregStart = formatGregorian(gregDateFromAptus(dayStart, today?.year ?? 12026, hemisphere));
@@ -134,9 +134,9 @@ export default function YearTab() {
     });
   }, [activeIndex, today, hemisphere]);
 
-  const currentDayAngle = today && !today.isOtium
+  const currentDayAngle = today && !today.isOutsideCount
     ? (today.dayOfYear - 0.5) * DEG_PER_DAY
-    : today?.isOtium ? 364.5 * DEG_PER_DAY : null;
+    : today?.isOutsideCount ? 364.5 * DEG_PER_DAY : null;
 
   const dotPos = currentDayAngle !== null
     ? polar(CX, CY, (R_OUT + R_IN) / 2, currentDayAngle)

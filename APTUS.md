@@ -31,7 +31,8 @@ strong enough without verdicts attached to it.
 
 - 13 months × 28 days = 364 days.
 - **Otium** — day 365, outside the count, belongs to no month or week.
-- **Retta** — day 366, calibration, roughly every 4 years. Next: 12030 NE.
+- **Retta** — day 366, calibration, every 4 years. Next: 12030 NE. See below
+  for the insertion rule.
 - Anchor: Verna 1 = 23 Sept (Southern Hemisphere) / 20 March (Northern).
 - Year numbering: Natural Era (NE) = Gregorian + 10,000.
 - Weekly cadence, repeating every 7 days within each month:
@@ -87,10 +88,40 @@ stays inside a single day indefinitely (residual −0.031 d/cycle, one day per
 of drift” already in the copy implies 4; the 6 was an arithmetic slip that had
 propagated to five places. Next Retta is unchanged at 12030 NE.
 
-**Retta is not implemented.** It is prose only — every arithmetic path in
-`lib/aptus.ts`, `lib/celebrations.ts` and `lib/ics.ts` hardcode 365, and day
-366 is unreachable. Until that is built the calendar does not calibrate at all
-and drifts ~0.24 days a year. Open work, not a settled decision.
+### How Retta is inserted
+
+Decided 23 Sept 2026, and implemented the same day — until then Retta was
+prose only and day 366 was unreachable, so the calendar did not calibrate at
+all. §6 said not to guess at this, so it was settled with ephemeris data
+rather than preference.
+
+The rule is one line: the Retta days absorbed before a year begins are
+
+    floor((neYear - 12026) x 0.2422)
+
+and a year is a Retta year when that figure increases across it. Flooring the
+accumulated drift puts the calibration day in the year the drift completes,
+which yields 12030, 12034, 12038, 12042 and so on — exactly the cadence §2
+already claimed, derived rather than tabulated.
+
+Floor runs in both directions, which is the reason for choosing it over a rule
+with a start epoch. The converter takes arbitrary dates and people put their
+birthdays in it; a forward-only rule leaves a 1950 date 18 days out. This one
+holds the year start within a single day of the true equinox from at least
+1900 to 2150, in both directions, and needs no century exception.
+
+**Consequence worth knowing:** 12025 is a Retta year, so the day before the
+anchor is Retta rather than Otium. This is forced, not chosen — the forward
+constraint (Retta in 12030) and a backward one (12025 running 365 days) cannot
+both hold for any uniform rule. 12025 opens a day before its true equinox,
+which is inside tolerance.
+
+Retta keeps `observed: null` in the celebration data. It has no *annual* day,
+and every consumer already branches on null; giving it a conditional 366 would
+push year-awareness through seven functions for a day that falls once in four
+years and whose whole meaning is sitting outside the annual cycle. Instead
+`getAptusDate` reports `isRetta`, alongside `isOutsideCount` — the flag Otium
+and Retta share, and what the tabs now branch on.
 
 ---
 

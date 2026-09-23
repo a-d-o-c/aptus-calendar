@@ -14,7 +14,10 @@ export interface AptusMonth {
 
 export interface AptusDate {
   hemisphere: Hemisphere;
+  /** Otium and Retta both sit outside the months, weeks and seasons. */
+  isOutsideCount: boolean;
   isOtium: boolean;
+  isRetta: boolean;
   day: number | string;
   month: string | null;
   monthIndex: number;
@@ -80,10 +83,44 @@ export const SEASON_COLORS: Record<Season, { primary: string; glow: string }> = 
 // The southern date is the 23rd because the ordinals in celebrations.ts encode
 // it: day 91 counted from 23 Sept is 22 Dec, the true solstice. From the 22nd
 // it lands a day early, as do Nesti and Vona.
+const ANCHOR_YEAR = 12026;
+
 const ANCHORS: Record<Hemisphere, { date: Date; year: number }> = {
-  SH: { date: new Date('2026-09-23T00:00:00'), year: 12026 },
-  NH: { date: new Date('2026-03-20T00:00:00'), year: 12026 },
+  SH: { date: new Date('2026-09-23T00:00:00'), year: ANCHOR_YEAR },
+  NH: { date: new Date('2026-03-20T00:00:00'), year: ANCHOR_YEAR },
 };
+
+// The solar year is 365.2422 days and the counted year is 365, so every Aptus
+// year loses about a quarter of a day. Retta is the day given back.
+const DRIFT_PER_YEAR = 0.2422;
+
+/**
+ * Retta days absorbed before `neYear` begins. Flooring the accumulated drift
+ * puts the calibration day in the year the drift completes — 12030, 12034,
+ * 12038 and so on — without needing a table or a start epoch.
+ *
+ * Floor runs in both directions, which is the point: the converter takes
+ * birthdays, and a rule that only corrects forwards puts a 1950 date 18 days
+ * out. This holds the year start within a day of the true equinox from at
+ * least 1900 to 2150.
+ */
+function rettaDaysBefore(neYear: number): number {
+  return Math.floor((neYear - ANCHOR_YEAR) * DRIFT_PER_YEAR);
+}
+
+/** Days from the anchor to the first day of `neYear`. */
+function daysToYearStart(neYear: number): number {
+  return (neYear - ANCHOR_YEAR) * 365 + rettaDaysBefore(neYear);
+}
+
+/** 365, or 366 when the year carries a Retta day. */
+export function yearLength(neYear: number): number {
+  return daysToYearStart(neYear + 1) - daysToYearStart(neYear);
+}
+
+export function isRettaYear(neYear: number): boolean {
+  return yearLength(neYear) === 366;
+}
 
 // Aptus days are local calendar days, so day arithmetic has to ignore
 // time-of-day. Subtracting raw timestamps drifts by an hour across a DST
@@ -95,30 +132,29 @@ function daysBetween(from: Date, to: Date): number {
 }
 
 export function getAptusDate(date: Date = new Date(), hemisphere: Hemisphere = 'SH'): AptusDate {
-  const { date: anchor, year: anchorYear } = ANCHORS[hemisphere];
+  const { date: anchor } = ANCHORS[hemisphere];
   const daysSinceAnchor = daysBetween(anchor, date);
 
-  let year: number;
-  let dayOfYear: number;
+  // Years are 365 or 366 days, so start from the mean length and settle it.
+  // The estimate is never more than one year out in either direction.
+  let year = ANCHOR_YEAR + Math.floor(daysSinceAnchor / (365 + DRIFT_PER_YEAR));
+  while (daysToYearStart(year) > daysSinceAnchor) year--;
+  while (daysToYearStart(year + 1) <= daysSinceAnchor) year++;
+  const dayOfYear = daysSinceAnchor - daysToYearStart(year) + 1;
 
-  if (daysSinceAnchor < 0) {
-    const daysBack = Math.abs(daysSinceAnchor);
-    year = anchorYear - 1 - Math.floor((daysBack - 1) / 365);
-    dayOfYear = 365 - ((daysBack - 1) % 365);
-  } else {
-    year = anchorYear + Math.floor(daysSinceAnchor / 365);
-    dayOfYear = (daysSinceAnchor % 365) + 1;
-  }
-
-  if (dayOfYear === 365) {
+  // Day 365 closes every year; day 366 exists only in a Retta year.
+  if (dayOfYear >= 365) {
+    const isRetta = dayOfYear === 366;
     return {
       hemisphere,
-      isOtium: true,
-      day: 'Otium',
+      isOutsideCount: true,
+      isOtium: !isRetta,
+      isRetta,
+      day: isRetta ? 'Retta' : 'Otium',
       month: null,
       monthIndex: -1,
       year,
-      dayOfYear: 365,
+      dayOfYear,
       dayInMonth: 0,
       weekIndex: -1,
       weekPhase: null,
@@ -133,7 +169,9 @@ export function getAptusDate(date: Date = new Date(), hemisphere: Hemisphere = '
 
   return {
     hemisphere,
+    isOutsideCount: false,
     isOtium: false,
+    isRetta: false,
     day: dayInMonth,
     month: monthData.name,
     monthIndex,
@@ -148,8 +186,8 @@ export function getAptusDate(date: Date = new Date(), hemisphere: Hemisphere = '
 }
 
 export function gregDateFromAptus(dayOfYear: number, neYear: number, hemisphere: Hemisphere = 'SH'): Date {
-  const { date: anchor, year: anchorYear } = ANCHORS[hemisphere];
-  const totalDays = (neYear - anchorYear) * 365 + (dayOfYear - 1);
+  const { date: anchor } = ANCHORS[hemisphere];
+  const totalDays = daysToYearStart(neYear) + (dayOfYear - 1);
   // Step by calendar date rather than milliseconds so the result stays at
   // local midnight even when a DST boundary falls in between.
   return new Date(anchor.getFullYear(), anchor.getMonth(), anchor.getDate() + totalDays);

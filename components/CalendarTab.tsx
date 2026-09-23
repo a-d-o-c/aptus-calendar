@@ -7,6 +7,7 @@ import {
   SEASON_COLORS,
   getAptusDate,
   gregDateFromAptus,
+  isRettaYear,
   type AptusDate,
   type Season,
 } from '@/lib/aptus';
@@ -32,7 +33,7 @@ function MonthCard({ monthIndex, today, neYear }: MonthCardProps) {
   const { hemisphere } = useHemisphere();
   const month = MONTHS[monthIndex];
   const color = month.color;
-  const isCurrentMonth = !!(today && !today.isOtium && today.monthIndex === monthIndex);
+  const isCurrentMonth = !!(today && !today.isOutsideCount && today.monthIndex === monthIndex);
 
   return (
     <div style={{
@@ -111,7 +112,7 @@ function MonthCard({ monthIndex, today, neYear }: MonthCardProps) {
               ...Array.from({ length: 7 }, (_, di) => {
                 const dayInMonth = dayStart + di;
                 const dayOfYear = month.start + dayStart + di - 1;
-                const isToday = !!(today && !today.isOtium &&
+                const isToday = !!(today && !today.isOutsideCount &&
                   today.monthIndex === monthIndex &&
                   today.dayInMonth === dayInMonth);
                 const isThisWeek = isCurrentWeek;
@@ -299,6 +300,51 @@ export default function CalendarTab() {
             The threshold day. For reflection, review, and renewal. A pause between years.
           </div>
         </div>
+
+        {/* Retta — only in a calibration year */}
+        {isRettaYear(neYear) && (
+          <div style={{
+            padding: '1.25rem 1.5rem',
+            background: '#1d1d1c',
+            border: '1px solid #3a352b',
+            borderRadius: 6,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            marginBottom: '2rem',
+          }}>
+            <div>
+              <div style={{
+                fontFamily: 'var(--font-cormorant)',
+                fontSize: '1.4rem',
+                fontWeight: 300,
+                color: '#c0a880',
+                lineHeight: 1,
+                marginBottom: '0.3rem',
+              }}>
+                Retta
+              </div>
+              <div style={{
+                fontFamily: 'var(--font-dm-mono)',
+                fontSize: '0.62rem',
+                color: '#8a7460',
+                letterSpacing: '0.1em',
+              }}>
+                Day 366 · Calibration
+              </div>
+            </div>
+            <div style={{
+              fontFamily: 'var(--font-libre)',
+              fontStyle: 'italic',
+              fontSize: '0.95rem',
+              color: '#9a8870',
+              maxWidth: 400,
+              textAlign: 'right',
+            }}>
+              The day given back. Every year loses a quarter-day against the sun; this one returns it.
+            </div>
+          </div>
+        )}
 
       </div>
     </div>
