@@ -130,7 +130,7 @@ export const CELEBRATIONS: Celebration[] = [
     kind: 'calibration',
     observed: null,
     days: 1,
-    position: 'Day 366 · roughly every 6 years · next: 12030 NE',
+    position: 'Day 366 · roughly every 4 years · next: 12030 NE',
     color: '#c0a880',
     meaning: 'The solar year is 365.2422 days, not 365. Every Aptus year drifts a little; Retta is added as Day 366 to bring the calendar back into true.',
     practice: [

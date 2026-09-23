@@ -69,9 +69,19 @@ export const SEASON_COLORS: Record<Season, { primary: string; glow: string }> = 
   winter: { primary: '#406280', glow: 'rgba(64, 98, 128, 0.18)' },
 };
 
-// Anchors: the Gregorian date that equals Verna Day 1 of 12026 NE
+// Anchors: the Gregorian date that equals Verna Day 1 of 12026 NE.
+//
+// Deliberately a floating local date rather than an instant — no Z, so
+// everyone's 23 September is Day 1 in their own zone. Resolving the true
+// equinox instant per viewer would put people either side of the date line on
+// permanently different day numbers, and "it is Hayta today" would stop
+// meaning one thing. Retta absorbs the drift instead.
+//
+// The southern date is the 23rd because the ordinals in celebrations.ts encode
+// it: day 91 counted from 23 Sept is 22 Dec, the true solstice. From the 22nd
+// it lands a day early, as do Nesti and Vona.
 const ANCHORS: Record<Hemisphere, { date: Date; year: number }> = {
-  SH: { date: new Date('2026-09-22T00:00:00'), year: 12026 },
+  SH: { date: new Date('2026-09-23T00:00:00'), year: 12026 },
   NH: { date: new Date('2026-03-20T00:00:00'), year: 12026 },
 };
 
