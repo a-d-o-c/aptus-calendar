@@ -1,5 +1,6 @@
 import {
   MONTHS,
+  yearLength,
   gregDateFromAptus,
   formatGregorian,
   formatGregorianShort,
@@ -130,7 +131,7 @@ export const CELEBRATIONS: Celebration[] = [
     kind: 'calibration',
     observed: null,
     days: 1,
-    position: 'Day 366 · roughly every 6 years · next: 12030 NE',
+    position: 'Day 366 · roughly every 4 years · next: 12030 NE',
     color: '#c0a880',
     meaning: 'The solar year is 365.2422 days, not 365. Every Aptus year drifts a little; Retta is added as Day 366 to bring the calendar back into true.',
     practice: [
@@ -152,10 +153,21 @@ export const KIND_LABEL: Record<CelKind, string> = {
 // to next year's occurrence. Retta has no fixed day and is excluded.
 
 function doyOf(today: AptusDate): number {
-  return today.isOtium ? 365 : today.dayOfYear;
+  return today.dayOfYear;
 }
 
+/**
+ * Wrap an ordinal into the 365 days every year has. Retta is day 366 and is
+ * deliberately not in this space: no celebration span reaches the end of the
+ * year, so nothing needs to wrap across it.
+ */
 const wrap = (doy: number): number => ((doy - 1 + 365) % 365) + 1;
+
+/**
+ * The cycle a countdown runs on. A Retta year is 366 days long, so counting
+ * forward to next year's celebration has to cross one more day than usual.
+ */
+const cycleOf = (today: AptusDate): number => yearLength(today.year);
 
 /** The observed day for one hemisphere. */
 export function observedDay(cel: Celebration, hemisphere: Hemisphere): number | null {
@@ -197,7 +209,8 @@ export function aptusPosition(cel: Celebration, hemisphere: Hemisphere): string 
 export function isActive(today: AptusDate, cel: Celebration): boolean {
   const start = startDay(cel, today.hemisphere);
   if (start === null) return false;
-  return (doyOf(today) - start + 365) % 365 < cel.days;
+  const cycle = cycleOf(today);
+  return (doyOf(today) - start + cycle) % cycle < cel.days;
 }
 
 /** Days until the celebration begins; 0 for every day it is running. */
@@ -205,7 +218,8 @@ export function daysUntil(today: AptusDate, cel: Celebration): number | null {
   const start = startDay(cel, today.hemisphere);
   if (start === null) return null;
   if (isActive(today, cel)) return 0;
-  return (start - doyOf(today) + 365) % 365;
+  const cycle = cycleOf(today);
+  return (start - doyOf(today) + cycle) % cycle;
 }
 
 /** The NE year the next occurrence falls in — next year once the day has passed. */

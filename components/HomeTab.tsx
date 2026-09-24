@@ -38,12 +38,12 @@ function MonoLabel({ children, color = '#8a7460' }: { children: React.ReactNode;
 // and the first client paint agree.
 
 function TodayHero({ info, now, isMobile }: { info: AptusDate; now: Date; isMobile: boolean }) {
-  const month = info.isOtium ? null : MONTHS.find(m => m.name === info.month) ?? null;
+  const month = info.isOutsideCount ? null : MONTHS.find(m => m.name === info.month) ?? null;
   const accent = month?.color ?? '#b8c8c8';
   const glow = info.season ? SEASON_COLORS[info.season].glow : 'rgba(184, 200, 200, 0.14)';
 
-  const meta = info.isOtium
-    ? [`${info.year} NE`, 'Outside the count']
+  const meta = info.isOutsideCount
+    ? [`${info.year} NE`, info.isRetta ? 'Calibration day' : 'Outside the count']
     : [`${info.year} NE`, info.weekPhase, month?.focus].filter(Boolean) as string[];
 
   return (
@@ -68,7 +68,7 @@ function TodayHero({ info, now, isMobile }: { info: AptusDate; now: Date; isMobi
           color: '#ede8de',
           margin: '0.9rem 0 0',
         }}>
-          {info.isOtium ? 'Otium' : `${info.month} ${info.dayInMonth}`}
+          {info.isOutsideCount ? info.day : `${info.month} ${info.dayInMonth}`}
         </h1>
 
         <div style={{
@@ -97,8 +97,10 @@ function TodayHero({ info, now, isMobile }: { info: AptusDate; now: Date; isMobi
           color: '#c0a880', lineHeight: 1.75,
           maxWidth: 500, margin: '0 auto',
         }}>
-          {info.isOtium
-            ? 'No month, no week, no number. The only day of the year that asks nothing of you — on purpose.'
+          {info.isOutsideCount
+            ? info.isRetta
+              ? 'An extra day, outside the ordinary structure of the year. The count drifts a quarter-day a year; this is the day given back.'
+              : 'No month, no week, no number. The only day of the year that asks nothing of you — on purpose.'
             : month?.intent}
         </p>
 
@@ -214,7 +216,7 @@ function BirthdayFinder({ hemisphere }: { hemisphere: 'SH' | 'NH' }) {
     setResult(getAptusDate(d, hemisphere));
   }
 
-  const month = result && !result.isOtium ? MONTHS.find(m => m.name === result.month) : null;
+  const month = result && !result.isOutsideCount ? MONTHS.find(m => m.name === result.month) : null;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
@@ -254,9 +256,9 @@ function BirthdayFinder({ hemisphere }: { hemisphere: 'SH' | 'NH' }) {
           textAlign: 'left',
           maxWidth: 360,
         }}>
-          {result.isOtium ? (
+          {result.isOutsideCount ? (
             <>
-              <div style={{ fontFamily: 'var(--font-cormorant)', fontSize: '2rem', fontWeight: 400, color: '#a080b8', lineHeight: 1 }}>Otium</div>
+              <div style={{ fontFamily: 'var(--font-cormorant)', fontSize: '2rem', fontWeight: 400, color: '#a080b8', lineHeight: 1 }}>{result.day}</div>
               <div style={{ fontFamily: 'var(--font-dm-mono)', fontSize: '0.65rem', color: '#9a8870', letterSpacing: '0.08em', marginTop: '0.5rem' }}>
                 {result.year} NE · Threshold day
               </div>
@@ -300,7 +302,7 @@ export default function HomeTab() {
     return () => clearInterval(id);
   }, [hemisphere]);
 
-  const aptusMonth = aptusInfo && !aptusInfo.isOtium ? MONTHS.find(m => m.name === aptusInfo.month) : null;
+  const aptusMonth = aptusInfo && !aptusInfo.isOutsideCount ? MONTHS.find(m => m.name === aptusInfo.month) : null;
   const accentColor = aptusMonth?.color ?? '#4e8845';
 
   return (

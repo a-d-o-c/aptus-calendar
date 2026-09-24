@@ -225,7 +225,7 @@ export default function AboutTab() {
             Thirteen months of exactly 28 days each = 364 days. Every month has four identical weeks. The year
             begins at the spring equinox — the moment the hemisphere tilts back toward the sun and conditions
             for growth actually begin. Day 365 is Otium: a threshold day outside the structure, for the pause
-            between years. Roughly every six years, Retta is added as a calibration day to keep the calendar true to
+            between years. Roughly every four years, Retta is added as a calibration day to keep the calendar true to
             the solar year.
           </Body>
           <Body>
@@ -547,7 +547,7 @@ export default function AboutTab() {
           <Label>Anchors</Label>
           <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
             {[
-              { label: 'Southern Hemisphere', date: 'Sept 22 = Verna Day 1', color: '#5aad3e' },
+              { label: 'Southern Hemisphere', date: 'Sept 23 = Verna Day 1', color: '#5aad3e' },
               { label: 'Northern Hemisphere', date: 'Mar 20 = Verna Day 1',  color: '#4a6fa5' },
             ].map(a => (
               <div key={a.label} style={{

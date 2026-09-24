@@ -31,8 +31,9 @@ strong enough without verdicts attached to it.
 
 - 13 months × 28 days = 364 days.
 - **Otium** — day 365, outside the count, belongs to no month or week.
-- **Retta** — day 366, calibration, roughly every 6 years. Next: 12030 NE.
-- Anchor: Verna 1 = 22 Sept (Southern Hemisphere) / 20 March (Northern).
+- **Retta** — day 366, calibration, every 4 years. Next: 12030 NE. See below
+  for the insertion rule.
+- Anchor: Verna 1 = 23 Sept (Southern Hemisphere) / 20 March (Northern).
 - Year numbering: Natural Era (NE) = Gregorian + 10,000.
 - Weekly cadence, repeating every 7 days within each month:
   Orient → Engage → Release → Integrate.
@@ -59,6 +60,68 @@ strong enough without verdicts attached to it.
 Naming is final as of 12026 NE: **Lacuna → Otium**, **Messia → Plena**,
 **Spira → Spyra**. No further renaming without an explicit decision recorded
 here.
+
+### The southern anchor is 23 September
+
+Corrected 23 Sept 2026, on the day itself. The anchor had been 22 Sept since
+v1. The ordinals in §3 are what settled it: day 91 counted from 23 Sept is
+22 Dec, the true December solstice, and days 180 and 273 likewise land on the
+March equinox and the June solstice. Counted from the 22nd all three fall a
+day early. The anchor and the ordinals disagreed; the ordinals were right.
+
+Corroborating: in NZ local terms the September equinox falls on the 23rd in 28
+of the 40 years from 2026, and the 2026 equinox — the first day of 12026 NE —
+was 23 Sept 00:05 UTC, 12:05pm NZST.
+
+The anchor stays a floating local date, not an instant. Resolving the true
+equinox per viewer would put people either side of the date line on
+permanently different day numbers, which costs more than the precision buys.
+
+### Retta runs every 4 years, not 6
+
+Corrected 23 Sept 2026. A 365-day year loses 0.2422 days against the tropical
+year, so a calibration day is owed every ~4.13 years. At every 6 years the
+calendar gives back one day per 1.45 accumulated and slips a full day every
+~13 years; simulated over 40 years it reaches 3 days out. At every 4 years it
+stays inside a single day indefinitely (residual −0.031 d/cycle, one day per
+~128 years, which will eventually want a skip rule). The “roughly a quarter-day
+of drift” already in the copy implies 4; the 6 was an arithmetic slip that had
+propagated to five places. Next Retta is unchanged at 12030 NE.
+
+### How Retta is inserted
+
+Decided 23 Sept 2026, and implemented the same day — until then Retta was
+prose only and day 366 was unreachable, so the calendar did not calibrate at
+all. §6 said not to guess at this, so it was settled with ephemeris data
+rather than preference.
+
+The rule is one line: the Retta days absorbed before a year begins are
+
+    floor((neYear - 12026) x 0.2422)
+
+and a year is a Retta year when that figure increases across it. Flooring the
+accumulated drift puts the calibration day in the year the drift completes,
+which yields 12030, 12034, 12038, 12042 and so on — exactly the cadence §2
+already claimed, derived rather than tabulated.
+
+Floor runs in both directions, which is the reason for choosing it over a rule
+with a start epoch. The converter takes arbitrary dates and people put their
+birthdays in it; a forward-only rule leaves a 1950 date 18 days out. This one
+holds the year start within a single day of the true equinox from at least
+1900 to 2150, in both directions, and needs no century exception.
+
+**Consequence worth knowing:** 12025 is a Retta year, so the day before the
+anchor is Retta rather than Otium. This is forced, not chosen — the forward
+constraint (Retta in 12030) and a backward one (12025 running 365 days) cannot
+both hold for any uniform rule. 12025 opens a day before its true equinox,
+which is inside tolerance.
+
+Retta keeps `observed: null` in the celebration data. It has no *annual* day,
+and every consumer already branches on null; giving it a conditional 366 would
+push year-awareness through seven functions for a day that falls once in four
+years and whose whole meaning is sitting outside the annual cycle. Instead
+`getAptusDate` reports `isRetta`, alongside `isOutsideCount` — the flag Otium
+and Retta share, and what the tabs now branch on.
 
 ---
 
