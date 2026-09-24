@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
-import { getAptusDate, type AptusDate } from '@/lib/aptus';
+import { useRef, useState } from 'react';
+import { useToday } from '@/lib/use-today';
 import {
   CELEBRATIONS,
   KIND_LABEL,
@@ -27,15 +27,11 @@ function Label({ children }: { children: React.ReactNode }) {
 export default function CelebrationsTab() {
   const { hemisphere } = useHemisphere();
   const isMobile = useIsMobile();
-  const [today, setToday] = useState<AptusDate | null>(null);
+
   const [openName, setOpenName] = useState<string | null>(null);
   const cardRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
-  useEffect(() => {
-    setToday(getAptusDate(new Date(), hemisphere));
-    const id = setInterval(() => setToday(getAptusDate(new Date(), hemisphere)), 60000);
-    return () => clearInterval(id);
-  }, [hemisphere]);
+  const today = useToday(hemisphere);
 
   // Chips are a jump list: open the card and bring it into view, so tapping one
   // on mobile doesn't expand something off-screen with no visible feedback.

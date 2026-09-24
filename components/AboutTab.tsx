@@ -1,17 +1,15 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import {
   MONTHS,
   SEASON_COLORS,
   WEEK_PHASES,
   WEEK_PHASE_DESC,
-  getAptusDate,
-  type AptusDate,
   type Season,
 } from '@/lib/aptus';
 import { CELEBRATIONS, timingLabel } from '@/lib/celebrations';
 import { useHemisphere } from '@/lib/hemisphere-context';
+import { useToday } from '@/lib/use-today';
 
 const SEASON_LABELS: Record<Season, string> = {
   spring: 'Spring',
@@ -125,11 +123,9 @@ function Card({ title, subtitle, body, accent }: {
 
 export default function AboutTab() {
   const { hemisphere } = useHemisphere();
-  const [today, setToday] = useState<AptusDate | null>(null);
 
-  useEffect(() => {
-    setToday(getAptusDate(new Date(), hemisphere));
-  }, [hemisphere]);
+
+  const today = useToday(hemisphere);
 
   /** Aptus position, what the day is, and its dates — all from the lib, never hardcoded. */
   const timingFor = (name: string): string | null => {
@@ -146,7 +142,7 @@ export default function AboutTab() {
         <div style={{ marginBottom: '3rem' }}>
           <Label>About Aptus</Label>
           <SectionTitle>
-            The Gregorian calendar wasn't designed.<br />
+            The Gregorian calendar wasn’t designed.<br />
             <span style={{ fontStyle: 'italic', color: '#c0a880' }}>It just kept getting patched.</span>
           </SectionTitle>
           <Body>
@@ -325,10 +321,10 @@ export default function AboutTab() {
           <Label>Celebrations</Label>
           <SectionTitle>Seven days the year turns on</SectionTitle>
           <Body>
-            The equinoxes and solstices are not invented — they're astronomical events, measurable and precise,
+            The equinoxes and solstices are not invented — they’re astronomical events, measurable and precise,
             occurring whether or not anyone acknowledges them. Arfa, Otium and Retta are structural features
             of the Aptus calendar built around those events and around the turn of the year itself. Together
-            these seven days are Aptus's calendar of observance.
+            these seven days are Aptus’s calendar of observance.
           </Body>
           <Body>
             What follows is what each moment actually is, and some suggestions for how a person might

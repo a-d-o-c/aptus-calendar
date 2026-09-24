@@ -1,14 +1,18 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { getAptusDate, SEASON_COLORS, WEEK_PHASE_DESC, type AptusDate, type WeekPhase, type Season } from '@/lib/aptus';
 import { useHemisphere } from '@/lib/hemisphere-context';
+import { useStored } from '@/lib/use-stored';
 
 interface SavedDate {
   id: string;
   name: string;
   gregorian: string; // ISO date string YYYY-MM-DD
 }
+
+/** Stable reference: a fresh [] each render would churn the store snapshot. */
+const NO_SAVED_DATES: SavedDate[] = [];
 
 const SEASON_LABELS: Record<Season, string> = {
   spring: 'Spring',
@@ -84,17 +88,10 @@ export default function ConvertTab() {
   const { hemisphere } = useHemisphere();
   const [inputDate, setInputDate] = useState('');
   const [result, setResult] = useState<AptusDate | null>(null);
-  const [saved, setSaved] = useState<SavedDate[]>([]);
+  const [saved, setSaved] = useStored<SavedDate[]>('aptus-birthdays', NO_SAVED_DATES);
   const [saveName, setSaveName] = useState('');
   const [showSaveForm, setShowSaveForm] = useState(false);
   const nameRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    try {
-      const raw = localStorage.getItem('aptus-birthdays');
-      if (raw) setSaved(JSON.parse(raw));
-    } catch {}
-  }, []);
 
   function convert(dateStr: string) {
     if (!dateStr) { setResult(null); return; }
@@ -112,17 +109,13 @@ export default function ConvertTab() {
   function saveDate() {
     if (!saveName.trim() || !inputDate) return;
     const entry: SavedDate = { id: Date.now().toString(), name: saveName.trim(), gregorian: inputDate };
-    const next = [...saved, entry];
-    setSaved(next);
-    localStorage.setItem('aptus-birthdays', JSON.stringify(next));
+    setSaved([...saved, entry]);
     setSaveName('');
     setShowSaveForm(false);
   }
 
   function removeDate(id: string) {
-    const next = saved.filter(d => d.id !== id);
-    setSaved(next);
-    localStorage.setItem('aptus-birthdays', JSON.stringify(next));
+    setSaved(saved.filter(d => d.id !== id));
   }
 
   function loadSaved(s: SavedDate) {

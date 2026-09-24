@@ -1,17 +1,16 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import {
   MONTHS,
   SEASON_COLORS,
   WEEK_PHASES,
-  getAptusDate,
   gregDateFromAptus,
   formatGregorian,
-  type AptusDate,
   type Season,
 } from '@/lib/aptus';
 import { useHemisphere } from '@/lib/hemisphere-context';
+import { useToday } from '@/lib/use-today';
 import { useIsMobile } from '@/lib/use-mobile';
 
 // ── SVG geometry ─────────────────────────────────────────────────
@@ -106,14 +105,12 @@ const SEASON_MID_DAYS: Record<Season, number> = {
 
 export default function YearTab() {
   const { hemisphere } = useHemisphere();
-  const [today, setToday] = useState<AptusDate | null>(null);
+
   const [hovered, setHovered] = useState<number | null>(null);
   const [selected, setSelected] = useState<number | null>(null);
   const isMobile = useIsMobile();
 
-  useEffect(() => {
-    setToday(getAptusDate(new Date(), hemisphere));
-  }, [hemisphere]);
+  const today = useToday(hemisphere);
 
   const activeIndex = selected ?? (today && !today.isOutsideCount ? today.monthIndex : null);
   const activeSegment = activeIndex !== null ? SEGMENTS[activeIndex] : null;

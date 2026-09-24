@@ -1,17 +1,16 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import {
   MONTHS,
   WEEK_PHASES,
   SEASON_COLORS,
-  getAptusDate,
   gregDateFromAptus,
   isRettaYear,
   type AptusDate,
   type Season,
 } from '@/lib/aptus';
 import { useHemisphere } from '@/lib/hemisphere-context';
+import { useToday } from '@/lib/use-today';
 import { useIsMobile } from '@/lib/use-mobile';
 
 const SEASON_LABELS: Record<Season, string> = {
@@ -166,12 +165,10 @@ function MonthCard({ monthIndex, today, neYear }: MonthCardProps) {
 
 export default function CalendarTab() {
   const { hemisphere } = useHemisphere();
-  const [today, setToday] = useState<AptusDate | null>(null);
+
   const isMobile = useIsMobile();
 
-  useEffect(() => {
-    setToday(getAptusDate(new Date(), hemisphere));
-  }, [hemisphere]);
+  const today = useToday(hemisphere);
 
   const neYear = today?.year ?? 12026;
 

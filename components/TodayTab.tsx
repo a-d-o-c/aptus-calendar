@@ -1,19 +1,17 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import { moonPhase } from '@/lib/moon';
 import {
-  getAptusDate,
   yearLength,
   formatGregorian,
   MONTHS,
   SEASON_COLORS,
   WEEK_PHASE_DESC,
-  type AptusDate,
   type Season,
   type WeekPhase,
 } from '@/lib/aptus';
 import { useHemisphere } from '@/lib/hemisphere-context';
+import { useToday, useNow } from '@/lib/use-today';
 import { useIsMobile } from '@/lib/use-mobile';
 
 const SEASON_LABELS: Record<Season, string> = {
@@ -57,22 +55,11 @@ function YearArc({ dayOfYear, total, season, size = 106 }: { dayOfYear: number; 
 
 export default function TodayTab() {
   const { hemisphere } = useHemisphere();
-  const [info, setInfo] = useState<AptusDate | null>(null);
-  const [greg, setGreg] = useState('');
-  const [moon, setMoon] = useState('');
+  const info = useToday(hemisphere);
+  const now = useNow();
+  const greg = now ? formatGregorian(now) : '';
+  const moon = now ? moonPhase(now).toLowerCase() : '';
   const isMobile = useIsMobile();
-
-  useEffect(() => {
-    function refresh() {
-      const now = new Date();
-      setInfo(getAptusDate(now, hemisphere));
-      setGreg(formatGregorian(now));
-      setMoon(moonPhase(now).toLowerCase());
-    }
-    refresh();
-    const id = setInterval(refresh, 60_000);
-    return () => clearInterval(id);
-  }, [hemisphere]);
 
   if (!info) return null;
 
