@@ -364,8 +364,12 @@ These are load-bearing and verifiable. Keep them; state them flatly.
   listed under both spellings: browsers report `America/Argentina/*` but some
   runtimes canonicalise to the older `America/Buenos_Aires`, and the prefix
   alone missed every Argentine visitor. Checked against 32 zones.
-- **Hydration:** the page prerenders statically, so anything date-dependent
-  resolves in a `useEffect`, never during render.
+- **Hydration:** the page prerenders statically, so nothing date-dependent may
+  resolve during render. Until 23 Sept 2026 each tab did this in its own
+  `useEffect`; it now comes from `useToday()` in `lib/use-today.ts`, a
+  `useSyncExternalStore` over the clock — null on the server, the real date
+  after hydration, and one timer for the app rather than one per tab.
+  Persisted client state uses `lib/use-stored.ts` the same way.
 
 ### Launch plumbing
 
@@ -426,8 +430,11 @@ aptuscalendar.com, nothing more. Its four nav links — `about.html`,
 `calendar.html`, `converter.html`, `guide.html` — never existed in the repo
 and were 404s on the live site for as long as it was up, so the old page was
 a working homepage attached to a broken menu. `aptus.js`, `wheel.js` and
-`styles.css` remain in the repo but nothing references them now; git history
-holds the full v1 site if it is ever wanted back.
+`styles.css` lingered unreferenced until 23 Sept 2026 and are now deleted —
+`aptus.js` still held the raw-millisecond day arithmetic that §5 warns
+against, which made it a trap for anyone who opened it. `wheel.svg` stays,
+for social and print. Git history holds the full v1 site if it is ever
+wanted back.
 
 The duplicate copies of these files in the parent `Aptus Calendar/` folder
 are gone (13 Sept 2026). They were identical to the repo's, one commit

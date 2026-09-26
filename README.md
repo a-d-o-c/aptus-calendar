@@ -1,36 +1,43 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Aptus Calendar
 
-## Getting Started
+A calendar aligned to the seasons rather than to Rome: thirteen months of
+twenty-eight days, anchored to the equinox, with a Southern Hemisphere
+default. Live at [aptuscalendar.com](https://aptuscalendar.com).
 
-First, run the development server:
+It is not a replacement for the Gregorian calendar. It runs alongside one,
+for people who want the year to match what is happening outside.
+
+## Structure
+
+13 months × 28 days = 364. **Otium** is day 365, outside the count and
+belonging to no month or week. **Retta** is day 366, added every four years to
+keep the count true to the sun. Year numbering is Natural Era: Gregorian plus
+10,000, so 2026 CE is 12026 NE.
+
+Verna 1 falls on 23 September in the south and 20 March in the north — as a
+floating local date, not an instant. Resolving the true equinox per viewer
+would put people either side of the date line on permanently different day
+numbers, so the anchor is fixed and Retta absorbs the drift.
+
+## Running it
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev      # http://localhost:3000
+npm test         # vitest
+npm run build
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Where things live
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- `lib/aptus.ts` — the date arithmetic, and the only place it exists. Day
+  counts are calendar-based, never raw milliseconds; subtracting timestamps
+  drifts across a DST boundary and reports the wrong day.
+- `lib/celebrations.ts` — the seven turning points, their timing and copy.
+- `lib/ics.ts` — the subscription feed served at `/feed.ics`.
+- `lib/use-today.ts` — today, as one store the whole app shares. Components
+  never call `getAptusDate(new Date())` themselves.
+- `APTUS.md` — what is decided, and why. Read it before changing anything
+  structural.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Built with Next.js (App Router), React and TypeScript. Deployed on Vercel.
