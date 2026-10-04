@@ -1,117 +1,130 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import {
   getAptusDate,
-  formatGregorian,
   MONTHS,
   SEASON_COLORS,
+  WEEK_PHASES,
+  WEEK_PHASE_SEASON,
   type AptusDate,
 } from '@/lib/aptus';
 import { nextCelebration, timingLabel } from '@/lib/celebrations';
+import RenameRing from './RenameRing';
 import Subscribe from './Subscribe';
 import { useHemisphere } from '@/lib/hemisphere-context';
 import { useTabNav } from '@/lib/tab-context';
 import { useIsMobile } from '@/lib/use-mobile';
+import { useNow, useToday } from '@/lib/use-today';
 
-const COMPARISON_ROWS = [
-  { greg: '12 months, 28–31 days each',        aptus: '13 months × 28 days exactly'          },
-  { greg: 'Year begins January 1',              aptus: 'Year begins at spring equinox'         },
-  { greg: 'No weekly phase structure',          aptus: 'Orient · Engage · Release · Integrate' },
-  { greg: 'Designed for Northern Hemisphere',   aptus: 'Southern Hemisphere default'           },
-  { greg: '2026 CE',                            aptus: '12026 NE — Natural Era'                },
+// ── Three ideas, each a picture first and a sentence second ───────
+
+function EqualMonthsGlyph() {
+  return (
+    <svg viewBox="0 0 120 44" width="120" height="44" aria-hidden>
+      {MONTHS.map((m, i) => (
+        <rect key={m.name} x={i * 8.6} y={6} width={6} height={32} rx={1} fill={m.color} opacity={0.85} />
+      ))}
+      <circle cx={13 * 8.6 + 3} cy={22} r={2.2} fill="#a080b8" />
+    </svg>
+  );
+}
+
+function EquinoxGlyph() {
+  return (
+    <svg viewBox="0 0 120 44" width="120" height="44" aria-hidden>
+      <path d="M 36 34 A 24 24 0 0 1 84 34" fill="none" stroke="#2d2e2b" strokeWidth={1} strokeDasharray="2 3" />
+      <line x1={14} y1={34} x2={106} y2={34} stroke="#8a7460" strokeWidth={1} />
+      <circle cx={60} cy={34} r={9} fill={SEASON_COLORS.spring.primary} />
+      <rect x={50} y={34} width={20} height={10} fill="#121110" />
+      <line x1={60} y1={6} x2={60} y2={18} stroke="#c0a880" strokeWidth={1} />
+    </svg>
+  );
+}
+
+function SmallYearGlyph() {
+  return (
+    <svg viewBox="0 0 120 44" width="120" height="44" aria-hidden>
+      {WEEK_PHASES.map((w, i) => (
+        <g key={w}>
+          {Array.from({ length: 7 }, (_, d) => (
+            <rect
+              key={d}
+              x={4 + i * 29 + (d % 4) * 6.4}
+              y={10 + Math.floor(d / 4) * 13}
+              width={4.6} height={10} rx={0.8}
+              fill={SEASON_COLORS[WEEK_PHASE_SEASON[w]].primary}
+              opacity={0.85}
+            />
+          ))}
+        </g>
+      ))}
+    </svg>
+  );
+}
+
+const IDEAS = [
+  {
+    glyph: <EqualMonthsGlyph />,
+    title: 'Thirteen equal months',
+    line: 'Twenty-eight days each, exactly four weeks. One day, Otium, sits outside the count.',
+  },
+  {
+    glyph: <EquinoxGlyph />,
+    title: 'The year opens at the equinox',
+    line: 'Day one is the spring equinox, when light starts to outlast the dark.',
+  },
+  {
+    glyph: <SmallYearGlyph />,
+    title: 'Every month is a small year',
+    line: 'Orient, Engage, Release, Integrate. Four weeks that rehearse the four seasons.',
+  },
 ];
 
-function MonoLabel({ children, color = '#8a7460' }: { children: React.ReactNode; color?: string }) {
+function Ideas({ isMobile }: { isMobile: boolean }) {
   return (
     <div style={{
-      fontFamily: 'var(--font-dm-mono)', fontSize: '0.62rem', letterSpacing: '0.25em',
-      textTransform: 'uppercase', color,
+      display: 'grid',
+      gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)',
+      gap: isMobile ? '2.25rem' : '2rem',
     }}>
-      {children}
+      {IDEAS.map(idea => (
+        <div key={idea.title} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <div style={{ height: 44, display: 'flex', alignItems: 'center' }}>{idea.glyph}</div>
+          <div style={{
+            fontFamily: 'var(--font-cormorant)', fontSize: '1.35rem', fontWeight: 400,
+            color: '#ede8de', marginTop: '1rem', lineHeight: 1.15,
+          }}>
+            {idea.title}
+          </div>
+          <p style={{
+            fontFamily: 'var(--font-libre)', fontSize: '0.86rem', lineHeight: 1.65,
+            color: '#9a8870', marginTop: '0.5rem', maxWidth: 260,
+          }}>
+            {idea.line}
+          </p>
+        </div>
+      ))}
     </div>
   );
 }
 
-// ── Hero: the live date ───────────────────────────────────────────
-// Rendered only once the client effect has run, so the static prerender
-// and the first client paint agree.
-
-function TodayHero({ info, now, isMobile }: { info: AptusDate; now: Date; isMobile: boolean }) {
-  const month = info.isOutsideCount ? null : MONTHS.find(m => m.name === info.month) ?? null;
-  const accent = month?.color ?? '#b8c8c8';
-  const glow = info.season ? SEASON_COLORS[info.season].glow : 'rgba(184, 200, 200, 0.14)';
-
-  const meta = info.isOutsideCount
-    ? [`${info.year} NE`, info.isRetta ? 'Calibration day' : 'Outside the count']
-    : [`${info.year} NE`, info.weekPhase, month?.focus].filter(Boolean) as string[];
-
+function PillLink({ children, onClick }: { children: React.ReactNode; onClick: () => void }) {
   return (
-    <section style={{ position: 'relative', marginBottom: isMobile ? '1.75rem' : '2.25rem' }}>
-      <div
-        aria-hidden
-        style={{
-          position: 'absolute', inset: '-15% -20% -10%',
-          background: `radial-gradient(ellipse 55% 65% at 50% 42%, ${glow}, transparent 72%)`,
-          pointerEvents: 'none',
-        }}
-      />
-      <div style={{ position: 'relative' }}>
-        <MonoLabel>Today</MonoLabel>
-
-        <h1 style={{
-          fontFamily: 'var(--font-cormorant)',
-          fontSize: isMobile ? 'clamp(2.9rem, 13vw, 4rem)' : 'clamp(3.4rem, 7vw, 5.5rem)',
-          fontWeight: 300,
-          lineHeight: 1,
-          letterSpacing: '-0.015em',
-          color: '#ede8de',
-          margin: '0.9rem 0 0',
-        }}>
-          {info.isOutsideCount ? info.day : `${info.month} ${info.dayInMonth}`}
-        </h1>
-
-        <div style={{
-          display: 'flex', justifyContent: 'center', alignItems: 'center',
-          flexWrap: 'wrap', gap: '0.6rem',
-          fontFamily: 'var(--font-dm-mono)', fontSize: '0.66rem',
-          letterSpacing: '0.14em', textTransform: 'uppercase',
-          color: accent, marginTop: '0.9rem',
-        }}>
-          {meta.map((part, i) => (
-            <span key={part} style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-              {i > 0 && <span style={{ color: '#2d2e2b' }}>·</span>}
-              {part}
-            </span>
-          ))}
-        </div>
-
-        <div style={{
-          width: 48, height: 1, background: accent, opacity: 0.5,
-          margin: '1.4rem auto',
-        }} />
-
-        <p style={{
-          fontFamily: 'var(--font-libre)', fontStyle: 'italic',
-          fontSize: isMobile ? '0.95rem' : '1.02rem',
-          color: '#c0a880', lineHeight: 1.75,
-          maxWidth: 500, margin: '0 auto',
-        }}>
-          {info.isOutsideCount
-            ? info.isRetta
-              ? 'An extra day, outside the ordinary structure of the year. The count drifts a quarter-day a year; this is the day given back.'
-              : 'No month, no week, no number. The only day of the year that asks nothing of you — on purpose.'
-            : month?.intent}
-        </p>
-
-        <div style={{
-          fontFamily: 'var(--font-dm-mono)', fontSize: '0.62rem',
-          letterSpacing: '0.08em', color: '#8a7460', marginTop: '1.25rem',
-        }}>
-          {formatGregorian(now)}
-        </div>
-      </div>
-    </section>
+    <button
+      onClick={onClick}
+      style={{
+        background: 'transparent', border: '1px solid #2d2e2b', borderRadius: 99,
+        padding: '0.55rem 1.3rem', cursor: 'pointer',
+        fontFamily: 'var(--font-dm-mono)', fontSize: '0.62rem', letterSpacing: '0.12em',
+        textTransform: 'uppercase', color: '#c0a880',
+        transition: 'border-color 0.2s, color 0.2s',
+      }}
+      onMouseEnter={e => { e.currentTarget.style.borderColor = '#8a7460'; e.currentTarget.style.color = '#ede8de'; }}
+      onMouseLeave={e => { e.currentTarget.style.borderColor = '#2d2e2b'; e.currentTarget.style.color = '#c0a880'; }}
+    >
+      {children}
+    </button>
   );
 }
 
@@ -228,7 +241,7 @@ function BirthdayFinder({ hemisphere }: { hemisphere: 'SH' | 'NH' }) {
         color: '#9a8870',
         marginBottom: '1rem',
       }}>
-        Find your Aptus birthday
+        What month were you really born in?
       </p>
       <input
         type="date"
@@ -286,159 +299,52 @@ function BirthdayFinder({ hemisphere }: { hemisphere: 'SH' | 'NH' }) {
 
 export default function HomeTab() {
   const { hemisphere } = useHemisphere();
-  const [aptusInfo, setAptusInfo] = useState<AptusDate | null>(null);
-  const [now, setNow] = useState<Date | null>(null);
+  const today = useToday(hemisphere);
+  const now = useNow();
   const nav = useTabNav();
   const isMobile = useIsMobile();
 
-  useEffect(() => {
-    function tick() {
-      const d = new Date();
-      setNow(d);
-      setAptusInfo(getAptusDate(d, hemisphere));
-    }
-    tick();
-    const id = setInterval(tick, 60000);
-    return () => clearInterval(id);
-  }, [hemisphere]);
-
-  const aptusMonth = aptusInfo && !aptusInfo.isOutsideCount ? MONTHS.find(m => m.name === aptusInfo.month) : null;
-  const accentColor = aptusMonth?.color ?? '#4e8845';
+  const divider = { borderTop: '1px solid #2d2e2b', paddingTop: isMobile ? '2.75rem' : '3.5rem' };
 
   return (
     <div style={{ height: '100%', overflowY: 'auto', overflowX: 'hidden' }}>
       <div style={{
-        maxWidth: 720,
+        maxWidth: 760,
         margin: '0 auto',
-        padding: isMobile ? '2.5rem 1.25rem 4rem' : '4rem 2rem 6rem',
+        padding: isMobile ? '2.25rem 1rem 4rem' : '3.25rem 2rem 6rem',
         textAlign: 'center',
       }}>
 
-        {/* ── Live date + countdown ── */}
-        {aptusInfo && now && (
-          <>
-            <TodayHero info={aptusInfo} now={now} isMobile={isMobile} />
-            <div style={{ marginBottom: isMobile ? '2.5rem' : '3.5rem' }}>
-              <CelebrationCountdown
-                info={aptusInfo}
-                isMobile={isMobile}
-                onOpen={() => nav('celebrations')}
-              />
-            </div>
-          </>
+        {/* ── Hero: the months, renamed ── */}
+        {today && now
+          ? <RenameRing today={today} now={now} isMobile={isMobile} />
+          // Hold the hero's space until the clock and hemisphere resolve on the client.
+          : <div style={{ height: isMobile ? 560 : 820 }} />}
+
+        {/* ── Three ideas ── */}
+        <div style={{ ...divider, marginTop: isMobile ? '3rem' : '4rem' }}>
+          <Ideas isMobile={isMobile} />
+          <div style={{
+            fontFamily: 'var(--font-dm-mono)', fontSize: '0.58rem', letterSpacing: '0.16em',
+            textTransform: 'uppercase', color: '#6a5c4c', marginTop: isMobile ? '2.25rem' : '2.75rem',
+          }}>
+            Optional · runs alongside the calendar you already use · no belief required
+          </div>
+          <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center', flexWrap: 'wrap', marginTop: '1.5rem' }}>
+            <PillLink onClick={() => nav('year')}>See the whole year →</PillLink>
+            <PillLink onClick={() => nav('about')}>Why Aptus →</PillLink>
+          </div>
+        </div>
+
+        {/* ── Next celebration ── */}
+        {today && (
+          <div style={{ marginTop: isMobile ? '3rem' : '4rem' }}>
+            <CelebrationCountdown info={today} isMobile={isMobile} onOpen={() => nav('celebrations')} />
+          </div>
         )}
 
-        {/* Reserve the hero's height before the client effect resolves, so the
-            marketing content below doesn't jump on first paint. */}
-        {!aptusInfo && <div style={{ height: isMobile ? 430 : 520 }} />}
-
-        {/* ── Headline ── */}
-        <div style={{
-          borderTop: '1px solid #2d2e2b',
-          paddingTop: isMobile ? '2.5rem' : '3.5rem',
-          marginBottom: isMobile ? '2rem' : '2.5rem',
-        }}>
-          <h2 style={{
-            fontFamily: 'var(--font-cormorant)',
-            fontSize: isMobile ? 'clamp(2.1rem, 8.5vw, 2.9rem)' : 'clamp(2.4rem, 5vw, 3.6rem)',
-            fontWeight: 300,
-            fontStyle: 'normal',
-            lineHeight: 1.05,
-            letterSpacing: '-0.01em',
-            color: '#ede8de',
-            marginBottom: '1.25rem',
-          }}>
-            The hidden cost<br />of calendar chaos.
-          </h2>
-          <p style={{
-            fontFamily: 'var(--font-libre)',
-            fontSize: isMobile ? '1rem' : '1.05rem',
-            color: '#c0a880',
-            lineHeight: 1.8,
-            maxWidth: 540,
-            margin: '0 auto',
-          }}>
-            Twelve unequal months. A year that starts on an arbitrary date. No weekly rhythm tied to anything natural.
-            The cost is invisible — until you notice you&rsquo;re always slightly out of sync.
-          </p>
-
-          {/* CTA */}
-          <button
-            onClick={() => nav('about')}
-            style={{
-              marginTop: '1.5rem',
-              background: 'transparent',
-              border: '1px solid #2d2e2b',
-              borderRadius: 99,
-              padding: '0.5rem 1.25rem',
-              fontFamily: 'var(--font-dm-mono)',
-              fontSize: '0.62rem',
-              letterSpacing: '0.12em',
-              textTransform: 'uppercase',
-              color: '#c0a880',
-              cursor: 'pointer',
-              transition: 'border-color 0.2s, color 0.2s',
-            }}
-            onMouseEnter={e => { e.currentTarget.style.borderColor = '#8a7460'; e.currentTarget.style.color = '#ede8de'; }}
-            onMouseLeave={e => { e.currentTarget.style.borderColor = '#2d2e2b'; e.currentTarget.style.color = '#c0a880'; }}
-          >
-            What is Aptus? →
-          </button>
-        </div>
-
-        {/* ── VS comparison table ── */}
-        <div style={{ marginBottom: isMobile ? '2.5rem' : '4rem' }}>
-          {isMobile ? (
-            /* Mobile: stacked cards */
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-              <div style={{ background: '#1d1d1c', border: '1px solid #2d2e2b', borderRadius: 6, overflow: 'hidden' }}>
-                <div style={{ padding: '0.75rem 1rem', borderBottom: '1px solid #2d2e2b', fontFamily: 'var(--font-dm-mono)', fontSize: '0.6rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: '#8a7460' }}>Gregorian</div>
-                {COMPARISON_ROWS.map((row, i) => (
-                  <div key={i} style={{ padding: '0.65rem 1rem', borderBottom: i < COMPARISON_ROWS.length - 1 ? '1px solid #232322' : 'none', display: 'flex', gap: '0.5rem', alignItems: 'flex-start' }}>
-                    <span style={{ color: '#2d2e2b', flexShrink: 0 }}>—</span>
-                    <span style={{ fontFamily: 'var(--font-libre)', fontSize: '0.9rem', color: '#9a8870', lineHeight: 1.4 }}>{row.greg}</span>
-                  </div>
-                ))}
-              </div>
-              <div style={{ background: '#1d1d1c', border: '1px solid #2d2e2b', borderRadius: 6, overflow: 'hidden' }}>
-                <div style={{ padding: '0.75rem 1rem', borderBottom: '1px solid #2d2e2b', fontFamily: 'var(--font-dm-mono)', fontSize: '0.6rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: accentColor }}>Aptus</div>
-                {COMPARISON_ROWS.map((row, i) => (
-                  <div key={i} style={{ padding: '0.65rem 1rem', borderBottom: i < COMPARISON_ROWS.length - 1 ? '1px solid #232322' : 'none', display: 'flex', gap: '0.5rem', alignItems: 'flex-start' }}>
-                    <span style={{ color: accentColor, flexShrink: 0 }}>→</span>
-                    <span style={{ fontFamily: 'var(--font-libre)', fontSize: '0.9rem', color: '#ede8de', lineHeight: 1.4 }}>{row.aptus}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          ) : (
-            /* Desktop: side-by-side table */
-            <div style={{ border: '1px solid #2d2e2b', borderRadius: 6, overflow: 'hidden' }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 64px 1fr', background: '#121110', borderBottom: '1px solid #2d2e2b' }}>
-                <div style={{ padding: '1rem 1.5rem', fontFamily: 'var(--font-dm-mono)', fontSize: '0.62rem', letterSpacing: '0.22em', textTransform: 'uppercase', color: '#8a7460', textAlign: 'center' }}>Gregorian</div>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', borderLeft: '1px solid #2d2e2b', borderRight: '1px solid #2d2e2b' }}>
-                  <span style={{ fontFamily: 'var(--font-cormorant)', fontSize: '2rem', fontWeight: 300, fontStyle: 'italic', color: '#8a7460', lineHeight: 1, userSelect: 'none' }}>vs</span>
-                </div>
-                <div style={{ padding: '1rem 1.5rem', fontFamily: 'var(--font-dm-mono)', fontSize: '0.62rem', letterSpacing: '0.22em', textTransform: 'uppercase', color: accentColor, textAlign: 'center' }}>Aptus</div>
-              </div>
-              {COMPARISON_ROWS.map((row, i) => (
-                <div key={i} style={{ display: 'grid', gridTemplateColumns: '1fr 64px 1fr', borderBottom: i < COMPARISON_ROWS.length - 1 ? '1px solid #232322' : 'none', background: i % 2 === 0 ? '#1d1d1c' : '#212120' }}>
-                  <div style={{ padding: '0.9rem 1.5rem', display: 'flex', alignItems: 'center', gap: '0.6rem', textAlign: 'left' }}>
-                    <span style={{ color: '#2d2e2b', flexShrink: 0, fontSize: '0.9rem' }}>—</span>
-                    <span style={{ fontFamily: 'var(--font-libre)', fontSize: '0.95rem', color: '#9a8870', lineHeight: 1.4 }}>{row.greg}</span>
-                  </div>
-                  <div style={{ borderLeft: '1px solid #232322', borderRight: '1px solid #232322' }} />
-                  <div style={{ padding: '0.9rem 1.5rem', display: 'flex', alignItems: 'center', gap: '0.6rem', textAlign: 'left' }}>
-                    <span style={{ color: accentColor, flexShrink: 0, fontSize: '0.9rem' }}>→</span>
-                    <span style={{ fontFamily: 'var(--font-libre)', fontSize: '0.95rem', color: '#ede8de', lineHeight: 1.4 }}>{row.aptus}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
         {/* ── Birthday finder ── */}
-        <div style={{ borderTop: '1px solid #2d2e2b', paddingTop: '2.5rem' }}>
+        <div style={{ ...divider, marginTop: isMobile ? '3rem' : '4rem' }}>
           <BirthdayFinder hemisphere={hemisphere} />
         </div>
 
